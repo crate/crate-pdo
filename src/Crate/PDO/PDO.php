@@ -18,7 +18,7 @@ class PDO extends BasePDO
     /**
      * {@inheritDoc}
      */
-    public function prepare($statement, array $driver_options = array())
+    public function prepare($statement, $options = null)
     {
 
     }
