@@ -1,7 +1,8 @@
 {
     "require": {
         "php":     "~5.4",
-        "ext-pdo": "~1.0"
+        "ext-pdo": "~1.0",
+        "rdlowrey/artax": "~0.7.0"
     },
     "autoload": {
         "psr-0": {
