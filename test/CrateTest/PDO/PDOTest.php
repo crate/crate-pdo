@@ -3,7 +3,6 @@
 
 namespace CrateTest\PDO;
 
-use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\PDO;
 use PHPUnit_Framework_TestCase;
 
@@ -42,7 +41,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testBeginTransactionThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->pdo->beginTransaction();
     }
 
@@ -51,7 +50,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testCommitThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->pdo->commit();
     }
 
@@ -60,7 +59,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testRollbackThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->pdo->rollBack();
     }
 
@@ -69,7 +68,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testInTransactionThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->pdo->inTransaction();
     }
 
@@ -78,7 +77,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testLastInsertIdThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->pdo->lastInsertId();
     }
 }

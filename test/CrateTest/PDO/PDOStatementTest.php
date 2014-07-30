@@ -3,7 +3,6 @@
 
 namespace CrateTest\PDO;
 
-use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\PDOStatement;
 use PHPUnit_Framework_TestCase;
 
@@ -41,7 +40,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testCloseCursorThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->statement->closeCursor();
     }
 }
