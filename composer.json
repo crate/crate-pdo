@@ -6,7 +6,7 @@
     },
     "autoload": {
         "psr-0": {
-            "Crate\\PDO\\": "src"
+            "Crate\\": "src"
         }
     },
     "require-dev": {
@@ -14,7 +14,8 @@
     },
     "autoload-dev": {
         "psr-0": {
-            "CrateTest\\PDO\\": "test"
+            "CrateTest\\PDO\\": "test",
+            "CrateIntegrationTest\\PDO\\": "test"
         }
     }
 }

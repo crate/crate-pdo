@@ -37,6 +37,34 @@ class PDOTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     */
+    public function testInstantiationWithInvalidOptions()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+
+        new PDO('http://localhost:1234/', null, null, 'a invalid value');
+    }
+
+    /**
+     * @covers ::prepare
+     */
+    public function testPrepareReturnsAPDOStatement()
+    {
+        $statement = $this->pdo->prepare('SELECT * FROM tweets');
+
+        $this->assertInstanceOf('Crate\PDO\PDOStatement', $statement);
+    }
+
+    /**
+     * @covers ::getAvailableDrivers
+     */
+    public function testAvailableDriversContainsCrate()
+    {
+        $this->assertArrayHasKey('crate', PDO::getAvailableDrivers());
+    }
+
+    /**
      * @covers ::beginTransaction
      */
     public function testBeginTransactionThrowsUnsupportedException()

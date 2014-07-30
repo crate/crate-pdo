@@ -3,20 +3,91 @@
 
 namespace Crate\PDO;
 
+use Crate\CrateConst;
+use Crate\PDO\ArtaxExt\ClientInterface;
+use IteratorAggregate;
 use PDOStatement as BasePDOStatement;
+use Traversable;
 
-class PDOStatement extends BasePDOStatement
+class PDOStatement extends BasePDOStatement implements IteratorAggregate
 {
     /**
-     * {@inheritDoc}
+     * @var ClientInterface
      */
-    public $queryString;
+    private $client;
+
+    /**
+     * @var array
+     */
+    private $parameters = [];
+
+    /**
+     * @var string|null
+     */
+    private $errorCode = null;
+
+    /**
+     * @var string|null
+     */
+    private $errorMessage = null;
+
+    /**
+     * @var array|null
+     */
+    private $cols;
+
+    /**
+     * @var array|null
+     */
+    private $rows;
+
+    /**
+     * @var int|null
+     */
+    private $rowCount;
+
+    /**
+     * @var int|null
+     */
+    private $duration;
+
+    /**
+     * @var string
+     */
+    private $sql;
+
+    /**
+     * @param ClientInterface $client
+     * @param string          $sql
+     */
+    public function __construct(ClientInterface $client, $sql)
+    {
+        $this->sql    = $sql;
+        $this->client = $client;
+    }
 
     /**
      * {@inheritDoc}
      */
     public function execute($input_parameters = null)
     {
+        $response     = $this->client->execute($this, $this->sql, $this->parameters);
+        $responseBody = json_decode($response->getBody());
+
+        if ($response->getStatus() !== 200) {
+
+            $this->errorCode    = $responseBody->error->code;
+            $this->errorMessage = $responseBody->error->message;
+
+            return false;
+        }
+
+        $this->cols     = $responseBody->cols;
+        $this->rows     = $responseBody->rows;
+        $this->duration = $responseBody->duration;
+        $this->rowCount = $responseBody->rowcount;
+
+        return true;
     }
 
     /**
@@ -85,6 +156,7 @@ class PDOStatement extends BasePDOStatement
      */
     public function errorCode()
     {
+        return $this->errorCode;
     }
 
     /**
@@ -92,6 +164,26 @@ class PDOStatement extends BasePDOStatement
      */
     public function errorInfo()
     {
+        if ($this->errorCode === null) {
+            return null;
+        }
+
+        switch ($this->errorCode)
+        {
+            case CrateConst::ERR_INVALID_SQL:
+                $ansiErrorCode = 42000;
+                break;
+
+            default:
+                $ansiErrorCode = 'Not available';
+                break;
+        }
+
+        return [
+            $ansiErrorCode,
+            $this->errorCode,
+            $this->errorMessage
+        ];
     }
 
     /**
@@ -149,5 +241,22 @@ class PDOStatement extends BasePDOStatement
      */
     public function debugDumpParams()
     {
+    }
+
+    /**
+     * (PHP 5 &gt;= 5.0.0)<br/>
+     * Retrieve an external iterator
+     *
+     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
+     * @return Traversable An instance of an object implementing <b>Iterator</b> or
+     *       <b>Traversable</b>
+     */
+    public function getIterator()
+    {
+        if ($this->rows === null) {
+            $this->execute();
+        }
+
+        return new \ArrayIterator($this->rows);
     }
 }

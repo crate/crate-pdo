@@ -4,15 +4,41 @@
 namespace Crate\PDO;
 
 use PDO as BasePDO;
+use Traversable;
 
 class PDO extends BasePDO
 {
+    /**
+     * @var array
+     */
+    private $options;
+
+    /**
+     * @var ArtaxExt\Client
+     */
+    private $client;
+
     /**
      * {@inheritDoc}
      */
     public function __construct($dsn, $username, $passwd, $options)
     {
+        $this->client = new ArtaxExt\Client($dsn);
 
+        if ($options instanceof Traversable) {
+            $options = iterator_to_array($options);
+        }
+
+        if ($options !== null && !is_array($options)) {
+            throw new Exception\InvalidArgumentException(
+                sprintf(
+                    'Fourth argument of __construct is expected to be traversable or null "%s" received.',
+                    gettype($options)
+                )
+            );
+        } else {
+            $this->options = $options;
+        }
     }
 
     /**
@@ -20,6 +46,7 @@ class PDO extends BasePDO
      */
     public function prepare($statement, $options = null)
     {
+        return new PDOStatement($this->client, $statement);
     }
 
     /**
@@ -67,7 +94,10 @@ class PDO extends BasePDO
      */
     public function exec($statement)
     {
+        $statement = $this->prepare($statement);
+        $statement->execute();
 
+        return $statement->rowCount();
     }
 
     /**
@@ -75,7 +105,10 @@ class PDO extends BasePDO
      */
     public function query($statement)
     {
+        $statement = $this->prepare($statement);
+        $statement->execute();
 
+        return $statement;
     }
 
     /**
@@ -91,7 +124,8 @@ class PDO extends BasePDO
      */
     public function errorCode()
     {
-
+        $statement = $this->client->getLastStatement();
+        return $statement !== null ? $statement->errorCode() : null;
     }
 
     /**
@@ -99,7 +133,8 @@ class PDO extends BasePDO
      */
     public function errorInfo()
     {
-
+        $statement = $this->client->getLastStatement();
+        return $statement !== null ? $statement->errorInfo() : null;
     }
 
     /**
@@ -123,6 +158,6 @@ class PDO extends BasePDO
      */
     public static function getAvailableDrivers()
     {
-
+        return parent::getAvailableDrivers() + ['crate'];
     }
 }
