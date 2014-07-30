@@ -9,15 +9,38 @@ use PHPUnit_Framework_TestCase;
 /**
  * Tests for {@see \Crate\PDO\PDOStatement}
  *
- * @covers \Crate\PDO\PDOStatement
+ * @coverDefaultClass \Crate\PDO\PDOStatement
+ *
+ * @group unit
+ * @group statement
  */
 class PDOStatementTest extends PHPUnit_Framework_TestCase
 {
-    public function testInstantiaton()
-    {
-        $pdoStatement = new PDOStatement();
+    /**
+     * @var PDOStatement
+     */
+    protected $statement;
 
-        $this->assertInstanceOf('Crate\PDO\PDOStatement', $pdoStatement);
-        $this->assertInstanceOf('PDOStatement', $pdoStatement);
+    protected function setUp()
+    {
+        $this->statement = new PDOStatement();
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testInstantiation()
+    {
+        $this->assertInstanceOf('Crate\PDO\PDOStatement', $this->statement);
+        $this->assertInstanceOf('PDOStatement', $this->statement);
+    }
+
+    /**
+     * @covers ::closeCursor
+     */
+    public function testCloseCursorThrowsUnsupportedException()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->statement->closeCursor();
     }
 }

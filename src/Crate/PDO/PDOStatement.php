@@ -141,6 +141,7 @@ class PDOStatement extends BasePDOStatement
      */
     public function closeCursor()
     {
+        throw new Exception\UnsupportedException;
     }
 
     /**

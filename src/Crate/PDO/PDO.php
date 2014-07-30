@@ -20,7 +20,6 @@ class PDO extends BasePDO
      */
     public function prepare($statement, $options = null)
     {
-
     }
 
     /**
@@ -28,7 +27,7 @@ class PDO extends BasePDO
      */
     public function beginTransaction()
     {
-        // @todo CRATE.IO does not support transactions
+        throw new Exception\UnsupportedException;
     }
 
     /**
@@ -36,7 +35,7 @@ class PDO extends BasePDO
      */
     public function commit()
     {
-        // @todo CRATE.IO does not support transactions
+        throw new Exception\UnsupportedException;
     }
 
     /**
@@ -44,7 +43,7 @@ class PDO extends BasePDO
      */
     public function rollBack()
     {
-        // @todo CRATE.IO does not support transactions - throw an exception?
+        throw new Exception\UnsupportedException;
     }
 
     /**
@@ -52,8 +51,7 @@ class PDO extends BasePDO
      */
     public function inTransaction()
     {
-        // @todo CRATE.IO does not support transactions
-        return false;
+        throw new Exception\UnsupportedException;
     }
 
     /**
@@ -85,7 +83,7 @@ class PDO extends BasePDO
      */
     public function lastInsertId($name = null)
     {
-        // should probably store it locally
+        throw new Exception\UnsupportedException;
     }
 
     /**
