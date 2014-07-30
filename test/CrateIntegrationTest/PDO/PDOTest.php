@@ -12,7 +12,7 @@ use PHPUnit_Framework_TestCase;
 /**
  * Integration tests for {@see \Crate\PDO\PDO}
  *
- * @coversDefaultClass \Crate\PDO\PDO
+ * @coversNothing
  *
  * @group integration
  */
@@ -27,7 +27,6 @@ class PDOTest extends PHPUnit_Framework_TestCase
     {
         $this->pdo = new PDO('http://localhost:4200/_sql', null, null, []);
         $this->pdo->query('CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string)');
-
     }
 
     protected function tearDown()
