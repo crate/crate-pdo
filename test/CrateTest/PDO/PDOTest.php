@@ -29,7 +29,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testInstantiaton()
+    public function testInstantiation()
     {
         $pdo = new PDO('http://localhost:1234/', null, null, []);
 

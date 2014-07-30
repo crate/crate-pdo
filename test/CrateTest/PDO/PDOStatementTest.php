@@ -30,7 +30,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
-    public function testInstantiaton()
+    public function testInstantiation()
     {
         $pdoStatement = new PDOStatement();
 
