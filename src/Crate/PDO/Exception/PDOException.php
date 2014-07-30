@@ -7,6 +7,6 @@ namespace Crate\PDO\Exception;
 
 use PDOException as BasePDOException;
 
-class PDOException extends BasePDOException
+class PDOException extends BasePDOException implements ExceptionInterface
 {
 }
