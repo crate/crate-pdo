@@ -95,9 +95,9 @@ class PDO extends BasePDO
     public function exec($statement)
     {
         $statement = $this->prepare($statement);
-        $statement->execute();
+        $result    = $statement->execute();
 
-        return $statement->rowCount();
+        return $result !== false ? $statement->rowCount() : false;
     }
 
     /**
@@ -106,9 +106,9 @@ class PDO extends BasePDO
     public function query($statement)
     {
         $statement = $this->prepare($statement);
-        $statement->execute();
+        $result    = $statement->execute();
 
-        return $statement;
+        return $result !== false ? $statement : false;
     }
 
     /**
@@ -158,6 +158,6 @@ class PDO extends BasePDO
      */
     public static function getAvailableDrivers()
     {
-        return parent::getAvailableDrivers() + ['crate'];
+        return array_merge(parent::getAvailableDrivers(), ['crate']);
     }
 }

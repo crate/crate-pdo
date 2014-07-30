@@ -61,7 +61,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testAvailableDriversContainsCrate()
     {
-        $this->assertArrayHasKey('crate', PDO::getAvailableDrivers());
+        $this->assertContains('crate', PDO::getAvailableDrivers());
     }
 
     /**

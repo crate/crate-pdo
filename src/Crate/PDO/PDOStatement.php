@@ -3,6 +3,7 @@
 
 namespace Crate\PDO;
 
+use ArrayIterator;
 use Crate\CrateConst;
 use Crate\PDO\ArtaxExt\ClientInterface;
 use IteratorAggregate;
@@ -85,7 +86,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $this->cols     = $responseBody->cols;
         $this->rows     = $responseBody->rows;
         $this->duration = $responseBody->duration;
-        $this->rowCount = $responseBody->rowcount;
+        $this->rowCount = isset($responseBody->rowcount) ? $responseBody->rowcount : null;
 
         return true;
     }
@@ -128,6 +129,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function rowCount()
     {
+        return $this->rowCount;
     }
 
     /**
@@ -253,10 +255,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function getIterator()
     {
-        if ($this->rows === null) {
-            $this->execute();
-        }
-
-        return new \ArrayIterator($this->rows);
+        return new ArrayIterator($this->rows);
     }
 }

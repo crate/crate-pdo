@@ -18,11 +18,35 @@ use PHPUnit_Framework_TestCase;
  */
 class PDOTest extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var PDO
+     */
+    protected $pdo;
+
+    protected function setUp()
+    {
+        $this->pdo = new PDO('http://localhost:4200/_sql', null, null, []);
+        $this->pdo->query('CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string)');
+
+    }
+
+    protected function tearDown()
+    {
+        $this->pdo->query('DROP TABLE test_table');
+    }
+
+    protected function insertRow($count = 1)
+    {
+        for ($i = 0; $i <= $count; $i++) {
+            $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, 'hello world')", $i));
+        }
+
+        $this->pdo->query('refresh table test_table');
+    }
+
     public function testWithInvalidSQL()
     {
-        $pdo = new PDO('http://localhost:4200/_sql', null, null, []);
-
-        $statement = $pdo->prepare('bogus sql');
+        $statement = $this->pdo->prepare('bogus sql');
         $statement->execute();
 
         $this->assertEquals(4000, $statement->errorCode());
@@ -34,19 +58,19 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('SQLActionException[line 1:1: no viable alternative at input \'bogus\']', $driverMessage);
     }
 
-    /**
-     * This is just a test used during development
-     */
     public function testSimple()
     {
-        $pdo = new PDO('http://localhost:4200/_sql', null, null, []);
-
-        $statement = $pdo->prepare('SELECT * FROM tweets LIMIT 2');
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
         $statement->execute();
+    }
 
-        foreach ($statement as $row) {
-            echo 'test';
-            print_r($row);
-        }
+    public function testDelete()
+    {
+        $this->insertRow(3);
+
+        $statement = $this->pdo->prepare('DELETE FROM test_table WHERE id = 1');
+
+        $this->assertTrue($statement->execute());
+        $this->assertEquals(1, $statement->rowCount());
     }
 }

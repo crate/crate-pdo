@@ -3,8 +3,7 @@
 
 namespace CrateTest\PDO;
 
-use Artax\Client;
-use Crate\PDO\ArtaxExt\Request;
+use Crate\PDO\ArtaxExt\Client;
 use Crate\PDO\PDOStatement;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
@@ -25,21 +24,15 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     protected $client;
 
     /**
-     * @var Request|PHPUnit_Framework_MockObject_MockObject
-     */
-    protected $request;
-
-    /**
      * @var PDOStatement
      */
     protected $statement;
 
     protected function setUp()
     {
-        $this->client  = $this->getMock('Artax\Client');
-        $this->request = $this->getMock('Crate\PDO\ArtaxExt\Request');
+        $this->client  = $this->getMock('Crate\PDO\ArtaxExt\ClientInterface');
 
-        $this->statement = new PDOStatement($this->client, $this->request);
+        $this->statement = new PDOStatement($this->client, "SELECT * FROM table_name");
     }
 
     /**

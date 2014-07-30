@@ -7,6 +7,11 @@ namespace Crate;
 
 final class CrateConst
 {
+    /**
+     * Ansi error code: 42000
+     *
+     * @var int
+     */
     const ERR_INVALID_SQL = 4000;
     const ERR_INVALID_ANALYZER_DEF = 4001;
     const ERR_INVALID_TABLE_NAME = 4002;
