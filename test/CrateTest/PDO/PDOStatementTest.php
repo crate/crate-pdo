@@ -32,10 +32,8 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testInstantiation()
     {
-        $pdoStatement = new PDOStatement();
-
-        $this->assertInstanceOf('Crate\PDO\PDOStatement', $pdoStatement);
-        $this->assertInstanceOf('PDOStatement', $pdoStatement);
+        $this->assertInstanceOf('Crate\PDO\PDOStatement', $this->statement);
+        $this->assertInstanceOf('PDOStatement', $this->statement);
     }
 
     /**
