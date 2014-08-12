@@ -28,7 +28,6 @@ class Client implements ClientInterface
     public function __construct($uri, array $options)
     {
         $this->uri    = $uri;
-
         $this->client = new ArtaxClient();
         $this->client->setAllOptions($options);
     }
@@ -62,7 +61,7 @@ class Client implements ClientInterface
     }
 
     /**
-     * @return array
+     * {@Inheritdoc}
      */
     public function getServerInfo()
     {
@@ -70,10 +69,26 @@ class Client implements ClientInterface
     }
 
     /**
-     * @return string
+     * {@Inheritdoc}
      */
     public function getServerVersion()
     {
         // TODO: Implement getServerVersion() method.
+    }
+
+    /**
+     * {@Inheritdoc}
+     */
+    public function setUri($uri)
+    {
+        $this->uri = $uri;
+    }
+
+    /**
+     * {@Inheritdoc}
+     */
+    public function setTimeout($timeout)
+    {
+        $this->client->setOption('connectTimeout', $timeout);
     }
 }

@@ -3,13 +3,17 @@
 
 namespace CrateTest\PDO;
 
+use Crate\PDO\ArtaxExt\ClientInterface;
+use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\PDO;
+use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 
 /**
  * Tests for {@see \Crate\PDO\PDO}
  *
- * @coverDefaultClass \Crate\PDO\PDO
+ * @coversDefaultClass \Crate\PDO\PDO
+ * @covers ::<!public>
  *
  * @group unit
  */
@@ -20,9 +24,17 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     protected $pdo;
 
+    /**
+     * @var PHPUnit_Framework_MockObject_MockObject|ClientInterface
+     */
+    protected $client;
+
     protected function setUp()
     {
+        $this->client = $this->getMock(ClientInterface::class);
+
         $this->pdo = new PDO('http://localhost:8080', null, null, []);
+        $this->pdo->setClient($this->client);
     }
 
     /**
@@ -39,6 +51,15 @@ class PDOTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
+    public function testInstantiationWithTraversableOptions()
+    {
+        $pdo = new PDO('http://localhost:1234/', null, null, new \ArrayObject([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]));
+        $this->assertEquals(PDO::ERRMODE_EXCEPTION, $pdo->getAttribute(PDO::ATTR_ERRMODE));
+    }
+
+    /**
+     * @covers ::__construct
+     */
     public function testInstantiationWithInvalidOptions()
     {
         $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
@@ -46,39 +67,85 @@ class PDOTest extends PHPUnit_Framework_TestCase
         new PDO('http://localhost:1234/', null, null, 'a invalid value');
     }
 
-    public function attributeProvider()
+    /**
+     * @covers ::getAttribute
+     */
+    public function testGetAttributeWithInvalidAttribute()
     {
-        return [
-            // Overriden attributes
-            [PDO::ATTR_STATEMENT_CLASS, ['Crate\PDO\PDOStatement']],
-            [PDO::ATTR_PERSISTENT, false],
-            [PDO::ATTR_DRIVER_NAME, 'crate'],
-            [PDO::ATTR_PREFETCH, false],
-            [PDO::ATTR_AUTOCOMMIT, true],
-            [PDO::ATTR_CLIENT_VERSION, PDO::VERSION],
-            [PDO::ATTR_TIMEOUT, 5],
-
-            // Inherited
-            [PDO::ATTR_ERRMODE],
-            [PDO::ATTR_DEFAULT_FETCH_MODE],
-        ];
+        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $this->pdo->getAttribute('I DONT EXIST');
     }
 
     /**
-     * @dataProvider attributeProvider
-     *
-     * @param string $attribute
-     * @param mixed  $overrideValue
+     * @covers ::setAttribute
      */
-    public function testDefaultAttributesMatchPDO($attribute, $overrideValue = null)
+    public function testSetAttributeWithInvalidAttribute()
     {
-        if ($overrideValue !== null) {
-            $this->assertEquals($overrideValue, $this->pdo->getAttribute($attribute));
-        } else {
+        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $this->pdo->setAttribute('I DONT EXIST', 'value');
+    }
 
-            $PDO = new \PDO('sqlite::memory:');
-            $this->assertEquals($PDO->getAttribute($attribute), $this->pdo->getAttribute($attribute));
-        }
+    /**
+     * @covers ::getAttribute
+     * @covers ::setAttribute
+     */
+    public function testGetAndSetDefaultFetchMode()
+    {
+        $this->assertEquals(PDO::FETCH_BOTH, $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE));
+        $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $this->assertEquals(PDO::FETCH_ASSOC, $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE));
+    }
+
+    /**
+     * @covers ::getAttribute
+     * @covers ::setAttribute
+     */
+    public function testGetAndSetErrorMode()
+    {
+        $this->assertEquals(PDO::ERRMODE_SILENT, $this->pdo->getAttribute(PDO::ATTR_ERRMODE));
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->assertEquals(PDO::ERRMODE_EXCEPTION, $this->pdo->getAttribute(PDO::ATTR_ERRMODE));
+    }
+
+    /**
+     * @covers ::getAttribute
+     * @covers ::setAttribute
+     */
+    public function testGetAndSetTimeout()
+    {
+        $timeout = 3;
+
+        $this->client
+            ->expects($this->once())
+            ->method('setTimeout')
+            ->with($timeout);
+
+        $this->assertEquals(5, $this->pdo->getAttribute(PDO::ATTR_TIMEOUT));
+
+        $this->pdo->setAttribute(PDO::ATTR_TIMEOUT, $timeout);
+
+        $this->assertEquals($timeout, $this->pdo->getAttribute(PDO::ATTR_TIMEOUT));
+    }
+
+    /**
+     * @covers ::quote
+     */
+    public function testQuote()
+    {
+        $this->assertTrue($this->pdo->quote('1', PDO::PARAM_BOOL));
+        $this->assertFalse($this->pdo->quote('0', PDO::PARAM_BOOL));
+
+        $this->assertEquals(100, $this->pdo->quote('100', PDO::PARAM_INT));
+        $this->assertNull($this->pdo->quote('helloWorld', PDO::PARAM_NULL));
+    }
+
+    /**
+     * @covers ::quote
+     */
+    public function testQuoteWithString()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->pdo->quote('helloWorld', PDO::PARAM_STR);
     }
 
     /**

@@ -11,7 +11,7 @@ use PHPUnit_Framework_TestCase;
 /**
  * Tests for {@see \Crate\PDO\PDOStatement}
  *
- * @coverDefaultClass \Crate\PDO\PDOStatement
+ * @coversDefaultClass \Crate\PDO\PDOStatement
  *
  * @group unit
  * @group statement

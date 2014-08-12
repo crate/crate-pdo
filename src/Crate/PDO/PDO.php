@@ -3,12 +3,20 @@
 
 namespace Crate\PDO;
 
+use Crate\PDO\ArtaxExt\ClientInterface;
 use PDO as BasePDO;
 use Traversable;
 
 class PDO extends BasePDO
 {
     const VERSION = '1.0.0-dev';
+
+    /**
+     * The DSN in the use-case of crate should be the URI endpoint
+     *
+     * @var string
+     */
+    private $dsn;
 
     /**
      * @var array
@@ -34,9 +42,8 @@ class PDO extends BasePDO
      */
     public function __construct($dsn, $username, $passwd, $options)
     {
-        $this->client = new ArtaxExt\Client($dsn, [
-            'connectTimeout' => $this->attributes['timeout']
-        ]);
+        // Store the DSN for later
+        $this->dsn = $dsn;
 
         if ($options instanceof Traversable) {
             $options = iterator_to_array($options);
@@ -50,8 +57,29 @@ class PDO extends BasePDO
                 )
             );
         } else {
-            $this->attributes = array_merge($this->attributes, $options);
+            foreach ($options as $attr => $value) {
+                $this->setAttribute($attr, $value);
+            }
         }
+    }
+
+    public function getClient()
+    {
+        if ($this->client === null) {
+            $this->client = new ArtaxExt\Client($this->dsn, [
+                'connectTimeout' => $this->attributes['timeout']
+            ]);
+        }
+
+        return $this->client;
+    }
+
+    public function setClient(ClientInterface $client)
+    {
+        $client->setUri($this->dsn);
+        $client->setTimeout($this->attributes['timeout']);
+
+        $this->client = $client;
     }
 
     /**
@@ -59,7 +87,7 @@ class PDO extends BasePDO
      */
     public function prepare($statement, $options = null)
     {
-        return new PDOStatement($this->client, $statement, $this->attributes);
+        return new PDOStatement($this->getClient(), $statement, $this->attributes);
     }
 
     /**
@@ -92,14 +120,6 @@ class PDO extends BasePDO
     public function inTransaction()
     {
         throw new Exception\UnsupportedException;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setAttribute($attribute, $value)
-    {
-        $this->attributes[$attribute] = $value;
     }
 
     /**
@@ -153,6 +173,31 @@ class PDO extends BasePDO
     /**
      * {@inheritDoc}
      */
+    public function setAttribute($attribute, $value)
+    {
+        switch ($attribute)
+        {
+            case self::ATTR_DEFAULT_FETCH_MODE:
+                $this->attributes['defaultFetchMode'] = $value;
+                break;
+
+            case self::ATTR_ERRMODE:
+                $this->attributes['errorMode'] = $value;
+                break;
+
+            case self::ATTR_TIMEOUT:
+                $this->attributes['timeout'] = (int) $value;
+                $this->getClient()->setTimeout((int) $value);
+                break;
+
+            default:
+                throw new Exception\PDOException('Unsupported driver attribute');
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getAttribute($attribute)
     {
         switch ($attribute)
@@ -163,7 +208,9 @@ class PDO extends BasePDO
             case PDO::ATTR_PREFETCH:
                 return false;
 
-            case PDO::ATTR_AUTOCOMMIT:
+            // This is hack against PHP else this would evaluate to true
+            // 'INVALID ATTRIBUTE' == 0
+            case ($attribute === PDO::ATTR_AUTOCOMMIT):
                 return true;
 
             case PDO::ATTR_CLIENT_VERSION:
@@ -189,6 +236,9 @@ class PDO extends BasePDO
 
             case PDO::ATTR_STATEMENT_CLASS:
                 return [$this->attributes['statementClass']];
+
+            default:
+                throw new Exception\PDOException('Unsupported driver attribute');
         }
     }
 
@@ -197,7 +247,20 @@ class PDO extends BasePDO
      */
     public function quote($string, $parameter_type = PDO::PARAM_STR)
     {
+        switch ($parameter_type)
+        {
+            case PDO::PARAM_INT:
+                return (int) $string;
 
+            case PDO::PARAM_BOOL:
+                return (bool) $string;
+
+            case PDO::PARAM_NULL:
+                return null;
+
+            default:
+                throw new Exception\UnsupportedException;
+        }
     }
 
     /**

@@ -103,6 +103,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function fetch($fetch_style = null, $cursor_orientation = PDO::FETCH_ORI_NEXT, $cursor_offset = 0)
     {
+        $fetchStyle = $fetch_style ?: $this->attributes['defaultFetchMode'];
+
+
     }
 
     /**

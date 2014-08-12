@@ -11,6 +11,24 @@ use Crate\PDO\PDOStatement;
 interface ClientInterface
 {
     /**
+     * Set the URI
+     *
+     * @param string $uri
+     *
+     * @return void
+     */
+    public function setUri($uri);
+
+    /**
+     * Set the connection timeout
+     *
+     * @param int $timeout
+     *
+     * @return void
+     */
+    public function setTimeout($timeout);
+
+    /**
      * Execute the PDOStatement and return the response from server
      *
      * @param PDOStatement $statement
