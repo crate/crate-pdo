@@ -46,13 +46,47 @@ class PDOTest extends PHPUnit_Framework_TestCase
         new PDO('http://localhost:1234/', null, null, 'a invalid value');
     }
 
+    public function attributeProvider()
+    {
+        return [
+            // Overriden attributes
+            [PDO::ATTR_STATEMENT_CLASS, ['Crate\PDO\PDOStatement']],
+            [PDO::ATTR_PERSISTENT, false],
+            [PDO::ATTR_DRIVER_NAME, 'crate'],
+            [PDO::ATTR_PREFETCH, false],
+            [PDO::ATTR_AUTOCOMMIT, true],
+            [PDO::ATTR_CLIENT_VERSION, PDO::VERSION],
+            [PDO::ATTR_TIMEOUT, 5],
+
+            // Inherited
+            [PDO::ATTR_ERRMODE],
+            [PDO::ATTR_DEFAULT_FETCH_MODE],
+        ];
+    }
+
+    /**
+     * @dataProvider attributeProvider
+     *
+     * @param string $attribute
+     * @param mixed  $overrideValue
+     */
+    public function testDefaultAttributesMatchPDO($attribute, $overrideValue = null)
+    {
+        if ($overrideValue !== null) {
+            $this->assertEquals($overrideValue, $this->pdo->getAttribute($attribute));
+        } else {
+
+            $PDO = new \PDO('sqlite::memory:');
+            $this->assertEquals($PDO->getAttribute($attribute), $this->pdo->getAttribute($attribute));
+        }
+    }
+
     /**
      * @covers ::prepare
      */
     public function testPrepareReturnsAPDOStatement()
     {
         $statement = $this->pdo->prepare('SELECT * FROM tweets');
-
         $this->assertInstanceOf('Crate\PDO\PDOStatement', $statement);
     }
 

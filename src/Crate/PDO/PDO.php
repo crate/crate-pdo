@@ -8,10 +8,21 @@ use Traversable;
 
 class PDO extends BasePDO
 {
+    const VERSION = '1.0.0-dev';
+
     /**
      * @var array
      */
-    private $options;
+    private $attributes = [
+        'defaultFetchMode' => self::FETCH_BOTH,
+        'errorMode'        => self::ERRMODE_SILENT,
+        'statementClass'   => 'Crate\PDO\PDOStatement',
+
+        'resultObject'                => 'PDOObject',
+        'resultObjectConstructorArgs' => [],
+
+        'timeout' => 5
+    ];
 
     /**
      * @var ArtaxExt\Client
@@ -23,7 +34,9 @@ class PDO extends BasePDO
      */
     public function __construct($dsn, $username, $passwd, $options)
     {
-        $this->client = new ArtaxExt\Client($dsn);
+        $this->client = new ArtaxExt\Client($dsn, [
+            'connectTimeout' => $this->attributes['timeout']
+        ]);
 
         if ($options instanceof Traversable) {
             $options = iterator_to_array($options);
@@ -37,7 +50,7 @@ class PDO extends BasePDO
                 )
             );
         } else {
-            $this->options = $options;
+            $this->attributes = array_merge($this->attributes, $options);
         }
     }
 
@@ -46,7 +59,7 @@ class PDO extends BasePDO
      */
     public function prepare($statement, $options = null)
     {
-        return new PDOStatement($this->client, $statement);
+        return new PDOStatement($this->client, $statement, $this->attributes);
     }
 
     /**
@@ -86,7 +99,7 @@ class PDO extends BasePDO
      */
     public function setAttribute($attribute, $value)
     {
-
+        $this->attributes[$attribute] = $value;
     }
 
     /**
@@ -142,7 +155,41 @@ class PDO extends BasePDO
      */
     public function getAttribute($attribute)
     {
+        switch ($attribute)
+        {
+            case PDO::ATTR_PERSISTENT:
+                return false;
 
+            case PDO::ATTR_PREFETCH:
+                return false;
+
+            case PDO::ATTR_AUTOCOMMIT:
+                return true;
+
+            case PDO::ATTR_CLIENT_VERSION:
+                return self::VERSION;
+
+            case PDO::ATTR_SERVER_VERSION:
+                return $this->client->getServerVersion();
+
+            case PDO::ATTR_SERVER_INFO:
+                return $this->client->getServerInfo();
+
+            case PDO::ATTR_TIMEOUT:
+                return $this->attributes['timeout'];
+
+            case PDO::ATTR_DEFAULT_FETCH_MODE:
+                return $this->attributes['defaultFetchMode'];
+
+            case PDO::ATTR_ERRMODE:
+                return $this->attributes['errorMode'];
+
+            case PDO::ATTR_DRIVER_NAME:
+                return 'crate';
+
+            case PDO::ATTR_STATEMENT_CLASS:
+                return [$this->attributes['statementClass']];
+        }
     }
 
     /**

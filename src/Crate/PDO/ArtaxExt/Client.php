@@ -23,11 +23,14 @@ class Client implements ClientInterface
 
     /**
      * @param string $uri
+     * @param array  $options
      */
-    public function __construct($uri)
+    public function __construct($uri, array $options)
     {
         $this->uri    = $uri;
+
         $this->client = new ArtaxClient();
+        $this->client->setAllOptions($options);
     }
 
     /**
@@ -56,5 +59,21 @@ class Client implements ClientInterface
     public function getLastStatement()
     {
         return $this->lastStatement;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServerInfo()
+    {
+        // TODO: Implement getServerInfo() method.
+    }
+
+    /**
+     * @return string
+     */
+    public function getServerVersion()
+    {
+        // TODO: Implement getServerVersion() method.
     }
 }

@@ -58,13 +58,20 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     private $sql;
 
     /**
+     * @var array
+     */
+    private $attributes = [];
+
+    /**
      * @param ClientInterface $client
      * @param string          $sql
+     * @param array           $attributes
      */
-    public function __construct(ClientInterface $client, $sql)
+    public function __construct(ClientInterface $client, $sql, array $attributes)
     {
-        $this->sql    = $sql;
-        $this->client = $client;
+        $this->sql        = $sql;
+        $this->client     = $client;
+        $this->attributes = $attributes;
     }
 
     /**
@@ -142,7 +149,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function fetchAll($fetch_style = null, $fetch_argument = null, $ctor_args = array())
+    public function fetchAll($fetch_style = null, $fetch_argument = null, $ctor_args = [])
     {
     }
 
@@ -221,6 +228,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function setFetchMode($mode, $params = null)
     {
+        $args = func_get_args();
     }
 
     /**

@@ -27,4 +27,14 @@ interface ClientInterface
      * @return PDOStatement|null
      */
     public function getLastStatement();
+
+    /**
+     * @return array
+     */
+    public function getServerInfo();
+
+    /**
+     * @return string
+     */
+    public function getServerVersion();
 }

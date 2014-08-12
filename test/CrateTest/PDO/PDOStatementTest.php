@@ -32,7 +32,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     {
         $this->client  = $this->getMock('Crate\PDO\ArtaxExt\ClientInterface');
 
-        $this->statement = new PDOStatement($this->client, "SELECT * FROM table_name");
+        $this->statement = new PDOStatement($this->client, "SELECT * FROM table_name", []);
     }
 
     /**
