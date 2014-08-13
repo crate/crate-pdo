@@ -9,7 +9,8 @@ use Traversable;
 
 class PDO extends BasePDO
 {
-    const VERSION = '1.0.0-dev';
+    const VERSION     = '1.0.0-dev';
+    const DRIVER_NAME = 'crate';
 
     /**
      * The DSN in the use-case of crate should be the URI endpoint
@@ -208,11 +209,6 @@ class PDO extends BasePDO
             case PDO::ATTR_PREFETCH:
                 return false;
 
-            // This is hack against PHP else this would evaluate to true
-            // 'INVALID ATTRIBUTE' == 0
-            case ($attribute === PDO::ATTR_AUTOCOMMIT):
-                return true;
-
             case PDO::ATTR_CLIENT_VERSION:
                 return self::VERSION;
 
@@ -232,12 +228,17 @@ class PDO extends BasePDO
                 return $this->attributes['errorMode'];
 
             case PDO::ATTR_DRIVER_NAME:
-                return 'crate';
+                return static::DRIVER_NAME;
 
             case PDO::ATTR_STATEMENT_CLASS:
                 return [$this->attributes['statementClass']];
 
             default:
+                // PHP Switch a lose comparison
+                if ($attribute === PDO::ATTR_AUTOCOMMIT) {
+                    return true;
+                }
+
                 throw new Exception\PDOException('Unsupported driver attribute');
         }
     }
@@ -268,6 +269,6 @@ class PDO extends BasePDO
      */
     public static function getAvailableDrivers()
     {
-        return array_merge(parent::getAvailableDrivers(), ['crate']);
+        return array_merge(parent::getAvailableDrivers(), [static::DRIVER_NAME]);
     }
 }

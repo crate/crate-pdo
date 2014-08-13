@@ -4,7 +4,6 @@
 namespace CrateTest\PDO;
 
 use Crate\PDO\ArtaxExt\ClientInterface;
-use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\PDO;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
@@ -105,6 +104,51 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(PDO::ERRMODE_SILENT, $this->pdo->getAttribute(PDO::ATTR_ERRMODE));
         $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         $this->assertEquals(PDO::ERRMODE_EXCEPTION, $this->pdo->getAttribute(PDO::ATTR_ERRMODE));
+    }
+
+    /**
+     * @covers ::getAttribute
+     */
+    public function testGetVersion()
+    {
+        $this->assertEquals(PDO::VERSION, $this->pdo->getAttribute(PDO::ATTR_CLIENT_VERSION));
+    }
+
+    /**
+     * @covers ::getAttribute
+     */
+    public function testGetDriverName()
+    {
+        $this->assertEquals(PDO::DRIVER_NAME, $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME));
+    }
+
+    public function testGetStatementClass()
+    {
+        $this->assertEquals(['Crate\PDO\PDOStatement'], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
+    }
+
+    /**
+     * @covers ::getAttribute
+     */
+    public function testPersistent()
+    {
+        $this->assertFalse($this->pdo->getAttribute(PDO::ATTR_PERSISTENT));
+    }
+
+    /**
+     * @covers ::getAttribute
+     */
+    public function testPreFetch()
+    {
+        $this->assertFalse($this->pdo->getAttribute(PDO::ATTR_PREFETCH));
+    }
+
+    /**
+     * @covers ::getAttribute
+     */
+    public function testAutoCommit()
+    {
+        $this->assertTrue($this->pdo->getAttribute(PDO::ATTR_AUTOCOMMIT));
     }
 
     /**
