@@ -7,15 +7,12 @@ namespace Crate\PDO\ArtaxExt;
 
 use Artax\Client as ArtaxClient;
 use Artax\Request;
+use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\PDOStatement;
+use Crate\Stdlib\Collection;
 
 class Client implements ClientInterface
 {
-    /**
-     * @var PDOStatement|null
-     */
-    private $lastStatement = null;
-
     /**
      * @var string
      */
@@ -35,10 +32,8 @@ class Client implements ClientInterface
     /**
      * {@Inheritdoc}
      */
-    public function execute(PDOStatement $statement, $query, array $parameters)
+    public function execute($query, array $parameters)
     {
-        $this->lastStatement = $statement;
-
         $body = [
             'stmt' => $query,
             'args' => $parameters
@@ -49,15 +44,23 @@ class Client implements ClientInterface
         $request->setMethod('POST');
         $request->setBody(json_encode($body));
 
-        return $this->client->request($request);
-    }
+        $response     = $this->client->request($request);
+        $responseBody = json_decode($response->getBody());
 
-    /**
-     * {@Inheritdoc}
-     */
-    public function getLastStatement()
-    {
-        return $this->lastStatement;
+        if ($response->getStatus() !== 200) {
+
+            $errorCode    = $responseBody->error->code;
+            $errorMessage = $responseBody->error->message;
+
+            throw new RuntimeException($errorMessage, $errorCode);
+        }
+
+        return new Collection(
+            $responseBody->cols,
+            $responseBody->rows,
+            $responseBody->duration,
+            $responseBody->rowcount
+        );
     }
 
     /**

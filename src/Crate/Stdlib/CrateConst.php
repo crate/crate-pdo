@@ -3,7 +3,7 @@
  * @author Antoine Hedgcock
  */
 
-namespace Crate;
+namespace Crate\Stdlib;
 
 final class CrateConst
 {

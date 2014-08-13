@@ -4,10 +4,10 @@
 namespace Crate\PDO;
 
 use Crate\PDO\ArtaxExt\ClientInterface;
+use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
-use Traversable;
 
-class PDO extends BasePDO
+class PDO extends BasePDO implements PDOInterface
 {
     const VERSION     = '1.0.0-dev';
     const DRIVER_NAME = 'crate';
@@ -23,20 +23,23 @@ class PDO extends BasePDO
      * @var array
      */
     private $attributes = [
-        'defaultFetchMode' => self::FETCH_BOTH,
-        'errorMode'        => self::ERRMODE_SILENT,
-        'statementClass'   => 'Crate\PDO\PDOStatement',
-
+        'defaultFetchMode'            => self::FETCH_BOTH,
+        'errorMode'                   => self::ERRMODE_SILENT,
+        'statementClass'              => 'Crate\PDO\PDOStatement',
         'resultObject'                => 'PDOObject',
         'resultObjectConstructorArgs' => [],
-
-        'timeout' => 5
+        'timeout'                     => 5
     ];
 
     /**
      * @var ArtaxExt\Client
      */
     private $client;
+
+    /**
+     * @var PDOStatement|null
+     */
+    private $lastStatement;
 
     /**
      * {@inheritDoc}
@@ -46,21 +49,8 @@ class PDO extends BasePDO
         // Store the DSN for later
         $this->dsn = $dsn;
 
-        if ($options instanceof Traversable) {
-            $options = iterator_to_array($options);
-        }
-
-        if ($options !== null && !is_array($options)) {
-            throw new Exception\InvalidArgumentException(
-                sprintf(
-                    'Fourth argument of __construct is expected to be traversable or null "%s" received.',
-                    gettype($options)
-                )
-            );
-        } else {
-            foreach ($options as $attr => $value) {
-                $this->setAttribute($attr, $value);
-            }
+        foreach(ArrayUtils::toArray($options) as $attribute => $value) {
+            $this->setAttribute($attribute, $value);
         }
     }
 
@@ -83,12 +73,44 @@ class PDO extends BasePDO
         $this->client = $client;
     }
 
+    public function doRequest(PDOStatement $statement, $sql, array $parameters)
+    {
+        $this->lastStatement = $statement;
+
+        try {
+
+            return $this->getClient()->execute($sql, $parameters);
+
+        } catch (Exception\RuntimeException $e) {
+
+            if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_EXCEPTION) {
+                throw new Exception\PDOException($e->getMessage(), $e->getCode());
+            }
+
+            if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_WARNING) {
+                trigger_error(sprintf('[%d] %s', $e->getCode(), $e->getMessage()), E_USER_WARNING);
+            }
+
+            // should probably wrap this in a error object ?
+            return [
+                'code'    => $e->getCode(),
+                'message' => $e->getMessage()
+            ];
+        }
+    }
+
     /**
      * {@inheritDoc}
      */
     public function prepare($statement, $options = null)
     {
-        return new PDOStatement($this->getClient(), $statement, $this->attributes);
+        $options = ArrayUtils::toArray($options);
+
+        if (isset($options[PDO::ATTR_CURSOR])) {
+            throw new Exception\UnsupportedException('Driver does not support cursors');
+        }
+
+        return new PDOStatement($this, $statement, $options);
     }
 
     /**
@@ -158,8 +180,7 @@ class PDO extends BasePDO
      */
     public function errorCode()
     {
-        $statement = $this->client->getLastStatement();
-        return $statement !== null ? $statement->errorCode() : null;
+        return $this->lastStatement !== null ? $this->lastStatement->errorCode() : null;
     }
 
     /**
@@ -167,8 +188,7 @@ class PDO extends BasePDO
      */
     public function errorInfo()
     {
-        $statement = $this->client->getLastStatement();
-        return $statement !== null ? $statement->errorInfo() : null;
+        return $this->lastStatement !== null ? $this->lastStatement->errorInfo() : null;
     }
 
     /**
@@ -258,6 +278,10 @@ class PDO extends BasePDO
 
             case PDO::PARAM_NULL:
                 return null;
+
+            case PDO::PARAM_LOB:
+                // todo: What do i do here ?
+                throw new \Exception('Not yet implemented');
 
             default:
                 throw new Exception\UnsupportedException;

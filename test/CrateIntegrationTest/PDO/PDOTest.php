@@ -5,8 +5,8 @@
 
 namespace CrateIntegrationTest\PDO;
 
-use Crate\CrateConst;
 use Crate\PDO\PDO;
+use Crate\Stdlib\CrateConst;
 use PHPUnit_Framework_TestCase;
 
 /**
@@ -65,11 +65,21 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     public function testDelete()
     {
-        $this->insertRow(3);
+        $this->insertRow(1);
 
         $statement = $this->pdo->prepare('DELETE FROM test_table WHERE id = 1');
 
         $this->assertTrue($statement->execute());
         $this->assertEquals(1, $statement->rowCount());
+    }
+
+    public function testDeleteWithMultipleAffectedRows()
+    {
+        $this->insertRow(5);
+
+        $statement = $this->pdo->prepare('DELETE FROM test_table WHERE id > 1');
+
+        $this->assertTrue($statement->execute());
+        $this->assertEquals(-1, $statement->rowCount());
     }
 }

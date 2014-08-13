@@ -3,20 +3,14 @@
 
 namespace Crate\PDO;
 
-use ArrayIterator;
-use Crate\CrateConst;
-use Crate\PDO\ArtaxExt\ClientInterface;
+use Crate\Stdlib\ArrayUtils;
+use Crate\Stdlib\Collection;
+use Crate\Stdlib\CrateConst;
 use IteratorAggregate;
 use PDOStatement as BasePDOStatement;
-use Traversable;
 
 class PDOStatement extends BasePDOStatement implements IteratorAggregate
 {
-    /**
-     * @var ClientInterface
-     */
-    private $client;
-
     /**
      * @var array
      */
@@ -33,26 +27,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     private $errorMessage = null;
 
     /**
-     * @var array|null
-     */
-    private $cols;
-
-    /**
-     * @var array|null
-     */
-    private $rows;
-
-    /**
-     * @var int|null
-     */
-    private $rowCount;
-
-    /**
-     * @var int|null
-     */
-    private $duration;
-
-    /**
      * @var string
      */
     private $sql;
@@ -60,18 +34,40 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * @var array
      */
-    private $attributes = [];
+    private $options = [];
 
     /**
-     * @param ClientInterface $client
-     * @param string          $sql
-     * @param array           $attributes
+     * Used for the {@see PDO::FETCH_BOUND}
+     *
+     * @var array
      */
-    public function __construct(ClientInterface $client, $sql, array $attributes)
+    private $columnBinding = [];
+
+    /**
+     * @var Collection|null
+     */
+    private $collection = null;
+
+    /**
+     * @var PDOInterface
+     */
+    private $pdo;
+
+    /**
+     * @param PDOInterface    $pdo
+     * @param string          $sql
+     * @param array           $options
+     */
+    public function __construct(PDOInterface $pdo, $sql, array $options)
     {
-        $this->sql        = $sql;
-        $this->client     = $client;
-        $this->attributes = $attributes;
+        $this->sql     = $sql;
+        $this->pdo     = $pdo;
+        $this->options = $options;
+    }
+
+    private function hasExecuted()
+    {
+        return ($this->collection !== null || $this->errorCode !== null);
     }
 
     /**
@@ -79,22 +75,20 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function execute($input_parameters = null)
     {
-        $response     = $this->client->execute($this, $this->sql, $this->parameters);
-        $responseBody = json_decode($response->getBody());
+        foreach (ArrayUtils::toArray($input_parameters) as $parameter => $value) {
+            $this->bindValue($parameter, $value);
+        }
 
-        if ($response->getStatus() !== 200) {
+        $result = $this->pdo->doRequest($this, $this->sql, $this->parameters);
 
-            $this->errorCode    = $responseBody->error->code;
-            $this->errorMessage = $responseBody->error->message;
+        if (is_array($result)) {
+            $this->errorCode    = $result['code'];
+            $this->errorMessage = $result['message'];
 
             return false;
         }
 
-        $this->cols     = $responseBody->cols;
-        $this->rows     = $responseBody->rows;
-        $this->duration = $responseBody->duration;
-        $this->rowCount = isset($responseBody->rowcount) ? $responseBody->rowcount : null;
-
+        $this->collection = $result;
         return true;
     }
 
@@ -103,8 +97,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function fetch($fetch_style = null, $cursor_orientation = PDO::FETCH_ORI_NEXT, $cursor_offset = 0)
     {
-        $fetchStyle = $fetch_style ?: $this->attributes['defaultFetchMode'];
-
 
     }
 
@@ -132,6 +124,30 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function bindValue($parameter, $value, $data_type = PDO::PARAM_STR)
     {
+        switch ($data_type)
+        {
+            case PDO::PARAM_INT:
+                $value = (int) $value;
+                break;
+
+            case PDO::PARAM_NULL:
+                $value = null;
+                break;
+
+            case PDO::PARAM_BOOL:
+                $value = (bool) $value;
+                break;
+
+            case PDO::PARAM_STR:
+                $value = (string) $value;
+                break;
+
+            case PDO::PARAM_LOB:
+                // todo: What do i do here ?
+                throw new \Exception('Not yet implemented');
+        }
+
+        $this->parameters[$parameter] = $value;
     }
 
     /**
@@ -139,7 +155,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function rowCount()
     {
-        return $this->rowCount;
+        if (!$this->hasExecuted()) {
+            $this->execute();
+        }
+
+        return $this->collection->count();
     }
 
     /**
@@ -147,6 +167,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function fetchColumn($column_number = 0)
     {
+        if (!$this->hasExecuted()) {
+            $this->execute();
+        }
     }
 
     /**
@@ -154,6 +177,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function fetchAll($fetch_style = null, $fetch_argument = null, $ctor_args = [])
     {
+        if (!$this->hasExecuted()) {
+            $this->execute();
+        }
     }
 
     /**
@@ -161,6 +187,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function fetchObject($class_name = "stdClass", $ctor_args = null)
     {
+        if (!$this->hasExecuted()) {
+            $this->execute();
+        }
     }
 
     /**
@@ -217,6 +246,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function columnCount()
     {
+        if ($this->hasExecuted()) {
+            $this->execute();
+        }
+
+        return count($this->collection->getColumns());
     }
 
     /**
@@ -224,6 +258,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function getColumnMeta($column)
     {
+        throw new Exception\UnsupportedException;
     }
 
     /**
@@ -239,6 +274,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function nextRowset()
     {
+        if ($this->hasExecuted()) {
+            $this->execute();
+        }
+
+        $this->collection->next();
+        return $this->collection->valid();
     }
 
     /**
@@ -257,15 +298,14 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     }
 
     /**
-     * (PHP 5 &gt;= 5.0.0)<br/>
-     * Retrieve an external iterator
-     *
-     * @link http://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     *       <b>Traversable</b>
+     * {@Inheritdoc}
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->rows);
+        if ($this->hasExecuted()) {
+            $this->execute();
+        }
+
+        return $this->collection;
     }
 }

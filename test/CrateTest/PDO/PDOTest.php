@@ -61,7 +61,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testInstantiationWithInvalidOptions()
     {
-        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->setExpectedException('Crate\Stdlib\Exception\InvalidArgumentException');
 
         new PDO('http://localhost:1234/', null, null, 'a invalid value');
     }
