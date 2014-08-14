@@ -65,9 +65,28 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $this->options = $options;
     }
 
+    /**
+     * @return bool
+     */
     private function hasExecuted()
     {
         return ($this->collection !== null || $this->errorCode !== null);
+    }
+
+    /**
+     * Internal pointer to mark the state of the current query
+     *
+     * @return bool
+     */
+    private function isSuccessful()
+    {
+        if (!$this->hasExecuted()) {
+            // @codeCoverageIgnoreStart
+            throw new Exception\LogicException('The statement has not been executed yet');
+            // @codeCoverageIgnoreEnd
+        }
+
+        return $this->collection !== null;
     }
 
     /**
@@ -159,6 +178,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             $this->execute();
         }
 
+        if (!$this->isSuccessful()) {
+            return false;
+        }
+
         return $this->collection->count();
     }
 
@@ -170,6 +193,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         if (!$this->hasExecuted()) {
             $this->execute();
         }
+
+        if (!$this->isSuccessful()) {
+            return false;
+        }
     }
 
     /**
@@ -180,6 +207,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         if (!$this->hasExecuted()) {
             $this->execute();
         }
+
+        if (!$this->isSuccessful()) {
+            return false;
+        }
     }
 
     /**
@@ -189,6 +220,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     {
         if (!$this->hasExecuted()) {
             $this->execute();
+        }
+
+        if (!$this->isSuccessful()) {
+            return false;
         }
     }
 
@@ -276,6 +311,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     {
         if ($this->hasExecuted()) {
             $this->execute();
+        }
+
+        if (!$this->isSuccessful()) {
+            return false;
         }
 
         $this->collection->next();
