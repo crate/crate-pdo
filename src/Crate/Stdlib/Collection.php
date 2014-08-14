@@ -52,6 +52,11 @@ class Collection implements Iterator, Countable
         return $this->columns;
     }
 
+    public function previous()
+    {
+        return prev($this->rows);
+    }
+
     /**
      * {@Inheritdoc}
      */

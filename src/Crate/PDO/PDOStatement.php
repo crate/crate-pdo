@@ -36,8 +36,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     private $options = [
         'fetchMode'           => null,
+        'fetchColumn'         => 0,
         'resultClass'         => 'stdClass',
-        'resultClassCtorArgs' => null
+        'resultClassCtorArgs' => null,
     ];
 
     /**
@@ -70,6 +71,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     }
 
     /**
+     * Determines if the statement has been executed
+     *
+     * @internal
+     *
      * @return bool
      */
     private function hasExecuted()
@@ -79,6 +84,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
     /**
      * Internal pointer to mark the state of the current query
+     *
+     * @internal
      *
      * @return bool
      */
@@ -91,6 +98,56 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
 
         return $this->collection !== null;
+    }
+
+    /**
+     * Update all the bound column references
+     *
+     * @internal
+     *
+     * @param array $row
+     *
+     * @return void
+     */
+    private function updateBoundColumns(array $row)
+    {
+        foreach ($this->columnBinding as $column => &$metadata) {
+
+            if (!isset($row[$column])) {
+                // todo: I would like to throw an exception and tell someone they screwed up
+                // but i think that would violate the PDO api
+            }
+
+            print_r($row);
+
+            $value = $row[$column];
+
+            switch ($metadata['type'])
+            {
+                case PDO::PARAM_INT:
+                    $value = (int) $value;
+                    break;
+
+                case PDO::PARAM_NULL:
+                    $value = null;
+                    break;
+
+                case PDO::PARAM_BOOL:
+                    $value = (bool) $value;
+                    break;
+
+                case PDO::PARAM_STR:
+                    $value = (string) $value;
+                    break;
+
+                case PDO::PARAM_LOB:
+                    // todo: What do i do here ?
+                    break;
+            }
+
+            // Update by reference
+            $metadata['ref'] = $value;
+        }
     }
 
     /**
@@ -120,7 +177,55 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function fetch($fetch_style = null, $cursor_orientation = PDO::FETCH_ORI_NEXT, $cursor_offset = 0)
     {
+        if (!$this->hasExecuted()) {
+            $this->execute();
+        }
 
+        if (!$this->isSuccessful()) {
+            return false;
+        }
+
+        // Increment row
+        $this->collection->next();
+        if (!$this->collection->valid()) {
+            return false;
+        }
+
+        $row = $this->collection->current();
+        $fetch_style = $fetch_style ?: $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
+
+        switch ($fetch_style)
+        {
+            case PDO::FETCH_ASSOC:
+                return array_combine($this->collection->getColumns(), $row);
+
+            case PDO::FETCH_BOTH:
+                return array_merge($row, array_values($row));
+
+            case PDO::FETCH_BOUND:
+                $this->updateBoundColumns($row);
+                break;
+
+            case PDO::FETCH_CLASS:
+                break;
+
+            case PDO::FETCH_INTO:
+                break;
+
+            case PDO::FETCH_LAZY:
+                break;
+
+            case PDO::FETCH_NAMED:
+                // This is not actually supported by crate, so we just return ASSOC
+                return $row;
+                break;
+
+            case PDO::FETCH_NUM:
+                return array_values($row);
+
+            default:
+                throw new Exception\UnsupportedException('Unsupported fetch style');
+        }
     }
 
     /**
@@ -140,6 +245,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function bindColumn($column, &$param, $type = null, $maxlen = null, $driverdata = null)
     {
+        $this->columnBinding[$column] = [
+            'ref'        => &$param,
+            'type'       => $type,
+            'maxlen'     => $maxlen,
+            'driverdata' => $driverdata
+        ];
     }
 
     /**

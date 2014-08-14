@@ -32,7 +32,7 @@ class PDOTest extends AbstractIntegrationTest
 
     public function testDelete()
     {
-        $this->insertRow(1);
+        $this->insertRows(1);
 
         $statement = $this->pdo->prepare('DELETE FROM test_table WHERE id = 1');
 
@@ -42,7 +42,7 @@ class PDOTest extends AbstractIntegrationTest
 
     public function testDeleteWithMultipleAffectedRows()
     {
-        $this->insertRow(5);
+        $this->insertRows(5);
 
         $statement = $this->pdo->prepare('DELETE FROM test_table WHERE id > 1');
 
