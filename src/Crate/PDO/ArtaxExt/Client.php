@@ -8,7 +8,6 @@ namespace Crate\PDO\ArtaxExt;
 use Artax\Client as ArtaxClient;
 use Artax\Request;
 use Crate\PDO\Exception\RuntimeException;
-use Crate\PDO\PDOStatement;
 use Crate\Stdlib\Collection;
 
 class Client implements ClientInterface
@@ -56,8 +55,8 @@ class Client implements ClientInterface
         }
 
         return new Collection(
-            $responseBody->cols,
             $responseBody->rows,
+            $responseBody->cols,
             $responseBody->duration,
             $responseBody->rowcount
         );

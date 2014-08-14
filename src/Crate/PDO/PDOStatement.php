@@ -34,7 +34,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * @var array
      */
-    private $options = [];
+    private $options = [
+        'fetchMode'           => null,
+        'resultClass'         => 'stdClass',
+        'resultClassCtorArgs' => null
+    ];
 
     /**
      * Used for the {@see PDO::FETCH_BOUND}
@@ -62,7 +66,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     {
         $this->sql     = $sql;
         $this->pdo     = $pdo;
-        $this->options = $options;
+        $this->options = array_merge($this->options, $options);
     }
 
     /**
@@ -197,6 +201,19 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         if (!$this->isSuccessful()) {
             return false;
         }
+
+        $this->collection->next();
+        if (!$this->collection->valid()) {
+            return false;
+        }
+
+        $row = array_values($this->collection->current());
+
+        if (!isset($row[$column_number])) {
+            // todo: Not sure how what actually happens here
+        }
+
+        return $row[$column_number];
     }
 
     /**
@@ -216,15 +233,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function fetchObject($class_name = "stdClass", $ctor_args = null)
+    public function fetchObject($class_name = null, $ctor_args = null)
     {
-        if (!$this->hasExecuted()) {
-            $this->execute();
-        }
-
-        if (!$this->isSuccessful()) {
-            return false;
-        }
+        throw new Exception\UnsupportedException;
     }
 
     /**
