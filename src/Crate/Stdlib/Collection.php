@@ -39,9 +39,25 @@ class Collection implements Iterator, Countable
     public function __construct(array $rows, array $columns, $duration, $rowCount)
     {
         $this->rows     = $rows;
-        $this->columns  = $columns;
+        $this->columns  = array_flip($columns);
         $this->duration = $duration;
         $this->rowCount = $rowCount;
+    }
+
+    /**
+     * Get the column index
+     *
+     * @param string $column
+     *
+     * @return string|null
+     */
+    public function getColumnIndex($column)
+    {
+        if (isset($this->columns[$column])) {
+            return $this->columns[$column];
+        }
+
+        return null;
     }
 
     /**
@@ -50,6 +66,14 @@ class Collection implements Iterator, Countable
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRows()
+    {
+        return $this->rows;
     }
 
     public function previous()

@@ -28,7 +28,7 @@ abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
 
     protected function insertRows($count = 1)
     {
-        for ($i = 0; $i <= $count; $i++) {
+        for ($i = 1; $i <= $count; $i++) {
             $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, 'hello world')", $i));
         }
 

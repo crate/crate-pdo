@@ -113,14 +113,14 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     {
         foreach ($this->columnBinding as $column => &$metadata) {
 
-            if (!isset($row[$column])) {
+            $index = $this->collection->getColumnIndex($column);
+            if ($index === null) {
                 // todo: I would like to throw an exception and tell someone they screwed up
                 // but i think that would violate the PDO api
+                continue;
             }
 
-            print_r($row);
-
-            $value = $row[$column];
+            $value = $row[$index];
 
             switch ($metadata['type'])
             {
@@ -148,6 +148,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             // Update by reference
             $metadata['ref'] = $value;
         }
+
     }
 
     /**
@@ -185,13 +186,16 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             return false;
         }
 
-        // Increment row
-        $this->collection->next();
         if (!$this->collection->valid()) {
             return false;
         }
 
+        // Get the current row
         $row = $this->collection->current();
+
+        // Traverse
+        $this->collection->next();
+
         $fetch_style = $fetch_style ?: $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
 
         switch ($fetch_style)
@@ -204,7 +208,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_BOUND:
                 $this->updateBoundColumns($row);
-                break;
+                return true;
 
             case PDO::FETCH_CLASS:
                 break;
@@ -245,6 +249,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function bindColumn($column, &$param, $type = null, $maxlen = null, $driverdata = null)
     {
+        $type = $type ?: PDO::PARAM_STR;
+
         $this->columnBinding[$column] = [
             'ref'        => &$param,
             'type'       => $type,
@@ -313,12 +319,13 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             return false;
         }
 
-        $this->collection->next();
         if (!$this->collection->valid()) {
             return false;
         }
 
-        $row = array_values($this->collection->current());
+        $row = $this->collection->current();
+        $this->collection->next();
+
 
         if (!isset($row[$column_number])) {
             // todo: Not sure how what actually happens here
@@ -338,6 +345,22 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
         if (!$this->isSuccessful()) {
             return false;
+        }
+
+        switch ($fetch_style)
+        {
+            case PDO::FETCH_NUM:
+                return $this->collection->getRows();
+
+            case PDO::FETCH_ASSOC:
+                $result  = [];
+                $columns = array_flip($this->collection->getColumns());
+
+                foreach ($this->collection as $row) {
+                    $result[] = array_combine($columns, $row);
+                }
+
+                return $result;
         }
     }
 

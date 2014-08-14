@@ -51,5 +51,43 @@ class PDOStatementTest extends AbstractIntegrationTest
 
             $index++;
         }
+
+        $this->assertEquals(3, $index);
+    }
+
+    public function testFetchAllWithNumStyle()
+    {
+        $expected = [
+            [1, 'first'],
+            [2, 'second'],
+            [3, 'third'],
+        ];
+
+        foreach ($expected as list($id, $name)) {
+            $this->insertRow($id, $name);
+        }
+
+        $statement = $this->pdo->prepare('SELECT * from test_table');
+        $statement->execute();
+
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_NUM));
+    }
+
+    public function testFetchAllWithAssocStyle()
+    {
+        $expected = [
+            ['id' => 1, 'name' => 'first'],
+            ['id' => 2, 'name' => 'second'],
+            ['id' => 3, 'name' => 'third'],
+        ];
+
+        foreach ($expected as $row) {
+            $this->insertRow($row['id'], $row['name']);
+        }
+
+        $statement = $this->pdo->prepare('SELECT * from test_table');
+        $statement->execute();
+
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_ASSOC));
     }
 }
