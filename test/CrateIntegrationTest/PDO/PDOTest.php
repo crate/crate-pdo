@@ -26,7 +26,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->pdo = new PDO('http://localhost:4200/_sql', null, null, []);
-        $this->pdo->query('CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string)');
+        $this->pdo->query('CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string) clustered into 1 shards with (number_of_replicas = 0)');
     }
 
     protected function tearDown()
