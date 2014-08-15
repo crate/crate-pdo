@@ -40,7 +40,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $name  = null;
         $index = 0;
 
-        $statement = $this->pdo->prepare('SELECT * from test_table');
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
         $statement->bindColumn('id', $id);
         $statement->bindColumn('name', $name);
 
@@ -67,7 +67,7 @@ class PDOStatementTest extends AbstractIntegrationTest
             $this->insertRow($id, $name);
         }
 
-        $statement = $this->pdo->prepare('SELECT * from test_table');
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
         $statement->execute();
 
         $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_NUM));
@@ -85,7 +85,7 @@ class PDOStatementTest extends AbstractIntegrationTest
             $this->insertRow($row['id'], $row['name']);
         }
 
-        $statement = $this->pdo->prepare('SELECT * from test_table');
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
         $statement->execute();
 
         $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_ASSOC));
@@ -103,10 +103,40 @@ class PDOStatementTest extends AbstractIntegrationTest
             $this->insertRow($row['id'], $row['name']);
         }
 
-        $statement = $this->pdo->prepare('SELECT * from test_table');
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
         $statement->execute();
 
         // In theory this should be assertSame, but implementing that would be incredibly slow
         $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_BOTH));
+    }
+
+    public function testFetchAllWithFuncStyle()
+    {
+        $expected = [
+            ['id' => 1, 'name' => 'first'],
+            ['id' => 2, 'name' => 'second'],
+            ['id' => 3, 'name' => 'third'],
+        ];
+
+        foreach ($expected as $row) {
+            $this->insertRow($row['id'], $row['name']);
+        }
+
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $statement->execute();
+
+        $index    = 0;
+        $callback = function ($id, $name) {
+            return sprintf('%d:%s', $id, $name);
+        };
+
+        $resultSet = $statement->fetchAll(PDO::FETCH_FUNC, $callback);
+
+        foreach ($resultSet as $result) {
+            $this->assertEquals(sprintf('%d:%s', $expected[$index]['id'], $expected[$index]['name']), $result);
+            $index++;
+        }
+
+        $this->assertEquals(count($expected), $index);
     }
 }

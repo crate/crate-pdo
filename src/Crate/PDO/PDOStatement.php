@@ -35,10 +35,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      * @var array
      */
     private $options = [
-        'fetchMode'           => null,
-        'fetchColumn'         => 0,
-        'resultClass'         => 'stdClass',
-        'resultClassCtorArgs' => null,
+        'fetchMode'          => null,
+        'fetchColumn'        => 0,
+        'fetchClass'         => 'stdClass',
+        'fetchClassCtorArgs' => null,
     ];
 
     /**
@@ -384,6 +384,15 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
                 return $result;
 
+            case PDO::FETCH_FUNC:
+                if (!is_callable($fetch_argument)) {
+                    throw new Exception\PDOException('Second argument must be callable', 'HY000');
+                }
+
+                return array_map(function(array $row) use ($fetch_argument) {
+                    return call_user_func_array($fetch_argument, $row);
+                }, $this->collection->getRows());
+
             case PDO::FETCH_CLASS:
                 break;
 
@@ -446,6 +455,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function setAttribute($attribute, $value)
     {
+        throw new Exception\PDOException('This driver doesn\'t support setting attributes');
     }
 
     /**
@@ -453,6 +463,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function getAttribute($attribute)
     {
+        throw new Exception\PDOException('This driver doesn\'t support getting attributes');
     }
 
     /**
