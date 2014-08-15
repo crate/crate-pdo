@@ -250,7 +250,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $length = null,
         $driver_options = null
     ) {
-        $this->parameters[$parameter] = &$parameter;
+        $this->parameters[$parameter] = &$variable;
     }
 
     /**
@@ -405,9 +405,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 });
 
             case PDO::FETCH_CLASS:
-                break;
-
-            case PDO::FETCH_INTO:
                 break;
 
             case PDO::FETCH_LAZY:

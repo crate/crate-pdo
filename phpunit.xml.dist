@@ -13,9 +13,11 @@
 >
     <testsuite name="CratePDO unit tests">
         <directory>./test/CrateTest/PDO</directory>
+        <exclude>./vendor</exclude>
     </testsuite>
     <testsuite name="CratePDO integration tests">
         <directory>./test/CrateIntegrationTest/PDO</directory>
+        <exclude>./vendor</exclude>
     </testsuite>
     <filter>
         <whitelist addUncoveredFilesFromWhitelist="true">
