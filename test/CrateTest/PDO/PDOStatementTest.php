@@ -143,4 +143,36 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals($value, $columnBinding[$column]['ref']);
     }
+
+    public function bindValueParameterProvider()
+    {
+        return [
+            [PDO::PARAM_INT, '1', 1],
+            [PDO::PARAM_NULL, '1', null],
+            [PDO::PARAM_BOOL, '1', true],
+            [PDO::PARAM_STR, '1', '1']
+        ];
+    }
+
+    /**
+     * @dataProvider bindValueParameterProvider
+     * @covers ::bindValue
+     *
+     * @param int    $type
+     * @param string $value
+     * @param mixed  $expectedValue
+     */
+    public function testBindValue($type, $value, $expectedValue)
+    {
+        $this->statement->bindValue('column', $value, $type);
+
+        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+
+        $property = $reflection->getProperty('parameters');
+        $property->setAccessible(true);
+
+        $castedValue = $property->getValue($this->statement);
+
+        $this->assertSame($expectedValue, $castedValue['column']);
+    }
 }
