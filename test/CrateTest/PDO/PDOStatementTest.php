@@ -9,6 +9,7 @@ use Crate\PDO\PDOStatement;
 use Crate\Stdlib\Collection;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
+use ReflectionClass;
 
 /**
  * Tests for {@see \Crate\PDO\PDOStatement}
@@ -113,5 +114,33 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $initial = $expected;
 
         $this->statement->execute();
+    }
+
+    /**
+     * @covers ::bindColumn
+     */
+    public function testBindColumn()
+    {
+        $column     = 'column';
+        $value      = 'value1';
+        $type       = PDO::PARAM_STR;
+        $maxlen     = 1000;
+        $driverData = null;
+
+        $this->statement->bindColumn($column, $value, $type, $maxlen, $driverData);
+
+        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+
+        $property = $reflection->getProperty('columnBinding');
+        $property->setAccessible(true);
+
+        $columnBinding = $property->getValue($this->statement);
+
+        $this->assertArrayHasKey($column, $columnBinding);
+        $this->assertEquals($value, $columnBinding[$column]['ref']);
+
+        $value = 'value2';
+
+        $this->assertEquals($value, $columnBinding[$column]['ref']);
     }
 }
