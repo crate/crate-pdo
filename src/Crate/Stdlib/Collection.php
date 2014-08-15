@@ -45,6 +45,16 @@ class Collection implements Iterator, Countable
     }
 
     /**
+     * @param callable $callback
+     *
+     * @return array
+     */
+    public function map(callable $callback)
+    {
+        return array_map($callback, $this->rows);
+    }
+
+    /**
      * Get the column index
      *
      * @param string $column

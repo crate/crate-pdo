@@ -365,33 +365,44 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_NAMED:
             case PDO::FETCH_ASSOC:
-                $result  = [];
                 $columns = array_flip($this->collection->getColumns());
 
-                foreach ($this->collection as $row) {
-                    $result[] = array_combine($columns, $row);
-                }
-
-                return $result;
+                return $this->collection->map(function (array $row) use ($columns) {
+                    return array_combine($columns, $row);
+                });
 
             case PDO::FETCH_BOTH:
-                $result  = [];
                 $columns = array_flip($this->collection->getColumns());
 
-                foreach ($this->collection as $row) {
-                    $result[] = array_merge($row, array_combine($columns, $row));
-                }
-
-                return $result;
+                return $this->collection->map(function (array $row) use ($columns) {
+                    return array_merge($row, array_combine($columns, $row));
+                });
 
             case PDO::FETCH_FUNC:
                 if (!is_callable($fetch_argument)) {
                     throw new Exception\PDOException('Second argument must be callable', 'HY000');
                 }
 
-                return array_map(function(array $row) use ($fetch_argument) {
+                return $this->collection->map(function (array $row) use ($fetch_argument) {
                     return call_user_func_array($fetch_argument, $row);
-                }, $this->collection->getRows());
+                });
+
+            case PDO::FETCH_COLUMN:
+                if (!is_int($fetch_argument)) {
+                    throw new Exception\PDOException('Second argument must be a integer', 'HY000');
+                }
+
+                $columns = array_flip($this->collection->getColumns());
+
+                if (!isset($columns[$fetch_argument])) {
+                    throw new Exception\OutOfBoundsException(
+                        sprintf('Column with the index %d does not exist.', $fetch_argument)
+                    );
+                }
+
+                return $this->collection->map(function(array $row) use ($fetch_argument) {
+                    return $row[$fetch_argument];
+                });
 
             case PDO::FETCH_CLASS:
                 break;
