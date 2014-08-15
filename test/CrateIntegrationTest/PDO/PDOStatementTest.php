@@ -90,4 +90,23 @@ class PDOStatementTest extends AbstractIntegrationTest
 
         $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_ASSOC));
     }
+
+    public function testFetchAllWithBothStyle()
+    {
+        $expected = [
+            [0 => 1, 'id' => 1, 1 => 'first', 'name' => 'first'],
+            [0 => 2, 'id' => 2, 1 => 'second', 'name' => 'second'],
+            [0 => 3, 'id' => 3, 1 => 'third', 'name' => 'third'],
+        ];
+
+        foreach ($expected as $row) {
+            $this->insertRow($row['id'], $row['name']);
+        }
+
+        $statement = $this->pdo->prepare('SELECT * from test_table');
+        $statement->execute();
+
+        // In theory this should be assertSame, but implementing that would be incredibly slow
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_BOTH));
+    }
 }
