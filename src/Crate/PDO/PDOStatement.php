@@ -101,6 +101,18 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     }
 
     /**
+     * Get the fetch style to be used
+     *
+     * @internal
+     *
+     * @return int
+     */
+    private function getFetchStyle()
+    {
+        return $this->options['fetchMode'] ?: $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
+    }
+
+    /**
      * Update all the bound column references
      *
      * @internal
@@ -196,10 +208,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         // Traverse
         $this->collection->next();
 
-        $fetch_style = $fetch_style ?: $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
+        $fetch_style = $fetch_style ?: $this->getFetchStyle();
 
         switch ($fetch_style)
         {
+            case PDO::FETCH_NAMED:
             case PDO::FETCH_ASSOC:
                 return array_combine($this->collection->getColumns(), $row);
 
@@ -219,13 +232,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             case PDO::FETCH_LAZY:
                 break;
 
-            case PDO::FETCH_NAMED:
-                // This is not actually supported by crate, so we just return ASSOC
-                return $row;
-                break;
-
             case PDO::FETCH_NUM:
-                return array_values($row);
+                return $row;
 
             default:
                 throw new Exception\UnsupportedException('Unsupported fetch style');
@@ -242,6 +250,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $length = null,
         $driver_options = null
     ) {
+        $this->parameters[$parameter] = &$parameter;
     }
 
     /**
@@ -347,11 +356,14 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             return false;
         }
 
+        $fetch_style = $fetch_style ?: $this->getFetchStyle();
+
         switch ($fetch_style)
         {
             case PDO::FETCH_NUM:
                 return $this->collection->getRows();
 
+            case PDO::FETCH_NAMED:
             case PDO::FETCH_ASSOC:
                 $result  = [];
                 $columns = array_flip($this->collection->getColumns());
@@ -361,6 +373,28 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 }
 
                 return $result;
+
+            case PDO::FETCH_BOTH:
+                $result  = [];
+                $columns = array_flip($this->collection->getColumns());
+
+                foreach ($this->collection as $row) {
+                    $result[] = array_merge($row, array_combine($columns, $row));
+                }
+
+                return $result;
+
+            case PDO::FETCH_CLASS:
+                break;
+
+            case PDO::FETCH_INTO:
+                break;
+
+            case PDO::FETCH_LAZY:
+                break;
+
+            default:
+                throw new Exception\UnsupportedException('Unsupported fetch style');
         }
     }
 
@@ -446,7 +480,88 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function setFetchMode($mode, $params = null)
     {
-        $args = func_get_args();
+        $args     = func_get_args();
+        $argCount = count($args);
+
+        switch ($mode)
+        {
+            case PDO::FETCH_COLUMN:
+                if ($argCount != 2) {
+                    throw new Exception\PDOException('fetch mode requires the colno argument', 'HY000');
+                }
+
+                if (!is_int($params)) {
+                    throw new Exception\PDOException('colno must be an integer', 'HY000');
+                }
+
+                $this->options['fetchMode']   = $mode;
+                $this->options['fetchColumn'] = $params;
+                break;
+
+            case PDO::FETCH_CLASSTYPE:
+                if ($argCount != 1) {
+                    throw new Exception\PDOException('fetch mode doesn\'t allow any extra arguments', 'HY000');
+                }
+
+                $this->options['fetchMode'] = $mode;
+                break;
+
+            case PDO::FETCH_CLASS:
+                if ($argCount < 2) {
+                    throw new Exception\PDOException('fetch mode requires the classname argument', 'HY000');
+                }
+
+                if (!is_string($params)) {
+                    throw new Exception\PDOException('classname must be a string', 'HY000');
+                }
+
+                $ctorArgs = ($argCount == 3) ? $args[2] : null;
+                if ($ctorArgs !== null && !is_array($ctorArgs)) {
+                    throw new Exception\PDOException('ctor_args must be either NULL or an array', 'HY000');
+                }
+
+                if (!class_exists($params, true)) {
+                    throw new Exception\PDOException(
+                        sprintf('A class by the name of %s could not be found', $params),
+                        'HY000'
+                    );
+                }
+
+                $this->options['fetchMode']          = $mode;
+                $this->options['fetchClass']         = $params;
+                $this->options['fetchClassCtorArgs'] = $ctorArgs;
+                break;
+
+            case PDO::FETCH_INTO:
+                if ($argCount < 2) {
+                    throw new Exception\PDOException('fetch mode requires the object parameter', 'HY000');
+                }
+
+                if (!is_object($params)) {
+                    throw new Exception\PDOException('object must be an object', 'HY000');
+                }
+
+                $this->options['fetchMode'] = $mode;
+                $this->options['fetchInto'] = $params;
+                break;
+
+            case PDO::FETCH_ASSOC:
+            case PDO::FETCH_NUM:
+            case PDO::FETCH_BOTH:
+            case PDO::FETCH_BOUND:
+            case PDO::FETCH_NAMED:
+            case PDO::FETCH_KEY_PAIR:
+            case PDO::FETCH_LAZY:
+                if ($params !== null) {
+                    throw new Exception\PDOException('fetch mode doesn\'t allow any extra arguments', 'HY000');
+                }
+
+                $this->options['fetchMode'] = $mode;
+                break;
+
+            default:
+                throw new Exception\UnsupportedException('Invalid fetch mode specified', 'HY22003');
+        }
     }
 
     /**
