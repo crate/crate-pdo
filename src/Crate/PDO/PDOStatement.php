@@ -376,35 +376,30 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_FUNC:
                 if (!is_callable($fetch_argument)) {
-                    throw new Exception\PDOException('Second argument must be callable', 'HY000');
+                    throw new Exception\InvalidArgumentException('Second argument must be callable');
                 }
 
                 return $this->collection->map(function (array $row) use ($fetch_argument) {
-                    return call_user_func_array($fetch_argument, $row);
+                    return $fetch_argument($row);
                 });
 
             case PDO::FETCH_COLUMN:
-                if (!is_int($fetch_argument)) {
-                    throw new Exception\PDOException('Second argument must be a integer', 'HY000');
+                $columnIndex = $fetch_argument ?: $this->options['fetchColumn'];
+
+                if (!is_int($columnIndex)) {
+                    throw new Exception\InvalidArgumentException('Second argument must be a integer');
                 }
 
-                $columns = array_flip($this->collection->getColumns());
-
-                if (!isset($columns[$fetch_argument])) {
+                $columns = $this->collection->getColumns(false);
+                if (!isset($columns[$columnIndex])) {
                     throw new Exception\OutOfBoundsException(
-                        sprintf('Column with the index %d does not exist.', $fetch_argument)
+                        sprintf('Column with the index %d does not exist.', $columnIndex)
                     );
                 }
 
-                return $this->collection->map(function(array $row) use ($fetch_argument) {
-                    return $row[$fetch_argument];
+                return $this->collection->map(function(array $row) use ($columnIndex) {
+                    return $row[$columnIndex];
                 });
-
-            case PDO::FETCH_CLASS:
-                break;
-
-            case PDO::FETCH_LAZY:
-                break;
 
             default:
                 throw new Exception\UnsupportedException('Unsupported fetch style');
@@ -502,11 +497,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         {
             case PDO::FETCH_COLUMN:
                 if ($argCount != 2) {
-                    throw new Exception\PDOException('fetch mode requires the colno argument', 'HY000');
+                    throw new Exception\PDOException('fetch mode requires the colno argument');
                 }
 
                 if (!is_int($params)) {
-                    throw new Exception\PDOException('colno must be an integer', 'HY000');
+                    throw new Exception\PDOException('colno must be an integer');
                 }
 
                 $this->options['fetchMode']   = $mode;
@@ -515,7 +510,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_CLASSTYPE:
                 if ($argCount != 1) {
-                    throw new Exception\PDOException('fetch mode doesn\'t allow any extra arguments', 'HY000');
+                    throw new Exception\PDOException('fetch mode doesn\'t allow any extra arguments');
                 }
 
                 $this->options['fetchMode'] = $mode;
@@ -523,16 +518,16 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_CLASS:
                 if ($argCount < 2) {
-                    throw new Exception\PDOException('fetch mode requires the classname argument', 'HY000');
+                    throw new Exception\PDOException('fetch mode requires the classname argument');
                 }
 
                 if (!is_string($params)) {
-                    throw new Exception\PDOException('classname must be a string', 'HY000');
+                    throw new Exception\PDOException('classname must be a string');
                 }
 
                 $ctorArgs = ($argCount == 3) ? $args[2] : null;
                 if ($ctorArgs !== null && !is_array($ctorArgs)) {
-                    throw new Exception\PDOException('ctor_args must be either NULL or an array', 'HY000');
+                    throw new Exception\PDOException('ctor_args must be either NULL or an array');
                 }
 
                 if (!class_exists($params, true)) {
@@ -549,11 +544,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_INTO:
                 if ($argCount < 2) {
-                    throw new Exception\PDOException('fetch mode requires the object parameter', 'HY000');
+                    throw new Exception\PDOException('fetch mode requires the object parameter');
                 }
 
                 if (!is_object($params)) {
-                    throw new Exception\PDOException('object must be an object', 'HY000');
+                    throw new Exception\PDOException('object must be an object');
                 }
 
                 $this->options['fetchMode'] = $mode;
@@ -568,7 +563,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             case PDO::FETCH_KEY_PAIR:
             case PDO::FETCH_LAZY:
                 if ($params !== null) {
-                    throw new Exception\PDOException('fetch mode doesn\'t allow any extra arguments', 'HY000');
+                    throw new Exception\PDOException('fetch mode doesn\'t allow any extra arguments');
                 }
 
                 $this->options['fetchMode'] = $mode;
@@ -620,6 +615,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             $this->execute();
         }
 
-        return $this->collection;
+        return $this->fetchAll();
     }
 }

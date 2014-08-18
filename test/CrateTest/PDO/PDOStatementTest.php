@@ -262,6 +262,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     public function fetchStyleProvider()
     {
         return [
+            [PDO::FETCH_NAMED, ['id' => 1, 'name' => 'foo', 'active' => false]],
             [PDO::FETCH_ASSOC, ['id' => 1, 'name' => 'foo', 'active' => false]],
             [PDO::FETCH_BOTH, [0 => 1, 1 => 'foo', 2 => false, 'id' => 1, 'name' => 'foo', 'active' => false]],
             [PDO::FETCH_NUM, [0 => 1, 1 => 'foo', 2 => false]]
@@ -397,5 +398,225 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $this->statement->fetchColumn());
         $this->assertEquals(2, $this->statement->fetchColumn());
         $this->assertFalse($this->statement->fetchColumn());
+    }
+
+    /**
+     * @covers ::fetchAll
+     */
+    public function testFetchAllWithFailedExecution()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+
+        $this->assertFalse($this->statement->fetchAll());
+    }
+
+    /**
+     * @covers ::fetchAll
+     */
+    public function testFetchAllWithInvalidFetchStyle()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->fetchAll(PDO::FETCH_INTO);
+    }
+
+    /**
+     * @return array
+     */
+    public function fetchAllStyleProvider()
+    {
+        return [
+            [
+                // Null mean it will use the default which is PDO::FETCH_BOTH
+                null,
+                [
+                    [
+                        0        => 1,
+                        1        => 'foo',
+                        2        => false,
+                        'id'     => 1,
+                        'name'   => 'foo',
+                        'active' => false
+                    ],
+                    [
+                        0        => 2,
+                        1        => 'bar',
+                        2        => true,
+                        'id'     => 2,
+                        'name'   => 'bar',
+                        'active' => true
+                    ]
+                ]
+            ],
+            [
+                PDO::FETCH_BOTH,
+                [
+                    [
+                        0        => 1,
+                        1        => 'foo',
+                        2        => false,
+                        'id'     => 1,
+                        'name'   => 'foo',
+                        'active' => false
+                    ],
+                    [
+                        0        => 2,
+                        1        => 'bar',
+                        2        => true,
+                        'id'     => 2,
+                        'name'   => 'bar',
+                        'active' => true
+                    ]
+                ]
+            ],
+            [
+                PDO::FETCH_ASSOC,
+                [
+                    [
+                        'id'     => 1,
+                        'name'   => 'foo',
+                        'active' => false
+                    ],
+                    [
+                        'id'     => 2,
+                        'name'   => 'bar',
+                        'active' => true
+                    ]
+                ]
+            ],
+            [
+                PDO::FETCH_NAMED,
+                [
+                    [
+                        'id'     => 1,
+                        'name'   => 'foo',
+                        'active' => false
+                    ],
+                    [
+                        'id'     => 2,
+                        'name'   => 'bar',
+                        'active' => true
+                    ]
+                ]
+            ],
+            [
+                PDO::FETCH_NUM,
+                [
+                    [
+                        0        => 1,
+                        1        => 'foo',
+                        2        => false,
+                    ],
+                    [
+                        0        => 2,
+                        1        => 'bar',
+                        2        => true,
+                    ]
+                ]
+            ],
+            [
+                PDO::FETCH_COLUMN,
+                [
+                    1,
+                    2
+                ]
+            ],
+
+        ];
+    }
+
+    /**
+     * @dataProvider fetchAllStyleProvider
+     * @covers ::fetchAll
+     *
+     * @param string $fetchStyle
+     * @param array  $expected
+     */
+    public function testFetchAll($fetchStyle, array $expected)
+    {
+        $this->pdo
+            ->expects($this->any())
+            ->method('getAttribute')
+            ->with(PDO::ATTR_DEFAULT_FETCH_MODE)
+            ->will($this->returnValue(PDO::FETCH_BOTH));
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $result = $this->statement->fetchAll($fetchStyle);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @covers ::fetchAll
+     */
+    public function testFetchAllWithFetchStyleFuncAndInvalidCallback()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->fetchAll(PDO::FETCH_FUNC, 'void');
+    }
+
+    /**
+     * @covers ::fetchAll
+     */
+    public function testFetchAllWithFetchStyleFunc()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $result = $this->statement->fetchAll(PDO::FETCH_FUNC, function(array $row) {
+            return $row[0];
+        });
+
+        $this->assertEquals([1, 2], $result);
+    }
+
+    /**
+     * @covers ::fetchAll
+     */
+    public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndexType()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->fetchAll(PDO::FETCH_COLUMN, 'test');
+    }
+
+    /**
+     * @covers ::fetchAll
+     */
+    public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndex()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\OutOfBoundsException');
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->fetchAll(PDO::FETCH_COLUMN, 100);
     }
 }
