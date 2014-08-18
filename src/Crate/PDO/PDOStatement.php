@@ -381,7 +381,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 }
 
                 return $this->collection->map(function (array $row) use ($fetch_argument) {
-                    return $fetch_argument($row);
+                    return call_user_func_array($fetch_argument, $row);
                 });
 
             case PDO::FETCH_COLUMN:

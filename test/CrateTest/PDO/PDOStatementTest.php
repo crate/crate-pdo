@@ -584,8 +584,8 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
             ->method('doRequest')
             ->will($this->returnValue($this->getPopulatedCollection()));
 
-        $result = $this->statement->fetchAll(PDO::FETCH_FUNC, function(array $row) {
-            return $row[0];
+        $result = $this->statement->fetchAll(PDO::FETCH_FUNC, function($id, $name, $active) {
+            return $id;
         });
 
         $this->assertEquals([1, 2], $result);
