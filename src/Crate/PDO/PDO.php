@@ -42,10 +42,10 @@ class PDO extends BasePDO implements PDOInterface
      * @var array
      */
     private $attributes = [
-        'defaultFetchMode'            => self::FETCH_BOTH,
-        'errorMode'                   => self::ERRMODE_SILENT,
-        'statementClass'              => 'Crate\PDO\PDOStatement',
-        'timeout'                     => 5
+        'defaultFetchMode' => self::FETCH_BOTH,
+        'errorMode'        => self::ERRMODE_SILENT,
+        'statementClass'   => 'Crate\PDO\PDOStatement',
+        'timeout'          => 5
     ];
 
     /**
@@ -64,7 +64,7 @@ class PDO extends BasePDO implements PDOInterface
     public function __construct($dsn, $username, $passwd, $options)
     {
         // Store the DSN for later
-        $this->dsn = $dsn;
+        $this->dsn = (string) $dsn;
 
         foreach(ArrayUtils::toArray($options) as $attribute => $value) {
             $this->setAttribute($attribute, $value);
