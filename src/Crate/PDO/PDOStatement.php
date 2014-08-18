@@ -509,52 +509,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 $this->options['fetchColumn'] = $params;
                 break;
 
-            case PDO::FETCH_CLASSTYPE:
-                if ($argCount != 1) {
-                    throw new Exception\PDOException('fetch mode doesn\'t allow any extra arguments');
-                }
-
-                $this->options['fetchMode'] = $mode;
-                break;
-
-            case PDO::FETCH_CLASS:
-                if ($argCount < 2) {
-                    throw new Exception\PDOException('fetch mode requires the classname argument');
-                }
-
-                if (!is_string($params)) {
-                    throw new Exception\PDOException('classname must be a string');
-                }
-
-                $ctorArgs = ($argCount == 3) ? $args[2] : null;
-                if ($ctorArgs !== null && !is_array($ctorArgs)) {
-                    throw new Exception\PDOException('ctor_args must be either NULL or an array');
-                }
-
-                if (!class_exists($params, true)) {
-                    throw new Exception\PDOException(
-                        sprintf('A class by the name of %s could not be found', $params)
-                    );
-                }
-
-                $this->options['fetchMode']          = $mode;
-                $this->options['fetchClass']         = $params;
-                $this->options['fetchClassCtorArgs'] = $ctorArgs;
-                break;
-
-            case PDO::FETCH_INTO:
-                if ($argCount < 2) {
-                    throw new Exception\PDOException('fetch mode requires the object parameter');
-                }
-
-                if (!is_object($params)) {
-                    throw new Exception\PDOException('object must be an object');
-                }
-
-                $this->options['fetchMode'] = $mode;
-                $this->options['fetchInto'] = $params;
-                break;
-
             case PDO::FETCH_ASSOC:
             case PDO::FETCH_NUM:
             case PDO::FETCH_BOTH:
