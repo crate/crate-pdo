@@ -25,7 +25,7 @@ namespace Crate\Stdlib;
 use Countable;
 use Iterator;
 
-class Collection implements CollectionInterface
+final class Collection implements CollectionInterface
 {
     /**
      * @var array
