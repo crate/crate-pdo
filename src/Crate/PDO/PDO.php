@@ -28,7 +28,7 @@ use PDO as BasePDO;
 
 class PDO extends BasePDO implements PDOInterface
 {
-    const VERSION     = '1.0.0-dev';
+    const VERSION = '1.0.0-dev';
     const DRIVER_NAME = 'crate';
 
     /**
@@ -60,13 +60,18 @@ class PDO extends BasePDO implements PDOInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @param string     $dsn      The HTTP endpoint to call
+     * @param null       $username Unused
+     * @param null       $passwd   Unused
+     * @param null|array $options  Attributes to set on the PDO
      */
     public function __construct($dsn, $username, $passwd, $options)
     {
         // Store the DSN for later
-        $this->dsn = (string) $dsn;
+        $this->dsn = (string)$dsn;
 
-        foreach(ArrayUtils::toArray($options) as $attribute => $value) {
+        foreach (ArrayUtils::toArray($options) as $attribute => $value) {
             $this->setAttribute($attribute, $value);
         }
     }
@@ -74,9 +79,11 @@ class PDO extends BasePDO implements PDOInterface
     public function getClient()
     {
         if ($this->client === null) {
-            $this->client = new ArtaxExt\Client($this->dsn, [
-                'connectTimeout' => $this->attributes['timeout']
-            ]);
+            $this->client = new ArtaxExt\Client(
+                $this->dsn, [
+                    'connectTimeout' => $this->attributes['timeout']
+                ]
+            );
         }
 
         return $this->client;
@@ -181,7 +188,7 @@ class PDO extends BasePDO implements PDOInterface
         $statement = $this->prepare($statement);
         $result    = $statement->execute();
 
-        return $result !== false ? $statement->rowCount() : false;
+        return $result === false ? false : $statement->rowCount();
     }
 
     /**
@@ -192,7 +199,7 @@ class PDO extends BasePDO implements PDOInterface
         $statement = $this->prepare($statement);
         $result    = $statement->execute();
 
-        return $result !== false ? $statement : false;
+        return $result === false ? false : $statement;
     }
 
     /**
@@ -208,7 +215,7 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function errorCode()
     {
-        return $this->lastStatement !== null ? $this->lastStatement->errorCode() : null;
+        return $this->lastStatement === null ? null : $this->lastStatement->errorCode();
     }
 
     /**
@@ -216,7 +223,7 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function errorInfo()
     {
-        return $this->lastStatement !== null ? $this->lastStatement->errorInfo() : null;
+        return $this->lastStatement === null ? null : $this->lastStatement->errorInfo();
     }
 
     /**
@@ -224,8 +231,7 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function setAttribute($attribute, $value)
     {
-        switch ($attribute)
-        {
+        switch ($attribute) {
             case self::ATTR_DEFAULT_FETCH_MODE:
                 $this->attributes['defaultFetchMode'] = $value;
                 break;
@@ -235,8 +241,8 @@ class PDO extends BasePDO implements PDOInterface
                 break;
 
             case self::ATTR_TIMEOUT:
-                $this->attributes['timeout'] = (int) $value;
-                $this->getClient()->setTimeout((int) $value);
+                $this->attributes['timeout'] = (int)$value;
+                $this->getClient()->setTimeout((int)$value);
                 break;
 
             default:
@@ -249,8 +255,7 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function getAttribute($attribute)
     {
-        switch ($attribute)
-        {
+        switch ($attribute) {
             case PDO::ATTR_PERSISTENT:
                 return false;
 
@@ -296,13 +301,12 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function quote($string, $parameter_type = PDO::PARAM_STR)
     {
-        switch ($parameter_type)
-        {
+        switch ($parameter_type) {
             case PDO::PARAM_INT:
-                return (int) $string;
+                return (int)$string;
 
             case PDO::PARAM_BOOL:
-                return (bool) $string;
+                return (bool)$string;
 
             case PDO::PARAM_NULL:
                 return null;
