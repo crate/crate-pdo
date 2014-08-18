@@ -39,12 +39,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * @var string|null
      */
-    private $errorCode = null;
+    private $errorCode;
 
     /**
      * @var string|null
      */
-    private $errorMessage = null;
+    private $errorMessage;
 
     /**
      * @var string
@@ -71,7 +71,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * @var CollectionInterface|null
      */
-    private $collection = null;
+    private $collection;
 
     /**
      * @var PDOInterface
