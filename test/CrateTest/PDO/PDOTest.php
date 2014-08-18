@@ -49,7 +49,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->client = $this->getMock(ClientInterface::class);
+        $this->client = $this->getMock('Crate\PDO\ArtaxExt\ClientInterface');
 
         $this->pdo = new PDO('http://localhost:8080', null, null, []);
         $this->pdo->setClient($this->client);

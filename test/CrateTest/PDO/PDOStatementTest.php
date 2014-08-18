@@ -57,7 +57,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->pdo = $this->getMock(PDOInterface::class);
+        $this->pdo = $this->getMock('Crate\PDO\PDOInterface');
 
         $this->statement = new PDOStatement($this->pdo, static::SQL, []);
     }
