@@ -24,8 +24,17 @@ namespace Crate\Stdlib;
 
 use Traversable;
 
-class ArrayUtils
+final class ArrayUtils
 {
+    /**
+     * Convert a optional value that when used is expected to be an array
+     *
+     * @param mixed $value
+     *
+     * @throws Exception\InvalidArgumentException
+     *
+     * @return array
+     */
     public static function toArray($value)
     {
         if (is_array($value)) {
