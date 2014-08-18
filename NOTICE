@@ -1,0 +1,12 @@
+Crate Python Adapter
+Copyright 2013-2014 CRATE Technology GmbH ("Crate")
+
+
+Third party dependencies:
+
+=========================================================================
+
+Artax
+https://github.com/rdlowrey/Artax
+Copyright (c) 2013 Daniel Lowrey, Levi Morrison
+License: MIT (http://opensource.org/licenses/MIT)
