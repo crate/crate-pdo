@@ -4,7 +4,7 @@
 namespace Crate\PDO;
 
 use Crate\Stdlib\ArrayUtils;
-use Crate\Stdlib\Collection;
+use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
 use IteratorAggregate;
 use PDOStatement as BasePDOStatement;
@@ -49,7 +49,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     private $columnBinding = [];
 
     /**
-     * @var Collection|null
+     * @var CollectionInterface|null
      */
     private $collection = null;
 
@@ -214,23 +214,14 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         {
             case PDO::FETCH_NAMED:
             case PDO::FETCH_ASSOC:
-                return array_combine($this->collection->getColumns(), $row);
+                return array_combine($this->collection->getColumns(false), $row);
 
             case PDO::FETCH_BOTH:
-                return array_merge($row, array_values($row));
+                return array_merge($row, array_combine($this->collection->getColumns(false), $row));
 
             case PDO::FETCH_BOUND:
                 $this->updateBoundColumns($row);
                 return true;
-
-            case PDO::FETCH_CLASS:
-                break;
-
-            case PDO::FETCH_INTO:
-                break;
-
-            case PDO::FETCH_LAZY:
-                break;
 
             case PDO::FETCH_NUM:
                 return $row;

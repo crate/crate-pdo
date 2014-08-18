@@ -7,6 +7,7 @@ use Crate\PDO\PDO;
 use Crate\PDO\PDOInterface;
 use Crate\PDO\PDOStatement;
 use Crate\Stdlib\Collection;
+use Crate\Stdlib\CollectionInterface;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
@@ -39,6 +40,21 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $this->pdo = $this->getMock(PDOInterface::class);
 
         $this->statement = new PDOStatement($this->pdo, static::SQL, []);
+    }
+
+    /**
+     * @return CollectionInterface
+     */
+    private function getPopulatedCollection()
+    {
+        $data = [
+            [1, 'foo', false],
+            [2, 'bar', true],
+        ];
+
+        $columns = ['id', 'name', 'active'];
+
+        return new Collection($data, $columns, 0, count($data));
     }
 
     /**
@@ -174,5 +190,115 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $castedValue = $property->getValue($this->statement);
 
         $this->assertSame($expectedValue, $castedValue['column']);
+    }
+
+    /**
+     * @covers ::fetch
+     */
+    public function testFetchWithUnsuccessfulExecution()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+
+        $this->assertFalse($this->statement->fetch());
+    }
+
+    /**
+     * @covers ::fetch
+     */
+    public function testFetchWithEmptyResult()
+    {
+        $collection = $this->getMock('Crate\Stdlib\CollectionInterface');
+        $collection
+            ->expects($this->once())
+            ->method('valid')
+            ->will($this->returnValue(false));
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($collection));
+
+        $this->assertFalse($this->statement->fetch());
+    }
+
+    /**
+     * @covers ::fetch
+     */
+    public function testFetchWithBoundStyle()
+    {
+        $id     = null;
+        $name   = null;
+        $active = null;
+
+        $this->statement->bindColumn('id', $id, PDO::PARAM_INT);
+        $this->statement->bindColumn('name', $name, PDO::PARAM_STR);
+        $this->statement->bindColumn('active', $active, PDO::PARAM_BOOL);
+
+        $this->assertNull($id);
+        $this->assertNull($name);
+        $this->assertNull($active);
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->fetch(PDO::FETCH_BOUND);
+
+        $this->assertSame(1, $id);
+        $this->assertSame('foo', $name);
+        $this->assertFalse($active);
+
+        $this->statement->fetch(PDO::FETCH_BOUND);
+
+        $this->assertSame(2, $id);
+        $this->assertSame('bar', $name);
+        $this->assertTrue($active);
+    }
+
+    public function fetchStyleProvider()
+    {
+        return [
+            [PDO::FETCH_ASSOC, ['id' => 1, 'name' => 'foo', 'active' => false]],
+            [PDO::FETCH_BOTH, [0 => 1, 1 => 'foo', 2 => false, 'id' => 1, 'name' => 'foo', 'active' => false]],
+            [PDO::FETCH_NUM, [0 => 1, 1 => 'foo', 2 => false]]
+        ];
+    }
+
+    /**
+     * @dataProvider fetchStyleProvider
+     * @covers ::fetch
+     *
+     * @param int   $fetchStyle
+     * @param array $expected
+     */
+    public function testFetch($fetchStyle, array $expected)
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $result = $this->statement->fetch($fetchStyle);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @covers ::fetch
+     */
+    public function testFetchWithUnsupportedFetchStyle()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->fetch(PDO::FETCH_INTO);
     }
 }
