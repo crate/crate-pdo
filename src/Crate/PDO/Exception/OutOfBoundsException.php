@@ -24,5 +24,4 @@ namespace Crate\PDO\Exception;
 
 class OutOfBoundsException extends PDOException
 {
-
 }
