@@ -22,6 +22,8 @@
 
 namespace Crate\Stdlib\Exception;
 
-class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
+use Crate\PDO\Exception\PDOException;
+
+class InvalidArgumentException extends PDOException implements ExceptionInterface
 {
 }
