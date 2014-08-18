@@ -327,4 +327,75 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(2, $this->statement->rowCount());
     }
+
+    /**
+     * @covers ::fetchColumn
+     */
+    public function testFetchColumnWithInvalidColumnNumberType()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->statement->fetchColumn('test');
+    }
+
+    /**
+     * @covers ::fetchColumn
+     */
+    public function testFetchColumnWithFailedExecution()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+
+        $this->assertFalse($this->statement->fetchColumn());
+    }
+
+    /**
+     * @covers ::fetchColumn
+     */
+    public function testFetchColumnWithWithEmptyCollection()
+    {
+        $collection = $this->getMock('Crate\Stdlib\CollectionInterface');
+        $collection
+            ->expects($this->once())
+            ->method('valid')
+            ->will($this->returnValue(false));
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($collection));
+
+        $this->assertFalse($this->statement->fetchColumn());
+    }
+
+    /**
+     * @covers ::fetchColumn
+     */
+    public function testFetchColumnWithInvalidColumnIndex()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\OutOfBoundsException');
+
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->fetchColumn(10);
+    }
+
+    /**
+     * @covers ::fetchColumn
+     */
+    public function testFetchColumn()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->assertEquals(1, $this->statement->fetchColumn());
+        $this->assertEquals(2, $this->statement->fetchColumn());
+        $this->assertFalse($this->statement->fetchColumn());
+    }
 }

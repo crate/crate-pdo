@@ -311,6 +311,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function fetchColumn($column_number = 0)
     {
+        if (!is_int($column_number)) {
+            throw new Exception\InvalidArgumentException('column_number must be a valid integer');
+        }
+
         if (!$this->hasExecuted()) {
             $this->execute();
         }
@@ -326,9 +330,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $row = $this->collection->current();
         $this->collection->next();
 
-
         if (!isset($row[$column_number])) {
-            // todo: Not sure how what actually happens here
+            throw new Exception\OutOfBoundsException(
+                sprintf('The column "%d" with the zero-based does not exist', $column_number)
+            );
         }
 
         return $row[$column_number];
