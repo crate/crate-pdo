@@ -25,6 +25,7 @@ namespace Crate\PDO\ArtaxExt;
 use Artax\Client as ArtaxClient;
 use Artax\Request;
 use Crate\PDO\Exception\RuntimeException;
+use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\Collection;
 
 class Client implements ClientInterface
@@ -84,7 +85,7 @@ class Client implements ClientInterface
      */
     public function getServerInfo()
     {
-        // TODO: Implement getServerInfo() method.
+        throw new UnsupportedException('Not yet implemented');
     }
 
     /**
@@ -92,7 +93,7 @@ class Client implements ClientInterface
      */
     public function getServerVersion()
     {
-        // TODO: Implement getServerVersion() method.
+        throw new UnsupportedException('Not yet implemented');
     }
 
     /**
