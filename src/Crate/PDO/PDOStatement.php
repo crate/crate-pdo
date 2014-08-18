@@ -3,6 +3,7 @@
 
 namespace Crate\PDO;
 
+use ArrayIterator;
 use Crate\Stdlib\ArrayUtils;
 use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
@@ -454,7 +455,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function setAttribute($attribute, $value)
     {
-        throw new Exception\PDOException('This driver doesn\'t support setting attributes');
+        throw new Exception\UnsupportedException('This driver doesn\'t support setting attributes');
     }
 
     /**
@@ -462,7 +463,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function getAttribute($attribute)
     {
-        throw new Exception\PDOException('This driver doesn\'t support getting attributes');
+        throw new Exception\UnsupportedException('This driver doesn\'t support getting attributes');
     }
 
     /**
@@ -470,7 +471,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function columnCount()
     {
-        if ($this->hasExecuted()) {
+        if (!$this->hasExecuted()) {
             $this->execute();
         }
 
@@ -532,8 +533,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
                 if (!class_exists($params, true)) {
                     throw new Exception\PDOException(
-                        sprintf('A class by the name of %s could not be found', $params),
-                        'HY000'
+                        sprintf('A class by the name of %s could not be found', $params)
                     );
                 }
 
@@ -570,7 +570,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 break;
 
             default:
-                throw new Exception\UnsupportedException('Invalid fetch mode specified', 'HY22003');
+                throw new Exception\UnsupportedException('Invalid fetch mode specified');
         }
     }
 
@@ -579,7 +579,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function nextRowset()
     {
-        if ($this->hasExecuted()) {
+        if (!$this->hasExecuted()) {
             $this->execute();
         }
 
@@ -611,10 +611,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function getIterator()
     {
-        if ($this->hasExecuted()) {
-            $this->execute();
-        }
-
-        return $this->fetchAll();
+        return new ArrayIterator($this->fetchAll());
     }
 }

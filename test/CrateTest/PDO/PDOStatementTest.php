@@ -8,6 +8,7 @@ use Crate\PDO\PDOInterface;
 use Crate\PDO\PDOStatement;
 use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
+use Crate\Stdlib\CrateConst;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
@@ -618,5 +619,152 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->getPopulatedCollection()));
 
         $this->statement->fetchAll(PDO::FETCH_COLUMN, 100);
+    }
+
+    /**
+     * @covers ::fetchObject
+     */
+    public function testFetchObject()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->statement->fetchObject();
+    }
+
+    /**
+     * @covers ::errorCode
+     */
+    public function testErrorCode()
+    {
+        $this->assertNull($this->statement->errorCode());
+
+        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+
+        $property = $reflection->getProperty('errorCode');
+        $property->setAccessible(true);
+        $property->setValue($this->statement, 1337);
+
+        $this->assertEquals(1337, $this->statement->errorCode());
+    }
+
+    /**
+     * @return array
+     */
+    public function errorInfoAnsiCodeProvider()
+    {
+        return [
+            [42000, CrateConst::ERR_INVALID_SQL, 'le error message'],
+            ['Not available', 1337, 'le error message']
+        ];
+    }
+
+    /**
+     * @covers ::errorInfo
+     * @dataProvider errorInfoAnsiCodeProvider
+     *
+     * @param mixed  $ansiCode
+     * @param int    $errorCode
+     * @param string $errorMessage
+     */
+    public function testErrorInfo($ansiCode, $errorCode, $errorMessage)
+    {
+        $this->assertNull($this->statement->errorInfo());
+
+        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+
+        $errorCodeProp = $reflection->getProperty('errorCode');
+        $errorCodeProp->setAccessible(true);
+        $errorCodeProp->setValue($this->statement, $errorCode);
+
+        $errorMessageProp = $reflection->getProperty('errorMessage');
+        $errorMessageProp->setAccessible(true);
+        $errorMessageProp->setValue($this->statement, $errorMessage);
+
+        $this->assertEquals([$ansiCode, $errorCode, $errorMessage], $this->statement->errorInfo());
+    }
+
+    /**
+     * @covers ::getAttribute
+     */
+    public function testGetAttribute()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->statement->getAttribute(null, null);
+    }
+
+    /**
+     * @covers ::setAttribute
+     */
+    public function testSetAttribute()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->statement->setAttribute(null, null);
+    }
+
+    /**
+     * @covers ::columnCount
+     */
+    public function testColumnCount()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->assertEquals(3, $this->statement->columnCount());
+    }
+
+    /**
+     * @covers ::getColumnMeta
+     */
+    public function testGetColumnMeta()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->statement->getColumnMeta(null);
+    }
+
+    /**
+     * @covers ::nextRowset
+     */
+    public function testNextRowsetWithFailedExecution()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+
+        $this->assertFalse($this->statement->nextRowset());
+    }
+
+    /**
+     * @covers ::nextRowset
+     */
+    public function testNextRowset()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->assertTrue($this->statement->nextRowset());
+        $this->assertFalse($this->statement->nextRowset());
+    }
+
+    /**
+     * @covers ::getIterator
+     */
+    public function testGetIterator()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->statement->setFetchMode(PDO::FETCH_COLUMN, 0);
+
+        foreach ($this->statement as $index => $id) {
+            $this->assertEquals($index + 1, $id);
+        }
+
+        $this->assertEquals(1, $index);
     }
 }
