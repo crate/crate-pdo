@@ -8,7 +8,7 @@ namespace Crate\Stdlib;
 use Countable;
 use Iterator;
 
-class Collection implements Iterator, Countable
+class Collection implements CollectionInterface
 {
     /**
      * @var array
@@ -18,7 +18,12 @@ class Collection implements Iterator, Countable
     /**
      * @var string[]
      */
-    private $columns;
+    private $columnsAsKeys;
+
+    /**
+     * @var string[]
+     */
+    private $columnsAsValues;
 
     /**
      * @var int
@@ -38,16 +43,15 @@ class Collection implements Iterator, Countable
      */
     public function __construct(array $rows, array $columns, $duration, $rowCount)
     {
-        $this->rows     = $rows;
-        $this->columns  = array_flip($columns);
-        $this->duration = $duration;
-        $this->rowCount = $rowCount;
+        $this->rows            = $rows;
+        $this->columnsAsKeys   = array_flip($columns);
+        $this->columnsAsValues = $columns;
+        $this->duration        = $duration;
+        $this->rowCount        = $rowCount;
     }
 
     /**
-     * @param callable $callback
-     *
-     * @return array
+     * {@Inheritdoc}
      */
     public function map(callable $callback)
     {
@@ -55,40 +59,31 @@ class Collection implements Iterator, Countable
     }
 
     /**
-     * Get the column index
-     *
-     * @param string $column
-     *
-     * @return string|null
+     * {@Inheritdoc}
      */
     public function getColumnIndex($column)
     {
-        if (isset($this->columns[$column])) {
-            return $this->columns[$column];
+        if (isset($this->columnsAsKeys[$column])) {
+            return $this->columnsAsKeys[$column];
         }
 
         return null;
     }
 
     /**
-     * @return string[]
+     * {@Inheritdoc}
      */
-    public function getColumns()
+    public function getColumns($columnsAsKeys = true)
     {
-        return $this->columns;
+        return $columnsAsKeys ? $this->columnsAsKeys : $this->columnsAsValues;
     }
 
     /**
-     * @return array
+     * {@Inheritdoc}
      */
     public function getRows()
     {
         return $this->rows;
-    }
-
-    public function previous()
-    {
-        return prev($this->rows);
     }
 
     /**
