@@ -723,6 +723,102 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::setFetchMode
+     */
+    public function testSetFetchModeWithColumnAndMissingColNo()
+    {
+        $this->setExpectedException(
+            'Crate\PDO\Exception\InvalidArgumentException',
+            'fetch mode requires the colno argument'
+        );
+
+        $this->statement->setFetchMode(PDO::FETCH_COLUMN);
+    }
+
+    /**
+     * @covers ::setFetchMode
+     */
+    public function testSetFetchModeWithColumnAndInvalidColNo()
+    {
+        $this->setExpectedException(
+            'Crate\PDO\Exception\InvalidArgumentException',
+            'colno must be an integer'
+        );
+
+        $this->statement->setFetchMode(PDO::FETCH_COLUMN, 'test');
+    }
+
+    /**
+     * @covers ::setFetchMode
+     */
+    public function testSetFetchModeWithColumn()
+    {
+        $this->statement->setFetchMode(PDO::FETCH_COLUMN, 1);
+
+        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+
+        $property = $reflection->getProperty('options');
+        $property->setAccessible(true);;
+
+        $options = $property->getValue($this->statement);
+
+        $this->assertEquals(PDO::FETCH_COLUMN, $options['fetchMode']);
+        $this->assertEquals(1, $options['fetchColumn']);
+    }
+
+    public function fetchModeStyleProvider()
+    {
+        return [
+            [PDO::FETCH_ASSOC],
+            [PDO::FETCH_NUM],
+            [PDO::FETCH_BOTH],
+            [PDO::FETCH_BOUND],
+            [PDO::FETCH_NAMED]
+        ];
+    }
+
+    /**
+     * @covers ::setFetchMode
+     * @dataProvider fetchModeStyleProvider
+     *
+     * @param int $fetchStyle
+     */
+    public function testSetFetchMode($fetchStyle)
+    {
+        $this->statement->setFetchMode($fetchStyle);
+
+        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+
+        $property = $reflection->getProperty('options');
+        $property->setAccessible(true);
+
+        $options = $property->getValue($this->statement);
+
+        $this->assertEquals($fetchStyle, $options['fetchMode']);
+    }
+
+    /**
+     * @covers ::setFetchMode
+     */
+    public function testSetFetchModeWithInvalidFetchStyle()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->statement->setFetchMode(PDO::FETCH_INTO);
+    }
+
+    /**
+     * @covers ::setFetchMode
+     * @dataProvider fetchModeStyleProvider
+     *
+     * @param int $fetchStyle
+     */
+    public function testSetFetchModeWithInvalidExtraParam($fetchStyle)
+    {
+        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->statement->setFetchMode($fetchStyle, 'fooBar');
+    }
+
+    /**
      * @covers ::nextRowset
      */
     public function testNextRowsetWithFailedExecution()
