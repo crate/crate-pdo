@@ -21,6 +21,6 @@
  */
 namespace Crate\PDO\Exception;
 
-class LogicException extends \LogicException implements ExceptionInterface
+class LogicException extends PDOException implements ExceptionInterface
 {
 }

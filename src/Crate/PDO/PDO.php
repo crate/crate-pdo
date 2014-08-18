@@ -90,6 +90,17 @@ class PDO extends BasePDO implements PDOInterface
         $this->client = $client;
     }
 
+    /**
+     * Execute the query against the crate
+     *
+     * @internal PLEASE DO NOT USE THIS
+     *
+     * @param PDOStatement $statement
+     * @param string       $sql
+     * @param array        $parameters
+     *
+     * @return array
+     */
     public function doRequest(PDOStatement $statement, $sql, array $parameters)
     {
         $this->lastStatement = $statement;

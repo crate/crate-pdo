@@ -22,6 +22,6 @@
 
 namespace Crate\PDO\Exception;
 
-class RuntimeException extends \RuntimeException implements ExceptionInterface
+class RuntimeException extends PDOException implements ExceptionInterface
 {
 }
