@@ -23,7 +23,6 @@
 namespace CrateTest\PDO;
 
 use Crate\PDO\PDO;
-use Crate\PDO\PDOInterface;
 use Crate\PDO\PDOStatement;
 use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
@@ -862,6 +861,15 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
         $this->assertTrue($this->statement->nextRowset());
         $this->assertFalse($this->statement->nextRowset());
+    }
+
+    /**
+     * @covers ::debugDumpParams
+     */
+    public function testDumpDebugParams()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $this->statement->debugDumpParams();
     }
 
     /**

@@ -575,6 +575,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function debugDumpParams()
     {
+        throw new Exception\UnsupportedException('Not supported, use var_dump($stmt) instead');
     }
 
     /**
