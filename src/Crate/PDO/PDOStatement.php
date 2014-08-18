@@ -303,7 +303,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             return false;
         }
 
-        return $this->collection->count();
+        return count($this->collection);
     }
 
     /**

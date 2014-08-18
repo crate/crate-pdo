@@ -301,4 +301,30 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
         $this->statement->fetch(PDO::FETCH_INTO);
     }
+
+    /**
+     * @covers ::rowCount
+     */
+    public function testRowCountWithFailedExecution()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+
+        $this->assertFalse($this->statement->rowCount());
+    }
+
+    /**
+     * @covers ::rowCount
+     */
+    public function testRowCount()
+    {
+        $this->pdo
+            ->expects($this->once())
+            ->method('doRequest')
+            ->will($this->returnValue($this->getPopulatedCollection()));
+
+        $this->assertEquals(2, $this->statement->rowCount());
+    }
 }
