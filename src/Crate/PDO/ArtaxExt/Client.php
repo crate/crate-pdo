@@ -40,7 +40,7 @@ class Client implements ClientInterface
      */
     public function __construct($uri, array $options)
     {
-        $this->uri    = $uri;
+        $this->uri    = (string) $uri;
         $this->client = new ArtaxClient();
         $this->client->setAllOptions($options);
     }
