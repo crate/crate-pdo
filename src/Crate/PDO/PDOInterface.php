@@ -22,8 +22,13 @@
 
 namespace Crate\PDO;
 
-use Crate\PDO\ArtaxExt\ClientInterface;
-
+/**
+ * Interface PDOInterface
+ *
+ * Used for unit testing the PDOStatement
+ *
+ * @internal
+ */
 interface PDOInterface
 {
     public function prepare($statement, $options = null);
