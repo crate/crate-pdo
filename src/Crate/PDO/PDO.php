@@ -22,7 +22,6 @@
 
 namespace Crate\PDO;
 
-use Crate\PDO\ArtaxExt\ClientInterface;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
 
@@ -42,7 +41,7 @@ class PDO extends BasePDO implements PDOInterface
     ];
 
     /**
-     * @var ArtaxExt\Client
+     * @var ArtaxExt\ClientInterface
      */
     private $client;
 
@@ -286,6 +285,9 @@ class PDO extends BasePDO implements PDOInterface
 
             case PDO::PARAM_STR:
                 throw new Exception\UnsupportedException('This is not supported, please use prepared statements.');
+
+            default:
+                throw new Exception\InvalidArgumentException('Unknown param type');
         }
     }
 

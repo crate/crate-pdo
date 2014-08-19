@@ -208,13 +208,26 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $this->assertNull($this->pdo->quote('helloWorld', PDO::PARAM_NULL));
     }
 
-    /**
-     * @covers ::quote
-     */
-    public function testQuoteWithString()
+    public function quoteExceptionProvider()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
-        $this->pdo->quote('helloWorld', PDO::PARAM_STR);
+        return [
+            [PDO::PARAM_LOB, 'Crate\PDO\Exception\PDOException', 'This is not supported by crate.io'],
+            [PDO::PARAM_STR, 'Crate\PDO\Exception\PDOException', 'This is not supported, please use prepared statements.'],
+            [120, 'Crate\PDO\Exception\InvalidArgumentException', 'Unknown param type'],
+        ];
+    }
+
+    /**
+     * @dataProvider quoteExceptionProvider
+     * @covers ::quote
+     *
+     * @param int $paramType
+     * @param string $message
+     */
+    public function testQuoteWithExpectedException($paramType, $exception, $message)
+    {
+        $this->setExpectedException($exception, $message);
+        $this->pdo->quote('helloWorld', $paramType);
     }
 
     /**

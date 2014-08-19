@@ -36,6 +36,11 @@ class Client implements ClientInterface
     private $uri;
 
     /**
+     * @var ArtaxClient
+     */
+    private $client;
+
+    /**
      * @param string $uri
      * @param array  $options
      */
