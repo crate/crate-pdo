@@ -26,6 +26,7 @@ use Crate\PDO\ArtaxExt\ClientInterface;
 use Crate\PDO\PDO;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
+use ReflectionClass;
 
 /**
  * Tests for {@see \Crate\PDO\PDO}
@@ -52,7 +53,12 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $this->client = $this->getMock('Crate\PDO\ArtaxExt\ClientInterface');
 
         $this->pdo = new PDO('http://localhost:8080', null, null, []);
-        $this->pdo->setClient($this->client);
+
+        $reflection = new ReflectionClass('Crate\PDO\PDO');
+
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($this->pdo, $this->client);
     }
 
     /**

@@ -32,13 +32,6 @@ class PDO extends BasePDO implements PDOInterface
     const DRIVER_NAME = 'crate';
 
     /**
-     * The DSN in the use-case of crate should be the URI endpoint
-     *
-     * @var string
-     */
-    private $dsn;
-
-    /**
      * @var array
      */
     private $attributes = [
@@ -68,33 +61,14 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function __construct($dsn, $username, $passwd, $options)
     {
-        // Store the DSN for later
-        $this->dsn = (string)$dsn;
-
         foreach (ArrayUtils::toArray($options) as $attribute => $value) {
             $this->setAttribute($attribute, $value);
         }
-    }
 
-    public function getClient()
-    {
-        if ($this->client === null) {
-            $this->client = new ArtaxExt\Client(
-                $this->dsn, [
-                    'connectTimeout' => $this->attributes['timeout']
-                ]
-            );
-        }
-
-        return $this->client;
-    }
-
-    public function setClient(ClientInterface $client)
-    {
-        $client->setUri($this->dsn);
-        $client->setTimeout($this->attributes['timeout']);
-
-        $this->client = $client;
+        // Store the DSN for later
+        $this->client = new ArtaxExt\Client($dsn, [
+            'connectTimeout' => $this->attributes
+        ]);
     }
 
     /**
@@ -114,7 +88,7 @@ class PDO extends BasePDO implements PDOInterface
 
         try {
 
-            return $this->getClient()->execute($sql, $parameters);
+            return $this->client->execute($sql, $parameters);
 
         } catch (Exception\RuntimeException $e) {
 
@@ -242,7 +216,7 @@ class PDO extends BasePDO implements PDOInterface
 
             case self::ATTR_TIMEOUT:
                 $this->attributes['timeout'] = (int)$value;
-                $this->getClient()->setTimeout((int)$value);
+                $this->client->setTimeout((int)$value);
                 break;
 
             default:

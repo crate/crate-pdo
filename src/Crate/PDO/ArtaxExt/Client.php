@@ -99,16 +99,8 @@ class Client implements ClientInterface
     /**
      * {@Inheritdoc}
      */
-    public function setUri($uri)
-    {
-        $this->uri = $uri;
-    }
-
-    /**
-     * {@Inheritdoc}
-     */
     public function setTimeout($timeout)
     {
-        $this->client->setOption('connectTimeout', $timeout);
+        $this->client->setOption('connectTimeout', (int) $timeout);
     }
 }

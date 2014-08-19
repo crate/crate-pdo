@@ -27,15 +27,6 @@ use Artax\Response;
 interface ClientInterface
 {
     /**
-     * Set the URI
-     *
-     * @param string $uri
-     *
-     * @return void
-     */
-    public function setUri($uri);
-
-    /**
      * Set the connection timeout
      *
      * @param int $timeout

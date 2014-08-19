@@ -26,8 +26,6 @@ use Crate\PDO\ArtaxExt\ClientInterface;
 
 interface PDOInterface
 {
-    public function getClient();
-    public function setClient(ClientInterface $client);
     public function doRequest(PDOStatement $statement, $sql, array $parameters);
     public function prepare($statement, $options = null);
     public function beginTransaction();
