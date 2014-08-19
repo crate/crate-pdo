@@ -20,14 +20,10 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\PDO\Exception;
+namespace Crate\Stdlib\Exception;
 
-use Exception;
+use Crate\PDO\Exception\PDOException;
 
-class UnsupportedException extends PDOException
+class InvalidArgumentException extends PDOException implements ExceptionInterface
 {
-    public function __construct($message = 'Unsupported functionality', $code = 0, Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
 }

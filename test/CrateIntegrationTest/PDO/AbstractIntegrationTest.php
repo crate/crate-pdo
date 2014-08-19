@@ -20,14 +20,41 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\PDO\Exception;
+namespace CrateIntegrationTest\PDO;
 
-use Exception;
+use Crate\PDO\PDO;
+use PHPUnit_Framework_TestCase;
 
-class UnsupportedException extends PDOException
+abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
 {
-    public function __construct($message = 'Unsupported functionality', $code = 0, Exception $previous = null)
+    /**
+     * @var PDO
+     */
+    protected $pdo;
+
+    protected function setUp()
     {
-        parent::__construct($message, $code, $previous);
+        $this->pdo = new PDO('http://localhost:4200/_sql', null, null, []);
+        $this->pdo->query('CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string) clustered into 1 shards with (number_of_replicas = 0)');
+    }
+
+    protected function tearDown()
+    {
+        $this->pdo->query('DROP TABLE test_table');
+    }
+
+    protected function insertRows($count = 1)
+    {
+        for ($i = 1; $i <= $count; $i++) {
+            $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, 'hello world')", $i));
+        }
+
+        $this->pdo->query('refresh table test_table');
+    }
+
+    protected function insertRow($id, $name)
+    {
+        $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, '%s')", $id, $name));
+        $this->pdo->query('refresh table test_table');
     }
 }

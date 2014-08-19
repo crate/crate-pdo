@@ -19,15 +19,8 @@
  * with Crate these terms will supersede the license and you may use the
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
-
 namespace Crate\PDO\Exception;
 
-use Exception;
-
-class UnsupportedException extends PDOException
+class LogicException extends PDOException implements ExceptionInterface
 {
-    public function __construct($message = 'Unsupported functionality', $code = 0, Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
 }

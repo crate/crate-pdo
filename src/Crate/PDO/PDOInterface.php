@@ -20,14 +20,28 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\PDO\Exception;
+namespace Crate\PDO;
 
-use Exception;
-
-class UnsupportedException extends PDOException
+/**
+ * Interface PDOInterface
+ *
+ * Used for unit testing the PDOStatement
+ *
+ * @internal
+ */
+interface PDOInterface
 {
-    public function __construct($message = 'Unsupported functionality', $code = 0, Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
+    public function prepare($statement, $options = null);
+    public function beginTransaction();
+    public function commit();
+    public function rollback();
+    public function inTransaction();
+    public function exec($statement);
+    public function query($statement);
+    public function lastInsertId($name = null);
+    public function errorCode();
+    public function errorInfo();
+    public function setAttribute($attribute, $value);
+    public function getAttribute($attribute);
+    public static function getAvailableDrivers();
 }

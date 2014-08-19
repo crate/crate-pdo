@@ -22,12 +22,6 @@
 
 namespace Crate\PDO\Exception;
 
-use Exception;
-
-class UnsupportedException extends PDOException
+class InvalidArgumentException extends PDOException implements ExceptionInterface
 {
-    public function __construct($message = 'Unsupported functionality', $code = 0, Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
 }

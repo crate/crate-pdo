@@ -20,14 +20,38 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\PDO\Exception;
+namespace Crate\PDO\ArtaxExt;
 
-use Exception;
+use Artax\Response;
 
-class UnsupportedException extends PDOException
+interface ClientInterface
 {
-    public function __construct($message = 'Unsupported functionality', $code = 0, Exception $previous = null)
-    {
-        parent::__construct($message, $code, $previous);
-    }
+    /**
+     * Set the connection timeout
+     *
+     * @param int $timeout
+     *
+     * @return void
+     */
+    public function setTimeout($timeout);
+
+    /**
+     * Execute the PDOStatement and return the response from server
+     *
+     * @param string       $queryString
+     * @param array        $parameters
+     *
+     * @return Response
+     */
+    public function execute($queryString, array $parameters);
+
+    /**
+     * @return array
+     */
+    public function getServerInfo();
+
+    /**
+     * @return string
+     */
+    public function getServerVersion();
 }

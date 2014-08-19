@@ -20,14 +20,35 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\PDO\Exception;
+namespace Crate\Stdlib;
 
-use Exception;
+use Traversable;
 
-class UnsupportedException extends PDOException
+final class ArrayUtils
 {
-    public function __construct($message = 'Unsupported functionality', $code = 0, Exception $previous = null)
+    /**
+     * Convert a optional value that when used is expected to be an array
+     *
+     * @param mixed $value
+     *
+     * @throws Exception\InvalidArgumentException
+     *
+     * @return array
+     */
+    public static function toArray($value)
     {
-        parent::__construct($message, $code, $previous);
+        if (is_array($value)) {
+            return $value;
+        }
+
+        if ($value === null) {
+            return [];
+        }
+
+        if (!$value instanceof Traversable) {
+            throw new Exception\InvalidArgumentException();
+        }
+
+        return iterator_to_array($value);
     }
 }
