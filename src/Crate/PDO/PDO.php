@@ -52,6 +52,11 @@ class PDO extends BasePDO implements PDOInterface
     private $lastStatement;
 
     /**
+     * @var callable
+     */
+    private $request;
+
+    /**
      * {@inheritDoc}
      *
      * @param string     $dsn      The HTTP endpoint to call
@@ -69,43 +74,34 @@ class PDO extends BasePDO implements PDOInterface
         $this->client = new ArtaxExt\Client($dsn, [
             'connectTimeout' => $this->attributes
         ]);
-    }
 
-    /**
-     * Execute the query against the crate
-     *
-     * @internal PLEASE DO NOT USE THIS
-     *
-     * @param PDOStatement $statement
-     * @param string       $sql
-     * @param array        $parameters
-     *
-     * @return array
-     */
-    public function doRequest(PDOStatement $statement, $sql, array $parameters)
-    {
-        $this->lastStatement = $statement;
+        // Define a callback that will be used in the PDOStatements
+        // This way we don't expose this api to the end users.
+        $this->request = function(PDOStatement $statement, $sql, array $parameters) {
 
-        try {
+            $this->lastStatement = $statement;
 
-            return $this->client->execute($sql, $parameters);
+            try {
 
-        } catch (Exception\RuntimeException $e) {
+                return $this->client->execute($sql, $parameters);
 
-            if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_EXCEPTION) {
-                throw new Exception\PDOException($e->getMessage(), $e->getCode());
+            } catch (Exception\RuntimeException $e) {
+
+                if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_EXCEPTION) {
+                    throw new Exception\PDOException($e->getMessage(), $e->getCode());
+                }
+
+                if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_WARNING) {
+                    trigger_error(sprintf('[%d] %s', $e->getCode(), $e->getMessage()), E_USER_WARNING);
+                }
+
+                // should probably wrap this in a error object ?
+                return [
+                    'code'    => $e->getCode(),
+                    'message' => $e->getMessage()
+                ];
             }
-
-            if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_WARNING) {
-                trigger_error(sprintf('[%d] %s', $e->getCode(), $e->getMessage()), E_USER_WARNING);
-            }
-
-            // should probably wrap this in a error object ?
-            return [
-                'code'    => $e->getCode(),
-                'message' => $e->getMessage()
-            ];
-        }
+        };
     }
 
     /**
@@ -119,7 +115,7 @@ class PDO extends BasePDO implements PDOInterface
             throw new Exception\UnsupportedException('Driver does not support cursors');
         }
 
-        return new PDOStatement($this, $statement, $options);
+        return new PDOStatement($this, $this->request, $statement, $options);
     }
 
     /**

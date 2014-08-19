@@ -54,11 +54,33 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     protected $statement;
 
+    /**
+     * @var mixed
+     */
+    protected $callbackReturnValue;
+
+    /**
+     * @var array
+     */
+    protected $callbackCallParams;
+
     protected function setUp()
     {
         $this->pdo = $this->getMock('Crate\PDO\PDOInterface');
 
-        $this->statement = new PDOStatement($this->pdo, static::SQL, []);
+
+        $callback = function() {
+
+            $args = func_get_args();
+
+            if ($this->callbackCallParams !== null) {
+                $this->assertEquals($args, $this->callbackCallParams);
+            }
+
+            return $this->callbackReturnValue;
+        };
+
+        $this->statement = new PDOStatement($this->pdo, $callback, static::SQL, []);
     }
 
     /**
@@ -99,11 +121,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testExecuteWithErrorResponse()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->with($this->statement, static::SQL, [])
-            ->will($this->returnValue(['code' => 1337, 'message' => 'failed']));
+        $this->callbackReturnValue = ['code' => 1337, 'message' => 'failed'];
 
         $this->assertFalse($this->statement->execute());
 
@@ -118,14 +136,10 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testExecute()
     {
-        $collection = new Collection([], [], 0, 0);
         $parameters = ['foo' => 'bar'];
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->with($this->statement, static::SQL, $parameters)
-            ->will($this->returnValue($collection));
+        $this->callbackCallParams  = [$this->statement, static::SQL, $parameters];
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->assertTrue($this->statement->execute($parameters));
     }
@@ -138,10 +152,8 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $initial  = 'foo';
         $expected = 'bar';
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->with($this->statement, static::SQL, ['var' => $expected]);
+        $this->callbackCallParams  = [$this->statement, static::SQL, ['var' => $expected]];
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->bindParam('var', $initial);
 
@@ -216,10 +228,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchWithUnsuccessfulExecution()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+        $this->callbackReturnValue = ['code' => 1337, 'message' => 'expected failure'];
 
         $this->assertFalse($this->statement->fetch());
     }
@@ -235,10 +244,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
             ->method('valid')
             ->will($this->returnValue(false));
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($collection));
+        $this->callbackReturnValue = $collection;
 
         $this->assertFalse($this->statement->fetch());
     }
@@ -260,10 +266,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $this->assertNull($name);
         $this->assertNull($active);
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetch(PDO::FETCH_BOUND);
 
@@ -297,10 +300,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetch($fetchStyle, array $expected)
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $result = $this->statement->fetch($fetchStyle);
 
@@ -314,10 +314,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetch(PDO::FETCH_INTO);
     }
@@ -327,10 +324,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testRowCountWithFailedExecution()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+        $this->callbackReturnValue = ['code' => 1337, 'message' => 'expected failure'];
 
         $this->assertFalse($this->statement->rowCount());
     }
@@ -340,11 +334,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testRowCount()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
-
+        $this->callbackReturnValue = $this->getPopulatedCollection();
         $this->assertEquals(2, $this->statement->rowCount());
     }
 
@@ -362,11 +352,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchColumnWithFailedExecution()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
-
+        $this->callbackReturnValue = ['code' => 1337, 'message' => 'expected failure'];
         $this->assertFalse($this->statement->fetchColumn());
     }
 
@@ -381,11 +367,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
             ->method('valid')
             ->will($this->returnValue(false));
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($collection));
-
+        $this->callbackReturnValue = $collection;
         $this->assertFalse($this->statement->fetchColumn());
     }
 
@@ -396,11 +378,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Crate\PDO\Exception\OutOfBoundsException');
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
-
+        $this->callbackReturnValue = $this->getPopulatedCollection();
         $this->statement->fetchColumn(10);
     }
 
@@ -409,10 +387,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchColumn()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->assertEquals(1, $this->statement->fetchColumn());
         $this->assertEquals(2, $this->statement->fetchColumn());
@@ -424,10 +399,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchAllWithFailedExecution()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
+        $this->callbackReturnValue = ['code' => 1337, 'message' => 'expected failure'];
 
         $this->assertFalse($this->statement->fetchAll());
     }
@@ -438,11 +410,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     public function testFetchAllWithInvalidFetchStyle()
     {
         $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
-
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_INTO);
     }
@@ -561,16 +529,14 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchAll($fetchStyle, array $expected)
     {
+        $this->callbackReturnValue = $this->getPopulatedCollection();
+
         $this->pdo
             ->expects($this->any())
             ->method('getAttribute')
             ->with(PDO::ATTR_DEFAULT_FETCH_MODE)
             ->will($this->returnValue(PDO::FETCH_BOTH));
 
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
 
         $result = $this->statement->fetchAll($fetchStyle);
 
@@ -583,11 +549,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     public function testFetchAllWithFetchStyleFuncAndInvalidCallback()
     {
         $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
-
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_FUNC, 'void');
     }
@@ -597,10 +559,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchAllWithFetchStyleFunc()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $result = $this->statement->fetchAll(PDO::FETCH_FUNC, function($id, $name, $active) {
             return $id;
@@ -615,11 +574,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndexType()
     {
         $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
-
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_COLUMN, 'test');
     }
@@ -630,11 +585,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndex()
     {
         $this->setExpectedException('Crate\PDO\Exception\OutOfBoundsException');
-
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_COLUMN, 100);
     }
@@ -723,11 +674,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testColumnCount()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
-
+        $this->callbackReturnValue = $this->getPopulatedCollection();
         $this->assertEquals(3, $this->statement->columnCount());
     }
 
@@ -841,11 +788,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testNextRowsetWithFailedExecution()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue(['code' => 1337, 'message' => 'expected failure']));
-
+        $this->callbackReturnValue = ['code' => 1337, 'message' => 'expected failure'];
         $this->assertFalse($this->statement->nextRowset());
     }
 
@@ -854,10 +797,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testNextRowset()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
+        $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->assertTrue($this->statement->nextRowset());
         $this->assertFalse($this->statement->nextRowset());
@@ -877,11 +817,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testGetIterator()
     {
-        $this->pdo
-            ->expects($this->once())
-            ->method('doRequest')
-            ->will($this->returnValue($this->getPopulatedCollection()));
-
+        $this->callbackReturnValue = $this->getPopulatedCollection();
         $this->statement->setFetchMode(PDO::FETCH_COLUMN, 0);
 
         foreach ($this->statement as $index => $id) {

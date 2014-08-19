@@ -23,6 +23,7 @@
 namespace Crate\PDO;
 
 use ArrayIterator;
+use Closure;
 use Crate\Stdlib\ArrayUtils;
 use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
@@ -79,15 +80,22 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     private $pdo;
 
     /**
-     * @param PDOInterface    $pdo
-     * @param string          $sql
-     * @param array           $options
+     * @var Closure
      */
-    public function __construct(PDOInterface $pdo, $sql, array $options)
+    private $request;
+
+    /**
+     * @param PDOInterface $pdo
+     * @param Closure      $request
+     * @param string       $sql
+     * @param array        $options
+     */
+    public function __construct(PDOInterface $pdo, Closure $request, $sql, array $options)
     {
         $this->sql     = $sql;
         $this->pdo     = $pdo;
         $this->options = array_merge($this->options, $options);
+        $this->request = $request;
     }
 
     /**
@@ -192,7 +200,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             $this->bindValue($parameter, $value);
         }
 
-        $result = $this->pdo->doRequest($this, $this->sql, $this->parameters);
+        $result = $this->request->__invoke($this, $this->sql, $this->parameters);
 
         if (is_array($result)) {
             $this->errorCode    = $result['code'];
