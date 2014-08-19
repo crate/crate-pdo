@@ -282,11 +282,10 @@ class PDO extends BasePDO implements PDOInterface
                 return null;
 
             case PDO::PARAM_LOB:
-                // todo: What do i do here ?
-                throw new \Exception('Not yet implemented');
+                throw new Exception\UnsupportedException('This is not supported by crate.io');
 
-            default:
-                throw new Exception\UnsupportedException;
+            case PDO::PARAM_STR:
+                throw new Exception\UnsupportedException('This is not supported, please use prepared statements.');
         }
     }
 
