@@ -24,6 +24,13 @@ namespace CrateIntegrationTest\PDO;
 
 use Crate\PDO\PDO;
 
+/**
+ * Class PDOStatementTest
+ *
+ * @coversNothing
+ *
+ * @group integration
+ */
 class PDOStatementTest extends AbstractIntegrationTest
 {
     public function testFetchColumn()
