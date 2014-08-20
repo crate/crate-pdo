@@ -87,8 +87,8 @@ class PDOStatementTest extends AbstractIntegrationTest
             [3, 'third'],
         ];
 
-        foreach ($expected as list($id, $name)) {
-            $this->insertRow($id, $name);
+        foreach ($expected as $row) {
+            $this->insertRow($row[0], $row[1]);
         }
 
         $statement = $this->pdo->prepare('SELECT * FROM test_table');
