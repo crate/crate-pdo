@@ -13,6 +13,10 @@ matrix:
     - php: hhvm-nightly
 
 before_script:
+  - sudo add-apt-repository ppa:crate/stable
+  - sudo apt-get update -qq
+  - sudo apt-get install crate
+  - sudo service crate start
   - composer self-update
   - composer install --prefer-source
 
