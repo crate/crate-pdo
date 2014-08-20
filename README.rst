@@ -15,3 +15,11 @@
 .. image:: https://scrutinizer-ci.com/g/Ocramius/crate-pdo/badges/quality-score.png?b=master
     :target: https://scrutinizer-ci.com/g/Ocramius/crate-pdo/?branch=master
     :alt: Quality
+
+
+Installation
+============
+
+Install the library by adding it to your composer.json or running::
+
+    php composer.phar require crate/crate-pdo:~1.0.0
