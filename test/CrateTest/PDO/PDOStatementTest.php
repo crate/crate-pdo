@@ -822,7 +822,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
         $counter = 0;
 
-        foreach ($this->statement as $id) {
+        foreach ($this->statement->getIterator() as $id) {
             $this->assertEquals(++$counter, $id);
         }
 
