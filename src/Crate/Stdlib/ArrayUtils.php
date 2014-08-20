@@ -46,7 +46,9 @@ final class ArrayUtils
         }
 
         if (!$value instanceof Traversable) {
-            throw new Exception\InvalidArgumentException();
+            throw new Exception\InvalidArgumentException(
+                'An invalid value was provided, should either be an null, array or Traversable'
+            );
         }
 
         return iterator_to_array($value);
