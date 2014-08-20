@@ -91,4 +91,13 @@ class CollectionTest extends PHPUnit_Framework_TestCase
     {
         $this->assertEquals(count($this->rows), $this->collection->count());
     }
+
+    public function testIterator()
+    {
+        $this->assertInstanceOf('Iterator', $this->collection);
+
+        foreach ($this->collection as $index => $row) {
+            $this->assertEquals($this->rows[$index], $row);
+        }
+    }
 }
