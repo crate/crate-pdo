@@ -76,7 +76,7 @@ class PDO extends BasePDO implements PDOInterface
 
         // Define a callback that will be used in the PDOStatements
         // This way we don't expose this api to the end users.
-        $this->request = function(PDOStatement $statement, $sql, array $parameters) {
+        $this->request = function (PDOStatement $statement, $sql, array $parameters) {
 
             $this->lastStatement = $statement;
 

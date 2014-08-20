@@ -425,7 +425,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                     );
                 }
 
-                return $this->collection->map(function(array $row) use ($columnIndex) {
+                return $this->collection->map(function (array $row) use ($columnIndex) {
                     return $row[$columnIndex];
                 });
 

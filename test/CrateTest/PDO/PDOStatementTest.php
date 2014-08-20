@@ -820,10 +820,12 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $this->callbackReturnValue = $this->getPopulatedCollection();
         $this->statement->setFetchMode(PDO::FETCH_COLUMN, 0);
 
-        foreach ($this->statement as $index => $id) {
-            $this->assertEquals($index + 1, $id);
+        $counter = 0;
+
+        foreach ($this->statement->getIterator() as $id) {
+            $this->assertEquals(++$counter, $id);
         }
 
-        $this->assertEquals(1, $index);
+        $this->assertEquals(2, $counter);
     }
 }
