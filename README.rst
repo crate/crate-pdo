@@ -30,7 +30,9 @@ Since we are implementing an existing api already the documentation available on
 project as well.
 
 
-On a side note since we only support a subset of the PDO api only the following fetch modes are supported
+On a side note since we only support a subset of the PDO api only the following fetch modes are supported.
+
+
 For PDOStatement::fetchAll
 
 - PDO::FETCH_NUM
