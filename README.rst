@@ -4,34 +4,25 @@
     :alt: Crate
     :target: https://crate.io
 
-.. image:: https://travis-ci.org/Ocramius/crate-pdo.svg?branch=master
-    :target: https://travis-ci.org/Ocramius/crate-pdo
+.. image:: https://travis-ci.org/crate/crate-pdo.svg?branch=master
+    :target: https://travis-ci.org/crate/crate-pdo
     :alt: Build status
-
-.. image:: https://scrutinizer-ci.com/g/Ocramius/crate-pdo/badges/coverage.png?b=master
-    :target: https://scrutinizer-ci.com/g/Ocramius/crate-pdo/?branch=master
-    :alt: Coverage
-
-.. image:: https://scrutinizer-ci.com/g/Ocramius/crate-pdo/badges/quality-score.png?b=master
-    :target: https://scrutinizer-ci.com/g/Ocramius/crate-pdo/?branch=master
-    :alt: Quality
-
 
 Introduction
 ============
 
-The goal of this project is to mimic a subset of the PDO api allowing to use an existing API you're already familiar
-with when developing with crate.io
+The goal of this project is to mimic a subset of the PDO api allowing
+to use an existing API you're already familiar with when developing
+with crate.io
 
 Documentation / Supported fetch modes
 =====================================
 
-Since we are implementing an existing api already the documentation available on http://www.php.net/pdo applies to this
-project as well.
+Since we are implementing an existing api already the documentation
+available on http://www.php.net/pdo applies to this project as well.
 
-
-On a side note since we only support a subset of the PDO api only the following fetch modes are supported.
-
+On a side note since we only support a subset of the PDO api only the
+following fetch modes are supported.
 
 For PDOStatement::fetchAll
 
@@ -60,16 +51,16 @@ Install the library by adding it to your composer.json or running::
 Are you a Developer?
 ====================
 
-You can help develop the crate-pdo adapter on your own with the latest version hosted on
-GitHub.
-To do so, please refer to ``DEVELOP.rst`` for further information.
+You can help develop the crate-pdo adapter on your own with the latest
+version hosted on GitHub.  To do so, please refer to ``DEVELOP.rst``
+for further information.
 
 Help & Contact
 ==============
 
-Do you have any questions? Or suggestions? We would be very happy
-to help you. So, feel free to swing by our IRC channel #crate on Freenode_.
-Or for further information and official contact please
+Do you have any questions? Or suggestions? We would be very happy to
+help you. So, feel free to swing by our IRC channel #crate on
+Freenode_.  Or for further information and official contact please
 visit `https://crate.io/ <https://crate.io/>`_.
 
 .. _Freenode: http://freenode.net
