@@ -17,6 +17,37 @@
     :alt: Quality
 
 
+Introduction
+============
+
+The goal of this project is to mimic a subset of the PDO api allowing to use an existing API you're already familiar
+with when developing with crate.io
+
+Documentation / Supported fetch modes
+=====================================
+
+Since we are implementing an existing api already the documentation available on http://www.php.net/pdo applies to this
+project as well.
+
+
+On a side note since we only support a subset of the PDO api only the following fetch modes are supported
+For PDOStatement::fetchAll
+
+- PDO::FETCH_NUM
+- PDO::FETCH_NAMED
+- PDO::FETCH_ASSOC
+- PDO::FETCH_BOTH
+- PDO::FETCH_FUNC
+- PDO::FETCH_COLUMN
+
+For PDOStatement::fetch
+
+- PDO::FETCH_NAMED
+- PDO::FETCH_ASSOC
+- PDO::FETCH_BOTH
+- PDO::FETCH_BOUND
+- PDO::FETCH_NUM
+
 Installation
 ============
 
