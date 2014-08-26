@@ -8,6 +8,7 @@
     :target: https://travis-ci.org/crate/crate-pdo
     :alt: Build status
 
+
 Introduction
 ============
 
@@ -18,11 +19,10 @@ with crate.io
 Documentation / Supported fetch modes
 =====================================
 
-Since we are implementing an existing api already the documentation
-available on http://www.php.net/pdo applies to this project as well.
+Since we are implementing an existing api the documentation available on http://www.php.net/pdo also applies to this project.
 
-On a side note since we only support a subset of the PDO api only the
-following fetch modes are supported.
+On a side note, since we only support a subset of the PDO api only the following fetch modes are supported.
+
 
 For PDOStatement::fetchAll
 
