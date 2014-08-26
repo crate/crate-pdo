@@ -1,4 +1,7 @@
 {
+    "name": "crate/crate-pdo",
+    "description": "A PDO adapter for interacting with the Crate.io DBMS",
+    "license": "Apache2",
     "require": {
         "php":     "~5.4",
         "ext-pdo": "~1.0",
