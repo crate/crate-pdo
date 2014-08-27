@@ -75,7 +75,7 @@ class PDO extends BasePDO implements PDOInterface
         ]);
 
         // Define a callback that will be used in the PDOStatements
-        // This way we don't expose this api to the end users.
+        // This way we don't expose this as a public api to the end users.
         $this->request = function (PDOStatement $statement, $sql, array $parameters) {
 
             $this->lastStatement = $statement;
@@ -256,7 +256,7 @@ class PDO extends BasePDO implements PDOInterface
                 return [$this->attributes['statementClass']];
 
             default:
-                // PHP Switch a lose comparison
+                // PHP Switch is a lose comparison
                 if ($attribute === PDO::ATTR_AUTOCOMMIT) {
                     return true;
                 }
