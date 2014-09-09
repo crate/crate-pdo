@@ -19,6 +19,13 @@ Start up the vagrant machine, when run for the first time it will also run the n
 
     vagrant up
 
+Get composer & install dependencies::
+
+    vagrant ssh
+    cd /vagrant
+    curl -sS https://getcomposer.org/installer | php
+    ./composer.phar install
+    
 
 Running the tests
 =================
@@ -33,10 +40,10 @@ Change directory to the mounted folder::
 
 Execute the tests::
 
-    vendor/bin/phpunit
+    ./vendor/bin/phpunit --coverage-html ./report
 
 Contributing
 ============
 
-1. fork the project
-2. create a pull requests
+1. Fork the project
+2. Create a pull request
