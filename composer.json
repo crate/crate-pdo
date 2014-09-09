@@ -2,6 +2,8 @@
     "name": "crate/crate-pdo",
     "description": "A PDO adapter for interacting with the Crate.io DBMS",
     "license": "Apache2",
+    "homepage": "https://github.com/crate/crate-pdo",
+    "keywords": ["database", "pdo", "crate"],
     "require": {
         "php":     "~5.4",
         "ext-pdo": "~1.0",
