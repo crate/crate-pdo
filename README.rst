@@ -9,11 +9,11 @@
     :alt: Build status
 
 .. image:: https://scrutinizer-ci.com/g/crate/crate-pdo/badges/coverage.png?b=master
-    :target https://scrutinizer-ci.com/g/crate/crate-pdo
+    :target: https://scrutinizer-ci.com/g/crate/crate-pdo
     :alt: Coverage
 
 .. image:: https://scrutinizer-ci.com/g/crate/crate-pdo/badges/quality-score.png?b=master
-    :target https://scrutinizer-ci.com/g/crate/crate-pdo
+    :target: https://scrutinizer-ci.com/g/crate/crate-pdo
     :alt: Quality
 
 Introduction
