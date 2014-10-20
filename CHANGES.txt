@@ -5,7 +5,11 @@
 Unreleased
 ==========
 
- - Update dependencies, `rdlowrey/artax` moved to `amphp/artax`
+
+2014/10/20 0.0.2
+================
+
+- Update dependencies, `rdlowrey/artax` moved to `amphp/artax`
 
 2014/09/09 0.0.1
 ================
