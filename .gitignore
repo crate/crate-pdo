@@ -1,4 +1,10 @@
 vendor
 build
+.buildpath
 composer.lock
 composer.phar
+.idea
+.project
+.settings
+.vagrant
+report

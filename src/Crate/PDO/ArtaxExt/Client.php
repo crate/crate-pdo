@@ -22,8 +22,8 @@
 
 namespace Crate\PDO\ArtaxExt;
 
-use Artax\Client as ArtaxClient;
-use Artax\Request;
+use Amp\Artax\Client as ArtaxClient;
+use Amp\Artax\Request;
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\Collection;
@@ -66,7 +66,8 @@ class Client implements ClientInterface
         $request->setMethod('POST');
         $request->setBody(json_encode($body));
 
-        $response     = $this->client->request($request);
+        $promise     = $this->client->request($request);
+        $response    = $promise->wait();
         $responseBody = json_decode($response->getBody());
 
         if ($response->getStatus() !== 200) {
@@ -106,6 +107,6 @@ class Client implements ClientInterface
      */
     public function setTimeout($timeout)
     {
-        $this->client->setOption('connectTimeout', (int) $timeout);
+        $this->client->setOption('connect_timeout', (int) $timeout);
     }
 }

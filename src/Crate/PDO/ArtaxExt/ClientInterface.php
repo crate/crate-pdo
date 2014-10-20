@@ -22,7 +22,7 @@
 
 namespace Crate\PDO\ArtaxExt;
 
-use Artax\Response;
+use Amp\Artax\Response;
 
 interface ClientInterface
 {

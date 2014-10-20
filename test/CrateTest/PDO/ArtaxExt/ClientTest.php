@@ -5,8 +5,9 @@
 
 namespace CrateTest\PDO\ArtaxExt;
 
-use Artax\Client as ArtaxClient;
-use Artax\Response;
+use Amp\Artax\Client as ArtaxClient;
+use Amp\Artax\Response;
+use Amp\Future;
 use Crate\PDO\ArtaxExt\Client;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
@@ -41,7 +42,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->client         = new Client(static::DSN, []);
-        $this->internalClient = $this->getMock('Artax\Client');
+        $this->internalClient = $this->getMock('Amp\Artax\Client');
 
         $reflection = new ReflectionClass('Crate\PDO\ArtaxExt\Client');
 
@@ -64,10 +65,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $response->setStatus(400);
         $response->setBody(json_encode(['error' => ['code' => $code, 'message' => $message]]));
 
+        $deferred = new Future($this->getMock('Amp\Reactor'));
+        $deferred->succeed($response);
         $this->internalClient
             ->expects($this->once())
             ->method('request')
-            ->will($this->returnValue($response));
+            ->will($this->returnValue($deferred));
 
         $this->client->execute(static::SQL, ['foo' => 'bar']);
     }
@@ -81,10 +84,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $response->setStatus(200);
         $response->setBody('{"cols":["id","name"],"rows":[],"rowcount":0,"duration":1}');
 
+        $deferred = new Future($this->getMock('Amp\Reactor'));
+        $deferred->succeed($response);
         $this->internalClient
             ->expects($this->once())
             ->method('request')
-            ->will($this->returnValue($response));
+            ->will($this->returnValue($deferred));
 
         $result = $this->client->execute(static::SQL, ['foo' => 'bar']);
 
@@ -117,7 +122,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->internalClient
             ->expects($this->once())
             ->method('setOption')
-            ->with('connectTimeout', 4);
+            ->with('connect_timeout', 4);
 
         $this->client->setTimeout('4');
     }

@@ -27,7 +27,7 @@ use PDO as BasePDO;
 
 class PDO extends BasePDO implements PDOInterface
 {
-    const VERSION = '1.0.0-dev';
+    const VERSION = '0.0.2';
     const DRIVER_NAME = 'crate';
 
     /**
@@ -71,7 +71,7 @@ class PDO extends BasePDO implements PDOInterface
 
         // Store the DSN for later
         $this->client = new ArtaxExt\Client($dsn, [
-            'connectTimeout' => $this->attributes
+            'connect_timeout' => $this->attributes['timeout']
         ]);
 
         // Define a callback that will be used in the PDOStatements

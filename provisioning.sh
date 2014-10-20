@@ -4,4 +4,4 @@ echo deb http://dl.hhvm.com/ubuntu trusty main | sudo tee /etc/apt/sources.list.
 sudo apt-get install -y python-software-properties
 sudo add-apt-repository -y ppa:crate/stable
 sudo apt-get update
-sudo apt-get install -y crate hhvm php5 php5-xdebug
+sudo apt-get install -y crate hhvm php5-cli php5-xdebug
