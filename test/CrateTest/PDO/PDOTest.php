@@ -249,19 +249,21 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::beginTransaction
+     * @expectedException PHPUnit_Framework_Error
+     * @expectedExceptionMessage Crate\PDO\PDO::beginTransaction not supported
      */
     public function testBeginTransactionThrowsUnsupportedException()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->pdo->beginTransaction();
     }
 
     /**
      * @covers ::commit
+     * @expectedException PHPUnit_Framework_Error
+     * @expectedExceptionMessage Crate\PDO\PDO::commit not supported
      */
     public function testCommitThrowsUnsupportedException()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
         $this->pdo->commit();
     }
 
@@ -279,8 +281,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testInTransactionThrowsUnsupportedException()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
-        $this->pdo->inTransaction();
+        $this->assertFalse($this->pdo->inTransaction());
     }
 
     /**

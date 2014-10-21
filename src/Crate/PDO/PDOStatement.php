@@ -84,6 +84,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     private $request;
 
+    private $namedToPositionalMap = array();
+
     /**
      * @param PDOInterface $pdo
      * @param Closure      $request
@@ -92,10 +94,26 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function __construct(PDOInterface $pdo, Closure $request, $sql, array $options)
     {
-        $this->sql     = $sql;
+        $this->sql     = $this->replaceNamedParametersWithPositionals($sql);
         $this->pdo     = $pdo;
         $this->options = array_merge($this->options, $options);
         $this->request = $request;
+    }
+
+    private function replaceNamedParametersWithPositionals($sql)
+    {
+        $pattern = '/:([\w|\d|_]+)/';
+
+        $idx = 0;
+        $callback = function ($matches) use (&$idx) {
+            foreach (array_slice($matches, 1) as $match) {
+                $this->namedToPositionalMap[$match] = $idx;
+                $idx++;
+            }
+            return '?';
+        };
+
+        return preg_replace_callback($pattern, $callback, $sql);
     }
 
     /**
@@ -196,7 +214,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function execute($input_parameters = null)
     {
-        foreach (ArrayUtils::toArray($input_parameters) as $parameter => $value) {
+        $input_parameters_array = ArrayUtils::toArray($input_parameters);
+        $zero_based = isset($input_parameters_array[0]);
+        foreach ($input_parameters_array as $parameter => $value) {
+            if (is_int($parameter) && $zero_based) {
+                $parameter++;
+            }
             $this->bindValue($parameter, $value);
         }
 
@@ -269,6 +292,14 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $length = null,
         $driver_options = null
     ) {
+        if (array_key_exists($parameter, $this->namedToPositionalMap)) {
+            $parameter = $this->namedToPositionalMap[$parameter];
+        } else {
+            if ($parameter == 0) {
+                throw new Exception\UnsupportedException("0-based parameter binding not supported, use 1-based");
+            }
+            $parameter--;
+        }
         $this->parameters[$parameter] = &$variable;
     }
 
@@ -314,8 +345,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 // todo: What do i do here ?
                 throw new \Exception('Not yet implemented');
         }
-
-        $this->parameters[$parameter] = $value;
+        $this->bindParam($parameter, $value, $data_type);
     }
 
     /**
@@ -328,10 +358,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
 
         if (!$this->isSuccessful()) {
-            return false;
+            return 0;
         }
 
-        return count($this->collection);
+        return $this->collection->count();
     }
 
     /**
@@ -358,7 +388,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $row = $this->collection->current();
         $this->collection->next();
 
-        if (!isset($row[$column_number])) {
+        if ($column_number >= count($row)) {
             throw new Exception\OutOfBoundsException(
                 sprintf('The column "%d" with the zero-based does not exist', $column_number)
             );
@@ -575,7 +605,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function closeCursor()
     {
-        throw new Exception\UnsupportedException;
+        $this->errorCode = 0;
+        $this->collection = null;
+        return true;
     }
 
     /**
