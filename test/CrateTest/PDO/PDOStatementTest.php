@@ -108,15 +108,6 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::closeCursor
-     */
-    public function testCloseCursorThrowsUnsupportedException()
-    {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
-        $this->statement->closeCursor();
-    }
-
-    /**
      * @covers ::execute
      */
     public function testExecuteWithErrorResponse()
@@ -136,7 +127,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testExecute()
     {
-        $parameters = ['foo' => 'bar'];
+        $parameters = ['bar'];
 
         $this->callbackCallParams  = [$this->statement, static::SQL, $parameters];
         $this->callbackReturnValue = $this->getPopulatedCollection();
@@ -152,15 +143,30 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $initial  = 'foo';
         $expected = 'bar';
 
-        $this->callbackCallParams  = [$this->statement, static::SQL, ['var' => $expected]];
+        $this->callbackCallParams  = [$this->statement, static::SQL, [0 => $expected]];
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->statement->bindParam('var', $initial);
+        $this->statement->bindParam(1, $initial);
 
         // Update bar prior to calling execute
         $initial = $expected;
 
         $this->statement->execute();
+    }
+
+    /**
+     * @covers ::bindParam
+     */
+    public function testBindParamInvalidPosition()
+    {
+        $initial  = 'foo';
+        $expected = 'bar';
+
+        $this->callbackCallParams  = [$this->statement, static::SQL, [0 => $expected]];
+        $this->callbackReturnValue = $this->getPopulatedCollection();
+
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->statement->bindParam(0, $initial);
     }
 
     /**
@@ -211,7 +217,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testBindValue($type, $value, $expectedValue)
     {
-        $this->statement->bindValue('column', $value, $type);
+        $this->statement->bindValue(1, $value, $type);
 
         $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
 
@@ -220,7 +226,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
         $castedValue = $property->getValue($this->statement);
 
-        $this->assertSame($expectedValue, $castedValue['column']);
+        $this->assertSame($expectedValue, $castedValue[0]);
     }
 
     /**
@@ -246,7 +252,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
         $this->callbackReturnValue = $collection;
 
-        $this->assertFalse($this->statement->fetch());
+        $this->assertFalse($this->statement->fetch(PDO::FETCH_NUM));
     }
 
     /**
@@ -326,7 +332,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     {
         $this->callbackReturnValue = ['code' => 1337, 'message' => 'expected failure'];
 
-        $this->assertFalse($this->statement->rowCount());
+        $this->assertEquals(0, $this->statement->rowCount());
     }
 
     /**
@@ -827,5 +833,13 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         }
 
         $this->assertEquals(2, $counter);
+    }
+
+    /**
+     * @covers ::closeCursor
+     */
+    public function testCloseCursorReturnsTrue()
+    {
+        $this->assertTrue($this->statement->closeCursor());
     }
 }

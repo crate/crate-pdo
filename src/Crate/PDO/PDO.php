@@ -111,7 +111,8 @@ class PDO extends BasePDO implements PDOInterface
         $options = ArrayUtils::toArray($options);
 
         if (isset($options[PDO::ATTR_CURSOR])) {
-            throw new Exception\UnsupportedException('Driver does not support cursors');
+            trigger_error(sprintf('%s not supported', __METHOD__), E_USER_WARNING);
+            return true;
         }
 
         return new PDOStatement($this, $this->request, $statement, $options);
@@ -122,7 +123,8 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function beginTransaction()
     {
-        throw new Exception\UnsupportedException;
+        trigger_error(sprintf('%s not supported', __METHOD__), E_USER_WARNING);
+        return true;
     }
 
     /**
@@ -130,7 +132,8 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function commit()
     {
-        throw new Exception\UnsupportedException;
+        trigger_error(sprintf('%s not supported', __METHOD__), E_USER_WARNING);
+        return true;
     }
 
     /**
@@ -146,7 +149,7 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function inTransaction()
     {
-        throw new Exception\UnsupportedException;
+        return false;
     }
 
     /**

@@ -163,4 +163,74 @@ class PDOStatementTest extends AbstractIntegrationTest
 
         $this->assertEquals(count($expected), $index);
     }
+
+    public function testBindParam()
+    {
+        $expected = [
+            ['id' => 1, 'name' => 'first'],
+            ['id' => 2, 'name' => 'second'],
+            ['id' => 3, 'name' => 'third'],
+        ];
+
+        foreach ($expected as $row) {
+            $this->insertRow($row['id'], $row['name']);
+        }
+
+        $name = 'second';
+        $statement = $this->pdo->prepare('SELECT * FROM test_table where name = ?');
+        $statement->bindParam(1, $name);
+        $statement->execute();
+        $this->assertEquals(1, $statement->rowCount());
+
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
+        $this->assertEquals(2, $resultSet[0]['id']);
+        $this->assertEquals($name, $resultSet[0]['name']);
+    }
+
+    public function testBindNamedParam()
+    {
+        $expected = [
+            ['id' => 1, 'name' => 'first'],
+            ['id' => 2, 'name' => 'second'],
+            ['id' => 3, 'name' => 'third'],
+        ];
+
+        foreach ($expected as $row) {
+            $this->insertRow($row['id'], $row['name']);
+        }
+
+        $name = 'second';
+        $id = 2;
+        $statement = $this->pdo->prepare('SELECT * FROM test_table where name = :name and id = :id');
+        $statement->bindParam('name', $name);
+        $statement->bindParam('id', $id);
+        $statement->execute();
+        $this->assertEquals(1, $statement->rowCount());
+
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
+        $this->assertEquals(2, $resultSet[0]['id']);
+        $this->assertEquals($name, $resultSet[0]['name']);
+    }
+
+    public function testBindValue()
+    {
+        $expected = [
+            ['id' => 1, 'name' => 'first'],
+            ['id' => 2, 'name' => 'second'],
+            ['id' => 3, 'name' => 'third'],
+        ];
+
+        foreach ($expected as $row) {
+            $this->insertRow($row['id'], $row['name']);
+        }
+
+        $statement = $this->pdo->prepare('SELECT * FROM test_table where name = ?');
+        $statement->bindValue(1, 'second');
+        $statement->execute();
+        $this->assertEquals(1, $statement->rowCount());
+
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
+        $this->assertEquals(2, $resultSet[0]['id']);
+        $this->assertEquals('second', $resultSet[0]['name']);
+    }
 }
