@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2014/10/27 0.0.3
+================
+
 - added support for named parameters (required by dbal driver)
 
 - fixed the way row count is calculated

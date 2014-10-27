@@ -55,7 +55,7 @@ Installation
 
 Install the library by adding it to your composer.json or running::
 
-    php composer.phar require crate/crate-pdo:~0.0.2
+    php composer.phar require crate/crate-pdo:~0.0.3
 
 Are you a Developer?
 ====================
