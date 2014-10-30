@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2014/10/30 0.0.4
+================
+
 - Using a common DSN format now instead of an URI. See README.rst for
   details.
   WARNING: This is a backward incompatible change!
