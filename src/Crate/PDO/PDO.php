@@ -22,6 +22,7 @@
 
 namespace Crate\PDO;
 
+use Crate\PDO\Exception\PDOException;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
 
@@ -29,6 +30,8 @@ class PDO extends BasePDO implements PDOInterface
 {
     const VERSION = '0.0.3';
     const DRIVER_NAME = 'crate';
+
+    const DSN_REGEX = '/^(?:crate)?(?::([\w\d\.-]+:\d+))+/';
 
     /**
      * @var array
@@ -69,8 +72,9 @@ class PDO extends BasePDO implements PDOInterface
             $this->setAttribute($attribute, $value);
         }
 
-        // Store the DSN for later
-        $this->client = new ArtaxExt\Client($dsn, [
+        $servers = self::parseDSN($dsn);
+        $uri = $this->computeURI($servers[0]);
+        $this->client = new ArtaxExt\Client($uri, [
             'connect_timeout' => $this->attributes['timeout']
         ]);
 
@@ -101,6 +105,30 @@ class PDO extends BasePDO implements PDOInterface
                 ];
             }
         };
+    }
+
+    public static function parseDSN($dsn)
+    {
+        if (strlen($dsn) === 0) {
+            throw new PDOException('Empty DSN');
+        }
+
+        $matches = array();
+        if (!preg_match(self::DSN_REGEX, $dsn, $matches)) {
+            throw new PDOException(sprintf('Invalid DSN %s', $dsn));
+        }
+
+        $servers = [];
+        for ($i = 1; $i < count($matches); $i++) {
+            $servers[] = $matches[$i];
+        }
+
+        return $servers;
+    }
+
+    function computeURI($server)
+    {
+        return 'http://' . $server . '/_sql';
     }
 
     /**

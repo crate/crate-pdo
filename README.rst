@@ -57,6 +57,19 @@ Install the library by adding it to your composer.json or running::
 
     php composer.phar require crate/crate-pdo:~0.0.3
 
+DSN
+===
+
+Following DSN is supported:
+::
+
+    crate:<HOSTNAME_OR_IP>:<PORT>
+
+Example:
+::
+
+    crate:localhost:4200
+
 Are you a Developer?
 ====================
 

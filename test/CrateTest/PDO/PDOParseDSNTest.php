@@ -20,41 +20,45 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace CrateIntegrationTest\PDO;
+namespace CrateTest\PDO;
 
+use Crate\PDO\ArtaxExt\ClientInterface;
 use Crate\PDO\PDO;
+use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
+use ReflectionClass;
 
-abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
+class PDOParseDSNTest extends PHPUnit_Framework_TestCase
 {
-    /**
-     * @var PDO
-     */
-    protected $pdo;
-
-    protected function setUp()
+    public function testParseDSNSingleHost()
     {
-        $this->pdo = new PDO('crate:localhost:4200', null, null, []);
-        $this->pdo->query('CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string) clustered into 1 shards with (number_of_replicas = 0)');
+        $dsn = 'crate:localhost:4200';
+        $servers = PDO::parseDSN($dsn);
+
+        $this->assertEquals(1, count($servers));
+        $this->assertEquals('localhost:4200', $servers[0]);
     }
 
-    protected function tearDown()
+    public function testParseDSNMissingName()
     {
-        $this->pdo->query('DROP TABLE test_table');
+        $dsn = 'localhost:4200';
+
+        $this->setExpectedException('Crate\PDO\Exception\PDOException', sprintf('Invalid DSN %s', $dsn));
+        PDO::parseDSN($dsn);
     }
 
-    protected function insertRows($count = 1)
+    public function testParseDSNEmpty()
     {
-        for ($i = 1; $i <= $count; $i++) {
-            $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, 'hello world')", $i));
-        }
-
-        $this->pdo->query('refresh table test_table');
+        $this->setExpectedException('Crate\PDO\Exception\PDOException', 'Empty DSN');
+        PDO::parseDSN('');
     }
 
-    protected function insertRow($id, $name)
+    public function testParseDSNInvalid()
     {
-        $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, '%s')", $id, $name));
-        $this->pdo->query('refresh table test_table');
+        $dsn = 'crate:localhost,demo.crate.io';
+
+        $this->setExpectedException('Crate\PDO\Exception\PDOException', sprintf('Invalid DSN %s', $dsn));
+        PDO::parseDSN($dsn);
     }
+
 }

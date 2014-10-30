@@ -52,7 +52,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
     {
         $this->client = $this->getMock('Crate\PDO\ArtaxExt\ClientInterface');
 
-        $this->pdo = new PDO('http://localhost:8080', null, null, []);
+        $this->pdo = new PDO('crate:localhost:1234', null, null, []);
 
         $reflection = new ReflectionClass('Crate\PDO\PDO');
 
@@ -66,7 +66,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testInstantiation()
     {
-        $pdo = new PDO('http://localhost:1234/', null, null, []);
+        $pdo = new PDO('crate:localhost:1234', null, null, []);
 
         $this->assertInstanceOf('Crate\PDO\PDO', $pdo);
         $this->assertInstanceOf('PDO', $pdo);
@@ -77,7 +77,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testInstantiationWithTraversableOptions()
     {
-        $pdo = new PDO('http://localhost:1234/', null, null, new \ArrayObject([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]));
+        $pdo = new PDO('crate:localhost:1234', null, null, new \ArrayObject([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]));
         $this->assertEquals(PDO::ERRMODE_EXCEPTION, $pdo->getAttribute(PDO::ATTR_ERRMODE));
     }
 
@@ -88,7 +88,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
     {
         $this->setExpectedException('Crate\Stdlib\Exception\InvalidArgumentException');
 
-        new PDO('http://localhost:1234/', null, null, 'a invalid value');
+        new PDO('crate:localhost:1234', null, null, 'a invalid value');
     }
 
     /**
