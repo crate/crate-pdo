@@ -5,24 +5,26 @@
 Unreleased
 ==========
 
+ - code style issues
+
 2014/10/30 0.0.4
 ================
 
-- Using a common DSN format now instead of an URI. See README.rst for
-  details.
-  WARNING: This is a backward incompatible change!
+ - Using a common DSN format now instead of an URI. See README.rst for
+   details.
+   WARNING: This is a backward incompatible change!
 
 2014/10/27 0.0.3
 ================
 
-- added support for named parameters (required by dbal driver)
+ - added support for named parameters (required by dbal driver)
 
-- fixed the way row count is calculated
+ - fixed the way row count is calculated
 
 2014/10/20 0.0.2
 ================
 
-- Update dependencies, `rdlowrey/artax` moved to `amphp/artax`
+ - Update dependencies, `rdlowrey/artax` moved to `amphp/artax`
 
 2014/09/09 0.0.1
 ================

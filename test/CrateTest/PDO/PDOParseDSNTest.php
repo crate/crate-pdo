@@ -22,18 +22,23 @@
 
 namespace CrateTest\PDO;
 
-use Crate\PDO\ArtaxExt\ClientInterface;
-use Crate\PDO\PDO;
-use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
-use ReflectionClass;
+use ReflectionMethod;
 
 class PDOParseDSNTest extends PHPUnit_Framework_TestCase
 {
+    private function parseDSN($dsn)
+    {
+        $method = new ReflectionMethod('Crate\PDO\PDO', 'parseDSN');
+        $method->setAccessible(true);
+
+        return $method->invoke(null, $dsn);
+    }
+
     public function testParseDSNSingleHost()
     {
         $dsn = 'crate:localhost:4200';
-        $servers = PDO::parseDSN($dsn);
+        $servers = $this->parseDSN($dsn);
 
         $this->assertEquals(1, count($servers));
         $this->assertEquals('localhost:4200', $servers[0]);
@@ -44,13 +49,13 @@ class PDOParseDSNTest extends PHPUnit_Framework_TestCase
         $dsn = 'localhost:4200';
 
         $this->setExpectedException('Crate\PDO\Exception\PDOException', sprintf('Invalid DSN %s', $dsn));
-        PDO::parseDSN($dsn);
+        $this->parseDSN($dsn);
     }
 
     public function testParseDSNEmpty()
     {
-        $this->setExpectedException('Crate\PDO\Exception\PDOException', 'Empty DSN');
-        PDO::parseDSN('');
+        $this->setExpectedException('Crate\PDO\Exception\PDOException', sprintf('Invalid DSN %s', ''));
+        $this->parseDSN('');
     }
 
     public function testParseDSNInvalid()
@@ -58,7 +63,7 @@ class PDOParseDSNTest extends PHPUnit_Framework_TestCase
         $dsn = 'crate:localhost,demo.crate.io';
 
         $this->setExpectedException('Crate\PDO\Exception\PDOException', sprintf('Invalid DSN %s', $dsn));
-        PDO::parseDSN($dsn);
+        $this->parseDSN($dsn);
     }
 
 }

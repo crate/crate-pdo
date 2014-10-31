@@ -73,7 +73,8 @@ class PDO extends BasePDO implements PDOInterface
         }
 
         $servers = self::parseDSN($dsn);
-        $uri = $this->computeURI($servers[0]);
+        $uri     = self::computeURI($servers[0]);
+
         $this->client = new ArtaxExt\Client($uri, [
             'connect_timeout' => $this->attributes['timeout']
         ]);
@@ -107,26 +108,30 @@ class PDO extends BasePDO implements PDOInterface
         };
     }
 
-    public static function parseDSN($dsn)
+    /**
+     * Extract host:port pairs out of the DSN string
+     *
+     * @param string    $dsn      The DSN string
+     * @return array    An array of host:port strings
+     */
+    private static function parseDSN($dsn)
     {
-        if (strlen($dsn) === 0) {
-            throw new PDOException('Empty DSN');
-        }
-
         $matches = array();
-        if (!preg_match(self::DSN_REGEX, $dsn, $matches)) {
+
+        if (!preg_match(static::DSN_REGEX, $dsn, $matches)) {
             throw new PDOException(sprintf('Invalid DSN %s', $dsn));
         }
 
-        $servers = [];
-        for ($i = 1; $i < count($matches); $i++) {
-            $servers[] = $matches[$i];
-        }
-
-        return $servers;
+        return array_slice($matches, 1);
     }
 
-    function computeURI($server)
+    /**
+     * Compute a URI for usage with the HTTP client
+     *
+     * @param $server   A host:port string
+     * @return string   An URI which can be used by the HTTP client
+     */
+    private static function computeURI($server)
     {
         return 'http://' . $server . '/_sql';
     }
