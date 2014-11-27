@@ -33,6 +33,14 @@ class PDO extends BasePDO implements PDOInterface
 
     const DSN_REGEX = '/^(?:crate)?(?::([\w\d\.-]+:\d+))+/';
 
+    const PARAM_FLOAT       = 6;
+    const PARAM_DOUBLE      = 7;
+    const PARAM_LONG        = 8;
+    const PARAM_ARRAY       = 9;
+    const PARAM_OBJECT      = 10;
+    const PARAM_TIMESTAMP   = 11;
+    const PARAM_IP          = 12;
+
     /**
      * @var array
      */
@@ -156,7 +164,6 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function beginTransaction()
     {
-        trigger_error(sprintf('%s not supported', __METHOD__), E_USER_WARNING);
         return true;
     }
 
@@ -165,7 +172,6 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function commit()
     {
-        trigger_error(sprintf('%s not supported', __METHOD__), E_USER_WARNING);
         return true;
     }
 

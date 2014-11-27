@@ -30,6 +30,8 @@ use Crate\Stdlib\CrateConst;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
+use ReflectionMethod;
+use ReflectionProperty;
 
 /**
  * Tests for {@see \Crate\PDO\PDOStatement}
@@ -842,4 +844,65 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     {
         $this->assertTrue($this->statement->closeCursor());
     }
+
+    /**
+     * @covers ::typedValue
+     */
+    public function testTypedValue()
+    {
+        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'typedValue');
+        $method->setAccessible(true);
+
+        $this->assertEquals(1.23, $method->invoke($this->statement, 1.23, PDO::PARAM_FLOAT));
+        $this->assertEquals(1.23, $method->invoke($this->statement, 1.23, PDO::PARAM_DOUBLE));
+
+        $this->assertEquals(1, $method->invoke($this->statement, 1, PDO::PARAM_INT));
+        $this->assertEquals(1, $method->invoke($this->statement, 1, PDO::PARAM_LONG));
+
+        $this->assertEquals(null, $method->invoke($this->statement, 1, PDO::PARAM_NULL));
+
+        $this->assertEquals("hello", $method->invoke($this->statement, "hello", PDO::PARAM_STR));
+        $this->assertEquals("1234", $method->invoke($this->statement, 1234, PDO::PARAM_STR));
+        $this->assertEquals("127.0.0.1", $method->invoke($this->statement, "127.0.0.1", PDO::PARAM_IP));
+
+        $this->assertEquals([1, 2], $method->invoke($this->statement, [1, 2], PDO::PARAM_ARRAY));
+        $this->assertEquals(["foo" =>  "bar"], $method->invoke($this->statement, ["foo" =>  "bar"], PDO::PARAM_ARRAY));
+
+        $this->assertEquals(12345, $method->invoke($this->statement, 12345, PDO::PARAM_TIMESTAMP));
+        $this->assertEquals(12345, $method->invoke($this->statement, "12345", PDO::PARAM_TIMESTAMP));
+        $this->assertEquals("2014-03-04T18:45:20", $method->invoke($this->statement, "2014-03-04T18:45:20", PDO::PARAM_TIMESTAMP));
+
+    }
+
+    /**
+     * @covers ::typedValue
+     */
+    public function testTypedValueInvalid()
+    {
+        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'typedValue');
+        $method->setAccessible(true);
+
+        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $method->invoke($this->statement, 1, PDO::PARAM_LOB);
+    }
+
+    /**
+     * @covers ::replaceNamedParametersWithPositionals
+     */
+    public function testReplaceNamedParametersWithPositionals()
+    {
+
+        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'replaceNamedParametersWithPositionals');
+        $method->setAccessible(true);
+        $property = new ReflectionProperty('Crate\PDO\PDOStatement', 'namedToPositionalMap');
+        $property->setAccessible(true);
+
+        $sql = 'select * from test_table where name = :name and id = :id';
+        $sql_converted = $method->invoke($this->statement, $sql);
+        $this->assertEquals('select * from test_table where name = ? and id = ?', $sql_converted);
+        $nameToPositionalMap = $property->getValue($this->statement);
+        $this->assertEquals(0, $nameToPositionalMap['name']);
+        $this->assertEquals(1, $nameToPositionalMap['id']);
+    }
 }
+

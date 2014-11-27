@@ -35,7 +35,11 @@ abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->pdo = new PDO('crate:localhost:4200', null, null, []);
-        $this->pdo->query('CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string) clustered into 1 shards with (number_of_replicas = 0)');
+        $query = 'CREATE TABLE test_table (id INTEGER PRIMARY KEY, name string,';
+        $query .= 'int_type integer, long_type long, boolean_type boolean,';
+        $query .= 'double_type double, float_type float, array_type array(int),';
+        $query .= 'object_type object) clustered into 1 shards with (number_of_replicas = 0)';
+        $this->pdo->query($query);
     }
 
     protected function tearDown()
@@ -46,7 +50,7 @@ abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
     protected function insertRows($count = 1)
     {
         for ($i = 1; $i <= $count; $i++) {
-            $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, 'hello world')", $i));
+            $this->pdo->exec(sprintf("INSERT INTO test_table (id, name) VALUES (%d, 'hello world')", $i));
         }
 
         $this->pdo->query('refresh table test_table');
@@ -54,7 +58,7 @@ abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
 
     protected function insertRow($id, $name)
     {
-        $this->pdo->exec(sprintf("INSERT INTO test_table VALUES (%d, '%s')", $id, $name));
+        $this->pdo->exec(sprintf("INSERT INTO test_table (id, name) VALUES (%d, '%s')", $id, $name));
         $this->pdo->query('refresh table test_table');
     }
 }
