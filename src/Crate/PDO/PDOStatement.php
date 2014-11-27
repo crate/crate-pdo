@@ -27,6 +27,7 @@ use Closure;
 use Crate\Stdlib\ArrayUtils;
 use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
+use InvalidArgumentException;
 use IteratorAggregate;
 use PDOStatement as BasePDOStatement;
 
@@ -58,7 +59,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     private $options = [
         'fetchMode'          => null,
         'fetchColumn'        => 0,
-        'fetchClass'         => 'stdClass',
+        'fetchClass'         => 'array',
         'fetchClassCtorArgs' => null,
     ];
 
@@ -178,32 +179,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 continue;
             }
 
-            $value = $row[$index];
-
-            switch ($metadata['type'])
-            {
-                case PDO::PARAM_INT:
-                    $value = (int) $value;
-                    break;
-
-                case PDO::PARAM_NULL:
-                    $value = null;
-                    break;
-
-                case PDO::PARAM_BOOL:
-                    $value = (bool) $value;
-                    break;
-
-                case PDO::PARAM_STR:
-                    $value = (string) $value;
-                    break;
-
-                case PDO::PARAM_LOB:
-                    // todo: What do i do here ?
-                    break;
-            }
-
             // Update by reference
+            $value = $this->typedValue($row[$index], $metadata['type']);
             $metadata['ref'] = $value;
         }
 
@@ -323,28 +300,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function bindValue($parameter, $value, $data_type = PDO::PARAM_STR)
     {
-        switch ($data_type)
-        {
-            case PDO::PARAM_INT:
-                $value = (int) $value;
-                break;
-
-            case PDO::PARAM_NULL:
-                $value = null;
-                break;
-
-            case PDO::PARAM_BOOL:
-                $value = (bool) $value;
-                break;
-
-            case PDO::PARAM_STR:
-                $value = (string) $value;
-                break;
-
-            case PDO::PARAM_LOB:
-                // todo: What do i do here ?
-                throw new \Exception('Not yet implemented');
-        }
+        $value = $this->typedValue($value, $data_type);
         $this->bindParam($parameter, $value, $data_type);
     }
 
@@ -624,5 +580,43 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     public function getIterator()
     {
         return new ArrayIterator($this->fetchAll());
+    }
+
+    private function typedValue($value, $data_type)
+    {
+        switch ($data_type)
+        {
+            case PDO::PARAM_FLOAT:
+            case PDO::PARAM_DOUBLE:
+                return (float) $value;
+
+            case PDO::PARAM_INT:
+            case PDO::PARAM_LONG:
+                return (int) $value;
+
+            case PDO::PARAM_NULL:
+                return null;
+
+            case PDO::PARAM_BOOL:
+                return (bool) $value;
+
+            case PDO::PARAM_STR:
+            case PDO::PARAM_IP:
+                return (string) $value;
+
+            case PDO::PARAM_OBJECT:
+            case PDO::PARAM_ARRAY:
+                return (array) $value;
+
+            case PDO::PARAM_TIMESTAMP:
+                if (is_numeric($value)) {
+                    return (int) $value;
+                }
+                return (string) $value;
+
+            default:
+                throw new Exception\InvalidArgumentException(sprintf('Parameter type %s not supported', $data_type));
+        }
+
     }
 }

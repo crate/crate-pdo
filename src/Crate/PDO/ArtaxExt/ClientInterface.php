@@ -22,7 +22,7 @@
 
 namespace Crate\PDO\ArtaxExt;
 
-use Amp\Artax\Response;
+use Crate\Stdlib\CollectionInterface;
 
 interface ClientInterface
 {
@@ -37,11 +37,12 @@ interface ClientInterface
 
     /**
      * Execute the PDOStatement and return the response from server
+     * wrapped inside a Collection
      *
      * @param string       $queryString
      * @param array        $parameters
      *
-     * @return Response
+     * @return CollectionInterface
      */
     public function execute($queryString, array $parameters);
 

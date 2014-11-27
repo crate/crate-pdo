@@ -5,7 +5,9 @@
 Unreleased
 ==========
 
- - code style issues
+ - Support crate `array` and `object` data types
+
+ - Code style issues
 
 2014/10/30 0.0.4
 ================
@@ -17,9 +19,9 @@ Unreleased
 2014/10/27 0.0.3
 ================
 
- - added support for named parameters (required by dbal driver)
+ - Added support for named parameters (required by dbal driver)
 
- - fixed the way row count is calculated
+ - Fixed the way row count is calculated
 
 2014/10/20 0.0.2
 ================
@@ -29,4 +31,4 @@ Unreleased
 2014/09/09 0.0.1
 ================
 
- - initial release
+ - Initial release

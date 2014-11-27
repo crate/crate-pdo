@@ -68,21 +68,21 @@ class Client implements ClientInterface
 
         $promise     = $this->client->request($request);
         $response    = $promise->wait();
-        $responseBody = json_decode($response->getBody());
+        $responseBody = json_decode($response->getBody(), true);
 
         if ($response->getStatus() !== 200) {
 
-            $errorCode    = $responseBody->error->code;
-            $errorMessage = $responseBody->error->message;
+            $errorCode    = $responseBody['error']['code'];
+            $errorMessage = $responseBody['error']['message'];
 
             throw new RuntimeException($errorMessage, $errorCode);
         }
 
         return new Collection(
-            $responseBody->rows,
-            $responseBody->cols,
-            $responseBody->duration,
-            $responseBody->rowcount
+            $responseBody['rows'],
+            $responseBody['cols'],
+            $responseBody['duration'],
+            $responseBody['rowcount']
         );
     }
 

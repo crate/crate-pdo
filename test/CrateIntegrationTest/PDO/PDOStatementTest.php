@@ -37,7 +37,7 @@ class PDOStatementTest extends AbstractIntegrationTest
     {
         $this->insertRows(5);
 
-        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $statement = $this->pdo->prepare('SELECT id FROM test_table');
 
         $result = [];
 
@@ -64,7 +64,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $name  = null;
         $index = 0;
 
-        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->bindColumn('id', $id);
         $statement->bindColumn('name', $name);
 
@@ -91,7 +91,7 @@ class PDOStatementTest extends AbstractIntegrationTest
             $this->insertRow($row[0], $row[1]);
         }
 
-        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->execute();
 
         $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_NUM));
@@ -109,7 +109,7 @@ class PDOStatementTest extends AbstractIntegrationTest
             $this->insertRow($row['id'], $row['name']);
         }
 
-        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->execute();
 
         $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_ASSOC));
@@ -127,7 +127,7 @@ class PDOStatementTest extends AbstractIntegrationTest
             $this->insertRow($row['id'], $row['name']);
         }
 
-        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->execute();
 
         // In theory this should be assertSame, but implementing that would be incredibly slow
@@ -146,7 +146,7 @@ class PDOStatementTest extends AbstractIntegrationTest
             $this->insertRow($row['id'], $row['name']);
         }
 
-        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->execute();
 
         $index    = 0;
@@ -232,5 +232,23 @@ class PDOStatementTest extends AbstractIntegrationTest
         $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
         $this->assertEquals(2, $resultSet[0]['id']);
         $this->assertEquals('second', $resultSet[0]['name']);
+    }
+
+    public function testArrayValue()
+    {
+        $statement = $this->pdo->prepare('INSERT INTO test_table (id, array_type, object_type) VALUES(?, ?, ?)');
+        $statement->bindValue(1, 1, PDO::PARAM_INT);
+        $statement->bindValue(2, [1, 2], PDO::PARAM_ARRAY);
+        $statement->bindValue(3, ["foo" => "bar"], PDO::PARAM_OBJECT);
+        $statement->execute();
+        $this->assertEquals(1, $statement->rowCount());
+
+        $this->pdo->exec('REFRESH TABLE test_table');
+
+        $statement = $this->pdo->prepare('SELECT id, array_type, object_type FROM test_table');
+        $resultSet = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $this->assertEquals(1, $resultSet[0]['id']);
+        $this->assertEquals([1, 2], $resultSet[0]['array_type']);
+        $this->assertEquals(["foo" => "bar"], $resultSet[0]['object_type']);
     }
 }
