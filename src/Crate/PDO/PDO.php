@@ -23,8 +23,10 @@
 namespace Crate\PDO;
 
 use Crate\PDO\Exception\PDOException;
+use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
+use Closure;
 
 class PDO extends BasePDO implements PDOInterface
 {
@@ -72,7 +74,7 @@ class PDO extends BasePDO implements PDOInterface
     private $lastStatement;
 
     /**
-     * @var callable
+     * @var Closure
      */
     private $request;
 
@@ -118,7 +120,7 @@ class PDO extends BasePDO implements PDOInterface
             } catch (Exception\RuntimeException $e) {
 
                 if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_EXCEPTION) {
-                    throw new Exception\PDOException($e->getMessage(), $e->getCode());
+                    throw new PDOException($e->getMessage(), $e->getCode(), null);
                 }
 
                 if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_WARNING) {
@@ -146,7 +148,7 @@ class PDO extends BasePDO implements PDOInterface
         $matches = array();
 
         if (!preg_match(static::DSN_REGEX, $dsn, $matches)) {
-            throw new PDOException(sprintf('Invalid DSN %s', $dsn));
+            throw new PDOException(sprintf('Invalid DSN %s', $dsn), 0, null);
         }
 
         return array_slice($matches, 1);
@@ -173,7 +175,7 @@ class PDO extends BasePDO implements PDOInterface
 
         if (isset($options[PDO::ATTR_CURSOR])) {
             trigger_error(sprintf('%s not supported', __METHOD__), E_USER_WARNING);
-            return true;
+            return false;
         }
 
         return new PDOStatement($this, $this->request, $statement, $options);
@@ -294,7 +296,7 @@ class PDO extends BasePDO implements PDOInterface
                 break;
 
             default:
-                throw new Exception\PDOException('Unsupported driver attribute');
+                throw new Exception\UnsupportedException('Unsupported driver attribute');
         }
     }
 
@@ -346,7 +348,7 @@ class PDO extends BasePDO implements PDOInterface
                     return true;
                 }
 
-                throw new Exception\PDOException('Unsupported driver attribute');
+                throw new UnsupportedException('Unsupported driver attribute');
         }
     }
 
@@ -356,19 +358,20 @@ class PDO extends BasePDO implements PDOInterface
     public function quote($string, $parameter_type = PDO::PARAM_STR)
     {
         switch ($parameter_type) {
-            case PDO::PARAM_INT:
-                return (int)$string;
-
-            case PDO::PARAM_BOOL:
-                return (bool)$string;
-
-            case PDO::PARAM_NULL:
-                return null;
-
             case PDO::PARAM_LOB:
                 throw new Exception\UnsupportedException('This is not supported by crate.io');
 
+            case PDO::PARAM_LONG:
+            case PDO::PARAM_INT:
+            case PDO::PARAM_FLOAT:
+            case PDO::PARAM_DOUBLE:
+            case PDO::PARAM_BOOL:
+            case PDO::PARAM_NULL:
             case PDO::PARAM_STR:
+            case PDO::PARAM_ARRAY:
+            case PDO::PARAM_OBJECT:
+            case PDO::PARAM_TIMESTAMP:
+            case PDO::PARAM_IP:
                 throw new Exception\UnsupportedException('This is not supported, please use prepared statements.');
 
             default:
