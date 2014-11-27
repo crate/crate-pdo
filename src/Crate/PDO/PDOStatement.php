@@ -27,6 +27,7 @@ use Closure;
 use Crate\Stdlib\ArrayUtils;
 use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
+use InvalidArgumentException;
 use IteratorAggregate;
 use PDOStatement as BasePDOStatement;
 
@@ -614,7 +615,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 return (string) $value;
 
             default:
-                throw new Exception\UnsupportedException('Not implemented');
+                throw new Exception\InvalidArgumentException(sprintf('Parameter type %s not supported', $data_type));
         }
 
     }
