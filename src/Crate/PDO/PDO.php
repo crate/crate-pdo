@@ -253,7 +253,9 @@ class PDO extends BasePDO implements PDOInterface
 
             case self::ATTR_TIMEOUT:
                 $this->attributes['timeout'] = (int)$value;
-                $this->client->setTimeout((int)$value);
+                if(is_object($this->client)) {
+                    $this->client->setTimeout((int)$value);
+                }
                 break;
 
             default:
