@@ -10,6 +10,6 @@ Marco Pivetta (@Ocramius) <ocramius@gmail.com>
 Code Contributors
 =================
 
-Paweł Krzaczkowski (krzaczek) <pawel@freshmind.pl>
+Paweł Krzaczkowski (@krzaczek) <pawel@freshmind.pl>
 
 Note: (@user) means a github user name.
