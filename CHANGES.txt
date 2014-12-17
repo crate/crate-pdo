@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+ - Nailed dependency versions of amphp/artax and amphp/amp
+   to prevent composer from fetching newer, incompatible releases
+
 2014/12/04 0.0.6
 ================
 
