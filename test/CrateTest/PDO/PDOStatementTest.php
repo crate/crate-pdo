@@ -891,15 +891,14 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testReplaceNamedParametersWithPositionals()
     {
-
         $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'replaceNamedParametersWithPositionals');
         $method->setAccessible(true);
         $property = new ReflectionProperty('Crate\PDO\PDOStatement', 'namedToPositionalMap');
         $property->setAccessible(true);
 
-        $sql = 'select * from test_table where name = :name and id = :id';
+        $sql = "select * from test_table where name = :name and hoschi = 'sld''fn:sdfsf' and id = :id";
         $sql_converted = $method->invoke($this->statement, $sql);
-        $this->assertEquals('select * from test_table where name = ? and id = ?', $sql_converted);
+        $this->assertEquals("select * from test_table where name = ? and hoschi = 'sld''fn:sdfsf' and id = ?", $sql_converted);
         $nameToPositionalMap = $property->getValue($this->statement);
         $this->assertEquals(0, $nameToPositionalMap['name']);
         $this->assertEquals(1, $nameToPositionalMap['id']);

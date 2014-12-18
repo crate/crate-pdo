@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+ - Fix: Literals containing a `:` character were misinterpreted as
+   named parameters.
+
  - Nailed dependency versions of amphp/artax and amphp/amp
    to prevent composer from fetching newer, incompatible releases
 
