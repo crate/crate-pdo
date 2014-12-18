@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2014/12/18 0.0.7
+================
+
  - Fix: Literals containing a `:` character were misinterpreted as
    named parameters.
 
