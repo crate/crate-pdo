@@ -103,14 +103,19 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
     private function replaceNamedParametersWithPositionals($sql)
     {
-        $pattern = '/:([\w|\d|_]+)/';
+        if (strpos($sql, ':') === false) {
+            return $sql;
+        }
+        $pattern = '/:((?:[\w|\d|_](?=([^\'\\\]*(\\\.|\'([^\'\\\]*\\\.)*[^\'\\\]*\'))*[^\']*$))*)/';
 
         $idx = 0;
         $callback = function ($matches) use (&$idx) {
-            foreach (array_slice($matches, 1) as $match) {
-                $this->namedToPositionalMap[$match] = $idx;
-                $idx++;
+            $value = $matches[1];
+            if (empty($value)) {
+                return $matches[0];
             }
+            $this->namedToPositionalMap[$value] = $idx;
+            $idx++;
             return '?';
         };
 
