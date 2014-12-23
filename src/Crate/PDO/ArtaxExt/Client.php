@@ -67,7 +67,7 @@ class Client implements ClientInterface
         $request->setBody(json_encode($body));
 
         $promise     = $this->client->request($request);
-        $response    = $promise->wait();
+        $response    = \Amp\wait($promise);
         $responseBody = json_decode($response->getBody(), true);
 
         if ($response->getStatus() !== 200) {
