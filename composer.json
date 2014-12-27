@@ -7,8 +7,7 @@
     "require": {
         "php":     "~5.5",
         "ext-pdo": "~1.0",
-        "amphp/amp": "0.12",
-        "amphp/artax": "1.0.0-rc4"
+        "guzzle/guzzle": "~5.0"
     },
     "autoload": {
         "psr-0": {
