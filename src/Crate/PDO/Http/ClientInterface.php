@@ -20,7 +20,7 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\PDO\ArtaxExt;
+namespace Crate\PDO\Http;
 
 use Crate\Stdlib\CollectionInterface;
 

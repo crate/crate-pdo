@@ -22,8 +22,12 @@
 
 namespace CrateTest\PDO;
 
-use Crate\PDO\ArtaxExt\ClientInterface;
+use Crate\PDO\Exception\InvalidArgumentException;
+use Crate\PDO\Exception\PDOException;
+use Crate\PDO\Exception\UnsupportedException;
+use Crate\PDO\Http\ClientInterface;
 use Crate\PDO\PDO;
+use Crate\PDO\PDOStatement;
 use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
@@ -50,11 +54,11 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->client = $this->getMock('Crate\PDO\ArtaxExt\ClientInterface');
+        $this->client = $this->getMock(ClientInterface::class);
 
         $this->pdo = new PDO('crate:localhost:1234', null, null, []);
 
-        $reflection = new ReflectionClass('Crate\PDO\PDO');
+        $reflection = new ReflectionClass(PDO::class);
 
         $property = $reflection->getProperty('client');
         $property->setAccessible(true);
@@ -96,7 +100,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAttributeWithInvalidAttribute()
     {
-        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $this->setExpectedException(PDOException::class);
         $this->pdo->getAttribute('I DONT EXIST');
     }
 
@@ -105,7 +109,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testSetAttributeWithInvalidAttribute()
     {
-        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $this->setExpectedException(PDOException::class);
         $this->pdo->setAttribute('I DONT EXIST', 'value');
     }
 
@@ -149,7 +153,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     public function testGetStatementClass()
     {
-        $this->assertEquals(['Crate\PDO\PDOStatement'], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
+        $this->assertEquals([PDOStatement::class], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
     }
 
     /**
@@ -208,12 +212,15 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $this->assertNull($this->pdo->quote('helloWorld', PDO::PARAM_NULL));
     }
 
+    /**
+     * @return array
+     */
     public function quoteExceptionProvider()
     {
         return [
-            [PDO::PARAM_LOB, 'Crate\PDO\Exception\PDOException', 'This is not supported by crate.io'],
-            [PDO::PARAM_STR, 'Crate\PDO\Exception\PDOException', 'This is not supported, please use prepared statements.'],
-            [120, 'Crate\PDO\Exception\InvalidArgumentException', 'Unknown param type'],
+            [PDO::PARAM_LOB, PDOException::class, 'This is not supported by crate.io'],
+            [PDO::PARAM_STR, PDOException::class, 'This is not supported, please use prepared statements.'],
+            [120, InvalidArgumentException::class, 'Unknown param type'],
         ];
     }
 
@@ -236,7 +243,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
     public function testPrepareReturnsAPDOStatement()
     {
         $statement = $this->pdo->prepare('SELECT * FROM tweets');
-        $this->assertInstanceOf('Crate\PDO\PDOStatement', $statement);
+        $this->assertInstanceOf(PDOStatement::class, $statement);
     }
 
     /**
@@ -268,7 +275,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testRollbackThrowsUnsupportedException()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->setExpectedException(UnsupportedException::class);
         $this->pdo->rollBack();
     }
 
@@ -285,7 +292,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testLastInsertIdThrowsUnsupportedException()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->setExpectedException(UnsupportedException::class);
         $this->pdo->lastInsertId();
     }
 }

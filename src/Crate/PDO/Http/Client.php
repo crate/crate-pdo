@@ -20,23 +20,19 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\PDO\ArtaxExt;
+namespace Crate\PDO\Http;
 
-use Amp\Artax\Client as ArtaxClient;
-use Amp\Artax\Request;
+use GuzzleHttp\Client as HttpClient;
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\Collection;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 
 class Client implements ClientInterface
 {
     /**
-     * @var string
-     */
-    private $uri;
-
-    /**
-     * @var ArtaxClient
+     * @var HttpClient
      */
     private $client;
 
@@ -46,9 +42,7 @@ class Client implements ClientInterface
      */
     public function __construct($uri, array $options)
     {
-        $this->uri    = (string) $uri;
-        $this->client = new ArtaxClient();
-        $this->client->setAllOptions($options);
+        $this->client = new HttpClient(['base_url' => $uri] + $options);
     }
 
     /**
@@ -61,29 +55,31 @@ class Client implements ClientInterface
             'args' => $parameters
         ];
 
-        $request = new Request();
-        $request->setUri($this->uri);
-        $request->setMethod('POST');
-        $request->setBody(json_encode($body));
+        try {
+            $response     = $this->client->post(null, ['json' => $body]);
+            $responseBody = $response->json();
 
-        $promise     = $this->client->request($request);
-        $response    = $promise->wait();
-        $responseBody = json_decode($response->getBody(), true);
+            return new Collection(
+                $responseBody['rows'],
+                $responseBody['cols'],
+                $responseBody['duration'],
+                $responseBody['rowcount']
+            );
 
-        if ($response->getStatus() !== 200) {
+        } catch (ClientException $exception) {
 
-            $errorCode    = $responseBody['error']['code'];
-            $errorMessage = $responseBody['error']['message'];
+            $json = $exception->getResponse()->json();
+
+            $errorCode    = $json['error']['code'];
+            $errorMessage = $json['error']['message'];
 
             throw new RuntimeException($errorMessage, $errorCode);
-        }
 
-        return new Collection(
-            $responseBody['rows'],
-            $responseBody['cols'],
-            $responseBody['duration'],
-            $responseBody['rowcount']
-        );
+        } catch (ServerException $exception) {
+
+            // todo: this could/should probably be handled here as well
+            throw $exception;
+        }
     }
 
     /**
@@ -107,6 +103,6 @@ class Client implements ClientInterface
      */
     public function setTimeout($timeout)
     {
-        $this->client->setOption('connect_timeout', (int) $timeout);
+        $this->client->setDefaultOption('timeout', (float) $timeout);
     }
 }

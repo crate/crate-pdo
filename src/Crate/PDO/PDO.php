@@ -48,11 +48,11 @@ class PDO extends BasePDO implements PDOInterface
         'defaultFetchMode' => self::FETCH_BOTH,
         'errorMode'        => self::ERRMODE_SILENT,
         'statementClass'   => 'Crate\PDO\PDOStatement',
-        'timeout'          => 5
+        'timeout'          => 5.0
     ];
 
     /**
-     * @var ArtaxExt\ClientInterface
+     * @var Http\ClientInterface
      */
     private $client;
 
@@ -83,8 +83,8 @@ class PDO extends BasePDO implements PDOInterface
         $servers = self::parseDSN($dsn);
         $uri     = self::computeURI($servers[0]);
 
-        $this->client = new ArtaxExt\Client($uri, [
-            'connect_timeout' => $this->attributes['timeout']
+        $this->client = new Http\Client($uri, [
+            'timeout' => $this->attributes['timeout']
         ]);
 
         // Define a callback that will be used in the PDOStatements
