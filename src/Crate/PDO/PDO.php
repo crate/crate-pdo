@@ -119,8 +119,9 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * Extract host:port pairs out of the DSN string
      *
-     * @param string    $dsn      The DSN string
-     * @return array    An array of host:port strings
+     * @param string $dsn The DSN string
+     *
+     * @return array An array of host:port strings
      */
     private static function parseDSN($dsn)
     {
@@ -136,8 +137,9 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * Compute a URI for usage with the HTTP client
      *
-     * @param $server   A host:port string
-     * @return string   An URI which can be used by the HTTP client
+     * @param string $server A host:port string
+     *
+     * @return string An URI which can be used by the HTTP client
      */
     private static function computeURI($server)
     {
