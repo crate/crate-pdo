@@ -26,8 +26,8 @@ use GuzzleHttp\Client as HttpClient;
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\Collection;
-use GuzzleHttp\Exception\ClientException;
-use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\ParseException;
 
 class Client implements ClientInterface
 {
@@ -66,19 +66,20 @@ class Client implements ClientInterface
                 $responseBody['rowcount']
             );
 
-        } catch (ClientException $exception) {
+        } catch (BadResponseException $exception) {
 
-            $json = $exception->getResponse()->json();
+            try {
 
-            $errorCode    = $json['error']['code'];
-            $errorMessage = $json['error']['message'];
+                $json = $exception->getResponse()->json();
 
-            throw new RuntimeException($errorMessage, $errorCode);
+                $errorCode    = $json['error']['code'];
+                $errorMessage = $json['error']['message'];
 
-        } catch (ServerException $exception) {
+                throw new RuntimeException($errorMessage, $errorCode);
 
-            // todo: this could/should probably be handled here as well
-            throw $exception;
+            } catch (ParseException $e) {
+                throw new RuntimeException('Unparsable response from server', 0, $exception);
+            }
         }
     }
 
