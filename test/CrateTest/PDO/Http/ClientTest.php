@@ -22,7 +22,7 @@ use ReflectionClass;
 /**
  * Class ClientTest
  *
- * @coversDefaultClass \Crate\PDO\ArtaxExt\Client
+ * @coversDefaultClass \Crate\PDO\Http\Client
  * @covers ::<!public>
  *
  * @group unit
