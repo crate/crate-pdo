@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2015/01/08 0.1.0
+================
+
  - Fix performance issues by switching http client library to
    ``guzzle``.
 
