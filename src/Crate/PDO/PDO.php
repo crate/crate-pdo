@@ -48,11 +48,11 @@ class PDO extends BasePDO implements PDOInterface
         'defaultFetchMode' => self::FETCH_BOTH,
         'errorMode'        => self::ERRMODE_SILENT,
         'statementClass'   => 'Crate\PDO\PDOStatement',
-        'timeout'          => 5
+        'timeout'          => 5.0
     ];
 
     /**
-     * @var ArtaxExt\ClientInterface
+     * @var Http\ClientInterface
      */
     private $client;
 
@@ -83,8 +83,8 @@ class PDO extends BasePDO implements PDOInterface
         $servers = self::parseDSN($dsn);
         $uri     = self::computeURI($servers[0]);
 
-        $this->client = new ArtaxExt\Client($uri, [
-            'connect_timeout' => $this->attributes['timeout']
+        $this->client = new Http\Client($uri, [
+            'timeout' => $this->attributes['timeout']
         ]);
 
         // Define a callback that will be used in the PDOStatements
@@ -119,8 +119,9 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * Extract host:port pairs out of the DSN string
      *
-     * @param string    $dsn      The DSN string
-     * @return array    An array of host:port strings
+     * @param string $dsn The DSN string
+     *
+     * @return array An array of host:port strings
      */
     private static function parseDSN($dsn)
     {
@@ -136,8 +137,9 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * Compute a URI for usage with the HTTP client
      *
-     * @param $server   A host:port string
-     * @return string   An URI which can be used by the HTTP client
+     * @param string $server A host:port string
+     *
+     * @return string An URI which can be used by the HTTP client
      */
     private static function computeURI($server)
     {
