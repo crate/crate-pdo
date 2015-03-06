@@ -1,7 +1,7 @@
-.. image:: https://cdn.crate.io/web/1.0.0/img/logo-solid.png
-    :width: 155px
-    :height: 45px
-    :alt: Crate
+.. image:: https://cdn.crate.io/web/2.0/img/crate-avatar_100x100.png
+    :width: 100px
+    :height: 100px
+    :alt: Crate.IO
     :target: https://crate.io
 
 .. image:: https://travis-ci.org/crate/crate-pdo.svg?branch=master
@@ -21,7 +21,7 @@ Introduction
 
 The goal of this project is to mimic a subset of the PDO api allowing
 to use an existing API you're already familiar with when developing
-with crate.io
+with Crate.
 
 Documentation / Supported fetch modes
 =====================================
@@ -90,7 +90,7 @@ visit `https://crate.io/ <https://crate.io/>`_.
 License
 =======
 
-Copyright 2014 CRATE Technology GmbH ("Crate")
+Copyright 2014-2015 CRATE Technology GmbH ("Crate")
 
 Licensed to CRATE Technology GmbH ("Crate") under one or more contributor
 license agreements.  See the NOTICE file distributed with this work for
