@@ -34,7 +34,7 @@ abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->pdo = new PDO('crate:localhost:4200', null, null, []);
+        $this->pdo = new PDO('crate:staging.crate.data.meinauto.de:80', 'elasticsearch', 'ohvu3yVFGqer9IuQ8820sJMf2rw6s1Hs3vQiUB9l4mI=', []);
         $query = 'CREATE TABLE test_table (id INTEGER PRIMARY KEY, name STRING,';
         $query .= 'int_type INTEGER, long_type LONG, boolean_type BOOLEAN,';
         $query .= 'double_type DOUBLE, float_type FLOAT, array_type ARRAY(INTEGER),';

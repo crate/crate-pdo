@@ -100,10 +100,18 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testInstantiationWithHttpBasicAuth()
     {
-        $pdo = new PDO('crate:localhost:1234', 'user', 'passwd', []);
+        $user = 'user';
+        $passwd = 'passwd';
+        $expectedCredentials = [$user, $passwd];
 
-        $this->assertInstanceOf('Crate\PDO\PDO', $pdo);
-        $this->assertInstanceOf('PDO', $pdo);
+        $this->client
+            ->expects($this->once())
+            ->method('setHttpBasicAuth')
+            ->with($user, $passwd);
+
+        $this->pdo->setAttribute(PDO::ATTR_HTTP_AUTH, [$user, $passwd]);
+
+        $this->assertEquals($expectedCredentials, $this->pdo->getAttribute(PDO::ATTR_HTTP_AUTH));
     }
 
     /**

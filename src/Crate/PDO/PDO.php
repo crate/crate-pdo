@@ -33,6 +33,8 @@ class PDO extends BasePDO implements PDOInterface
 
     const DSN_REGEX = '/^(?:crate)?(?::([\w\d\.-]+:\d+))+/';
 
+    const ATTR_HTTP_AUTH    = 403;
+
     const PARAM_FLOAT       = 6;
     const PARAM_DOUBLE      = 7;
     const PARAM_LONG        = 8;
@@ -48,7 +50,8 @@ class PDO extends BasePDO implements PDOInterface
         'defaultFetchMode' => self::FETCH_BOTH,
         'errorMode'        => self::ERRMODE_SILENT,
         'statementClass'   => 'Crate\PDO\PDOStatement',
-        'timeout'          => 5.0
+        'timeout'          => 5.0,
+        'auth'             => []
     ];
 
     /**
@@ -82,15 +85,14 @@ class PDO extends BasePDO implements PDOInterface
 
         $servers = self::parseDSN($dsn);
         $uri     = self::computeURI($servers[0]);
-        $params = [
-            'timeout' => $this->attributes['timeout'],
-        ];
+
+        $this->client = new Http\Client($uri, [
+            'timeout' => $this->attributes['timeout']
+        ]);
 
         if (!empty($username) && !empty($passwd)) {
-            $params['defaults'] = ['auth' => [$username, $passwd]];
+            $this->client->setHttpBasicAuth($username, $passwd);
         }
-
-        $this->client = new Http\Client($uri, $params);
 
         // Define a callback that will be used in the PDOStatements
         // This way we don't expose this as a public api to the end users.
@@ -265,6 +267,14 @@ class PDO extends BasePDO implements PDOInterface
                 }
                 break;
 
+            case self::ATTR_HTTP_AUTH:
+                $this->attributes['auth'] = $value;
+                if (is_object($this->client) && is_array($value)) {
+                    list($user, $password) = $value;
+                    $this->client->setHttpBasicAuth($user, $password);
+                }
+                break;
+
             default:
                 throw new Exception\PDOException('Unsupported driver attribute');
         }
@@ -293,6 +303,9 @@ class PDO extends BasePDO implements PDOInterface
 
             case PDO::ATTR_TIMEOUT:
                 return $this->attributes['timeout'];
+
+            case PDO::ATTR_HTTP_AUTH:
+                return $this->attributes['auth'];
 
             case PDO::ATTR_DEFAULT_FETCH_MODE:
                 return $this->attributes['defaultFetchMode'];
