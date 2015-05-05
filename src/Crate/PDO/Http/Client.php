@@ -106,4 +106,12 @@ class Client implements ClientInterface
     {
         $this->client->setDefaultOption('timeout', (float) $timeout);
     }
+
+    /**
+     * {@Inheritdoc}
+     */
+    public function setHttpBasicAuth($username, $passwd)
+    {
+        $this->client->setDefaultOption('auth', [$username, $passwd]);
+    }
 }
