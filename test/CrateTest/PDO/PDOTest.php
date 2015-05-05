@@ -96,6 +96,17 @@ class PDOTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     */
+    public function testInstantiationWithHttpBasicAuth()
+    {
+        $pdo = new PDO('crate:localhost:1234', 'user', 'passwd', []);
+
+        $this->assertInstanceOf('Crate\PDO\PDO', $pdo);
+        $this->assertInstanceOf('PDO', $pdo);
+    }
+
+    /**
      * @covers ::getAttribute
      */
     public function testGetAttributeWithInvalidAttribute()
