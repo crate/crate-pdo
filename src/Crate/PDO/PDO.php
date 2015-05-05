@@ -82,10 +82,15 @@ class PDO extends BasePDO implements PDOInterface
 
         $servers = self::parseDSN($dsn);
         $uri     = self::computeURI($servers[0]);
+        $params = [
+            'timeout' => $this->attributes['timeout'],
+        ];
 
-        $this->client = new Http\Client($uri, [
-            'timeout' => $this->attributes['timeout']
-        ]);
+        if (!empty($username) && !empty($passwd)) {
+            $params['defaults'] = ['auth' => [$username, $passwd]];
+        }
+
+        $this->client = new Http\Client($uri, $params);
 
         // Define a callback that will be used in the PDOStatements
         // This way we don't expose this as a public api to the end users.
