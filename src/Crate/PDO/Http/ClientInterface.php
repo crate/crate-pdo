@@ -36,6 +36,16 @@ interface ClientInterface
     public function setTimeout($timeout);
 
     /**
+     * Set the connection http basic auth
+     *
+     * @param string $username
+     * @param string $passwd
+     *
+     * @return void
+     */
+    public function setHttpBasicAuth($username, $passwd);
+
+    /**
      * Execute the PDOStatement and return the response from server
      * wrapped inside a Collection
      *

@@ -96,6 +96,25 @@ class PDOTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::__construct
+     */
+    public function testSetAttributeWithHttpBasicAuth()
+    {
+        $user = 'user';
+        $passwd = 'passwd';
+        $expectedCredentials = [$user, $passwd];
+
+        $this->client
+            ->expects($this->once())
+            ->method('setHttpBasicAuth')
+            ->with($user, $passwd);
+
+        $this->pdo->setAttribute(PDO::ATTR_HTTP_BASIC_AUTH, [$user, $passwd]);
+
+        $this->assertEquals($expectedCredentials, $this->pdo->getAttribute(PDO::ATTR_HTTP_BASIC_AUTH));
+    }
+
+    /**
      * @covers ::getAttribute
      */
     public function testGetAttributeWithInvalidAttribute()
