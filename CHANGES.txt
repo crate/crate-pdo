@@ -5,6 +5,12 @@
 Unreleased
 ==========
 
+2015/05/06 0.1.1
+================
+
+ - Support guzzle http basic auth at Crate/PDO through doctrine
+   dbal connection user credetials
+
 2015/01/08 0.1.0
 ================
 
