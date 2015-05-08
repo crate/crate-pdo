@@ -91,7 +91,7 @@ class PDO extends BasePDO implements PDOInterface
         ]);
 
         if (!empty($username) && !empty($passwd)) {
-            $this->client->setHttpBasicAuth($username, $passwd);
+            $this->setAttribute(PDO::ATTR_HTTP_BASIC_AUTH, [$username, $passwd]);
         }
 
         // Define a callback that will be used in the PDOStatements
@@ -274,7 +274,7 @@ class PDO extends BasePDO implements PDOInterface
                     $this->client->setHttpBasicAuth($user, $password);
                 }
                 break;
-            
+
             default:
                 throw new Exception\PDOException('Unsupported driver attribute');
         }
