@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+ - Set auth attribute in constructor of PDO class if credentials
+   are available
+
 2015/05/07 0.2.0
 ================
 

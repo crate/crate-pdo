@@ -98,20 +98,35 @@ class PDOTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::__construct
      */
+    public function testInstantiationWithHttpAuth() {
+        $user = 'crate';
+        $passwd = 'secret';
+        $pdo = new PDO('crate:localhost:44200', $user, $passwd, []);
+        $this->assertEquals([$user, $passwd], $pdo->getAttribute(PDO::ATTR_HTTP_BASIC_AUTH));
+    }
+
+    /**
+     * @covers ::setAttribute
+     */
     public function testSetAttributeWithHttpBasicAuth()
     {
-        $user = 'user';
-        $passwd = 'passwd';
+        $user = 'crate';
+        $passwd = 'secret';
         $expectedCredentials = [$user, $passwd];
 
-        $this->client
+        $client = $this->getMock(ClientInterface::class);
+        $pdo = new PDO('crate:localhost:44200', null, null, []);
+        $reflection = new ReflectionClass(PDO::class);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($pdo, $client);
+        $client
             ->expects($this->once())
             ->method('setHttpBasicAuth')
             ->with($user, $passwd);
 
-        $this->pdo->setAttribute(PDO::ATTR_HTTP_BASIC_AUTH, [$user, $passwd]);
-
-        $this->assertEquals($expectedCredentials, $this->pdo->getAttribute(PDO::ATTR_HTTP_BASIC_AUTH));
+        $pdo->setAttribute(PDO::ATTR_HTTP_BASIC_AUTH, [$user, $passwd]);
+        $this->assertEquals($expectedCredentials, $pdo->getAttribute(PDO::ATTR_HTTP_BASIC_AUTH));
     }
 
     /**
