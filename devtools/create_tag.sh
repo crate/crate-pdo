@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 
 # Licensed to CRATE Technology GmbH ("Crate") under one or more contributor
 # license agreements.  See the NOTICE file distributed with this work for
@@ -19,15 +19,11 @@
 # with Crate these terms will supersede the license and you may use the
 # software solely pursuant to the terms of the relevant commercial agreement.
 
-RED="\033[2;31m"
-GREEN="\033[2;32m"
-END="\033[0m"
-
 function print_green() {
-  echo -e "$GREEN$1$END"
+  echo -e "\033[2;32m$1\033[0m"
 }
 function print_red() {
-  echo -e "$RED$1$END"
+  echo -e "\033[1;31m$1\033[0m"
 }
 
 # check if everything is committed
@@ -47,21 +43,24 @@ BRANCH=`git branch | grep "^*" | cut -d " " -f 2`
 echo "Current branch is $BRANCH."
 
 # check if BRANCH == origin/BRANCH
-LOCAL_COMMIT=`git show --format="%H" $BRANCH`
-ORIGIN_COMMIT=`git show --format="%H" origin/$BRANCH`
+LOCAL_COMMIT=$(git log --pretty=oneline -n 1 ${BRANCH} | cat)
+ORIGIN_COMMIT=$(git log --pretty=oneline -n 1 origin/${BRANCH} | cat)
 
 if [ "$LOCAL_COMMIT" != "$ORIGIN_COMMIT" ]
 then
    print_red "Local $BRANCH is not up to date."
+   echo "Local commit:  $LOCAL_COMMIT"
+   echo "Origin commit: $ORIGIN_COMMIT"
    echo "Aborting."
    exit 1
 fi
 
 # get version from PDO class
 VERSION=$(grep "VERSION =" src/Crate/PDO/PDO.php | tr -d ';' | cut -d' ' -f8 | tr -d "'")
+print_green "Version: $VERSION"
 
 # check if tag to create has already been created
-EXISTS=`git tag | grep $VERSION`
+EXISTS=$(git tag | grep $VERSION)
 
 if [ "$VERSION" == "$EXISTS" ]
 then
