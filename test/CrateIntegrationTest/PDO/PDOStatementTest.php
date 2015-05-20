@@ -202,8 +202,8 @@ class PDOStatementTest extends AbstractIntegrationTest
         $name = 'second';
         $id = 2;
         $statement = $this->pdo->prepare('SELECT * FROM test_table where name = :name and id = :id');
-        $statement->bindParam('name', $name);
-        $statement->bindParam('id', $id);
+        $statement->bindParam(':name', $name);
+        $statement->bindParam(':id', $id);
         $statement->execute();
         $this->assertEquals(1, $statement->rowCount());
 

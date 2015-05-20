@@ -900,8 +900,8 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $sql_converted = $method->invoke($this->statement, $sql);
         $this->assertEquals("select * from test_table where name = ? and hoschi = 'sld''fn:sdfsf' and id = ?", $sql_converted);
         $nameToPositionalMap = $property->getValue($this->statement);
-        $this->assertEquals(0, $nameToPositionalMap['name']);
-        $this->assertEquals(1, $nameToPositionalMap['id']);
+        $this->assertEquals(0, $nameToPositionalMap[':name']);
+        $this->assertEquals(1, $nameToPositionalMap[':id']);
     }
 }
 

@@ -106,7 +106,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         if (strpos($sql, ':') === false) {
             return $sql;
         }
-        $pattern = '/:((?:[\w|\d|_](?=([^\'\\\]*(\\\.|\'([^\'\\\]*\\\.)*[^\'\\\]*\'))*[^\']*$))*)/';
+        $pattern = '/(:(?:[\w|\d|_](?=([^\'\\\]*(\\\.|\'([^\'\\\]*\\\.)*[^\'\\\]*\'))*[^\']*$))*)/';
 
         $idx = 0;
         $callback = function ($matches) use (&$idx) {
