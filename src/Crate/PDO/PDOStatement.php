@@ -274,13 +274,20 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $length = null,
         $driver_options = null
     ) {
-        if (array_key_exists($parameter, $this->namedToPositionalMap)) {
-            $parameter = $this->namedToPositionalMap[$parameter];
-        } else {
+        if (is_numeric($parameter)) {
             if ($parameter == 0) {
                 throw new Exception\UnsupportedException("0-based parameter binding not supported, use 1-based");
             }
             $parameter--;
+        } else {
+            $namedParameterKey = substr($parameter, 0, 1) === ':' ? substr($parameter, 1) : $parameter;
+            if (array_key_exists($namedParameterKey, $this->namedToPositionalMap)) {
+                $parameter = $this->namedToPositionalMap[$namedParameterKey];
+            } else {
+                throw new Exception\OutOfBoundsException(
+                    sprintf('The named parameter "%s" does not exist', $parameter)
+                );
+            }
         }
         $this->parameters[$parameter] = &$variable;
     }
