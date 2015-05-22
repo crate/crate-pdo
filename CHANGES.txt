@@ -5,6 +5,8 @@
 Unreleased
 ==========
 
+ - Support binding named parameters with a leading `:` character
+
 2015/05/08 0.2.1
 ================
 
