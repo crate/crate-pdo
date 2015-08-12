@@ -28,7 +28,7 @@ use PDO as BasePDO;
 
 class PDO extends BasePDO implements PDOInterface
 {
-    const VERSION = '0.2.1';
+    const VERSION = '0.3.0';
     const DRIVER_NAME = 'crate';
 
     const DSN_REGEX = '/^(?:crate)?(?::([\w\d\.-]+:\d+))+/';
