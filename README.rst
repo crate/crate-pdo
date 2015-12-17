@@ -53,17 +53,17 @@ For PDOStatement::fetch
 Installation
 ============
 
-Install the library by adding it manually to your ``composer.json`` or even 
-simpler via Composer_::
+Install the library by adding it manually to your ``composer.json`` or directly
+via Composer_::
 
-    php composer.phar require crate/crate-pdo:~0.3.0
+    composer require crate/crate-pdo:~0.3.0
 
 .. _Composer: https://packagist.org/
 
 Connect to Crate
 ----------------
 
-To connect to your cluster, Crate follows standard PDO syntax to form a data 
+To connect to your cluster, Crate follows standard PDO syntax to form a data
 source name string (DSN_) and then connect to it.
 
 ::
