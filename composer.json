@@ -5,8 +5,8 @@
     "homepage": "https://github.com/crate/crate-pdo",
     "keywords": ["database", "pdo", "crate"],
     "require": {
-        "php":     "~5.5",
-        "ext-pdo": "~1.0",
+        "php":     "~5.5|~7.0",
+        "ext-pdo": "*",
         "guzzlehttp/guzzle": "~5.0"
     },
     "autoload": {

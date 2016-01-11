@@ -19,6 +19,19 @@ Start up the vagrant machine, when run for the first time it will also run the n
 
     vagrant up
 
+PHP Version
+-----------
+
+There are 2 PHP versions installed in the Vagrant box: ``5.6.3`` and ``7.0.2``.
+To activate a certain version you need to create a symlink to ``php5`` or ``php7``
+in ``/usr/bin/``::
+
+    sudo rm /usr/bin/php
+    sudo ln -s /usr/bin/phpX /usr/bin/php
+
+Installing dependencies
+-----------------------
+
 Get composer & install dependencies::
 
     vagrant ssh
