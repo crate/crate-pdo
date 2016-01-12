@@ -19,6 +19,9 @@ Start up the vagrant machine, when run for the first time it will also run the n
 
     vagrant up
 
+If you are using IntelliJ/PhpStorm IDE you can `follow this guide <https://gist.github.com/mikethebeer/d8feda1bcc6b6ef6ea59>`_
+to setup your remote interpreter and test environment environment.
+
 PHP Version
 -----------
 
