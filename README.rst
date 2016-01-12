@@ -16,87 +16,19 @@
     :target: https://scrutinizer-ci.com/g/crate/crate-pdo
     :alt: Quality
 
+
 Introduction
 ============
 
-The goal of this project is to mimic a subset of the PDO api allowing
-to use an existing API you're already familiar with when developing
-with Crate.
-
-Documentation / Supported fetch modes
-=====================================
-
-Since we are implementing an existing api the documentation available on
-http://www.php.net/pdo also applies to this project.
-
-On a side note, since we only support a subset of the PDO api only the
-following fetch modes are supported.
-
-
-For PDOStatement::fetchAll
-
-- PDO::FETCH_NUM
-- PDO::FETCH_NAMED
-- PDO::FETCH_ASSOC
-- PDO::FETCH_BOTH
-- PDO::FETCH_FUNC
-- PDO::FETCH_COLUMN
-
-For PDOStatement::fetch
-
-- PDO::FETCH_NAMED
-- PDO::FETCH_ASSOC
-- PDO::FETCH_BOTH
-- PDO::FETCH_BOUND
-- PDO::FETCH_NUM
-
-Installation
-============
-
-Install the library by adding it manually to your ``composer.json`` or directly
-via Composer_::
-
-    composer require crate/crate-pdo:~0.3.0
-
-.. _Composer: https://packagist.org/
-
-Connect to Crate
-----------------
-
-To connect to your cluster, Crate follows standard PDO syntax to form a data
-source name string (DSN_) and then connect to it.
-
-::
-
-  require 'vendor/autoload.php';
-  use Crate\PDO\PDO as PDO;
-
-  $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
-  $connection = new PDO($dsn, null, null, null);
-
-
-As Crate doesn't support authentication, the other parameters can be left null.
-
-.. _DSN: https://en.wikipedia.org/wiki/Data_source_name
-
-DSN
----
-
-Following DSN is supported:
-::
-
-    crate:<HOSTNAME_OR_IP>:<PORT>
-
-Example:
-::
-
-    crate:localhost:4200
+``Crate PDO`` is a Crate specific database driver implementation of the PDO_ API.
+This allows you to use the standardized PDO API you're already familiar with
+when developing PHP applications with a Crate.io_ database backend.
 
 Are you a Developer?
 ====================
 
 You can help develop the crate-pdo adapter on your own with the latest
-version hosted on GitHub.  To do so, please refer to ``DEVELOP.rst``
+version hosted on GitHub. To do so, please refer to ``DEVELOP.rst``
 for further information.
 
 Help & Contact
@@ -106,8 +38,6 @@ Do you have any questions? Or suggestions? We would be very happy to
 help you. So, feel free to swing by our public room on HipChat_.
 Or for further information and official contact please
 visit `https://crate.io/ <https://crate.io/>`_.
-
-.. _HipChat: https://www.hipchat.com/g7Pc2CYwi
 
 License
 =======
@@ -132,3 +62,8 @@ under the License.
 However, if you have executed another commercial license agreement
 with Crate these terms will supersede the license and you may use the
 software solely pursuant to the terms of the relevant commercial agreement.
+
+
+.. _PDO: http://www.php.net/manual/en/intro.pdo.php
+.. _Crate.io: https://crate.io
+.. _HipChat: https://www.hipchat.com/g7Pc2CYwi
