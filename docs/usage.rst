@@ -29,13 +29,20 @@ DSN
 
 Following DSN is supported::
 
-    crate:<HOSTNAME_OR_IP>:<PORT>
+    crate:<HOSTNAME_OR_IP>:<PORT>[/<SCHEMA>]
 
 Examples::
 
     crate:localhost:4200
     crate:127.0.0.1:4200
-    crate:demo.crate.io:4200
+    crate:demo.crate.io:4200/my_schema
+
+The ``/schema`` part in the connection string is optional and can be omitted.
+If no schema is provided the Crate's default schema ``doc`` is used.
+
+Note that you can still implicitly provide a schema in SQL statements, e.g.::
+
+    SELECT * FROM other_schema.my_table LIMIT 10;
 
 Fetch Modes
 ===========
