@@ -22,6 +22,8 @@
 
 namespace CrateTest\PDO;
 
+use Crate\PDO\Exception\PDOException;
+use Crate\PDO\PDO;
 use PHPUnit_Framework_TestCase;
 use ReflectionMethod;
 
@@ -66,4 +68,29 @@ class PDOParseDSNTest extends PHPUnit_Framework_TestCase
         $this->parseDSN($dsn);
     }
 
+    public function testParseDSNSingleHostWithSchema()
+    {
+        $dsn = 'crate:localhost:4200/my_schema';
+        $servers = $this->parseDSN($dsn);
+
+        $this->assertEquals(2, count($servers));
+        $this->assertEquals('my_schema', $servers[1]);
+    }
+
+    public function testParseDSNInvalidSchema()
+    {
+        $dsn = array(
+            'crate:localhost:4200/österreich',
+            'crate:localhost:4200/mk++je',
+            'crate:localhost:4200/copyright©'
+        );
+
+        foreach ($dsn as &$val) {
+            try {
+                $this->parseDSN($val);
+            } catch (PDOException $e) {
+                $this->assertEquals(substr( $e->getMessage(), 0, 11 ), 'Invalid DSN');
+            }
+        }
+    }
 }

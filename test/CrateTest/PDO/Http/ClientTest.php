@@ -149,4 +149,18 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $this->client->setTimeout('4');
     }
+
+    public function testSetHTTPHeader()
+    {
+        $pdoClient = new Client(static::DSN, []);
+        $reflection = new ReflectionClass(Client::class);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+
+        $pdoClient->setHttpHeader('default-schema', 'my_schema');
+        $internalPDOClient = $property->getValue($pdoClient);
+        $header = $internalPDOClient->getDefaultOption('headers/default-schema');
+
+        $this->assertEquals('my_schema', $header);
+    }
 }

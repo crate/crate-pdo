@@ -29,13 +29,20 @@ DSN
 
 Following DSN is supported::
 
-    crate:<HOSTNAME_OR_IP>:<PORT>
+    crate:<HOSTNAME_OR_IP>:<PORT>[/<SCHEMA>]
 
 Examples::
 
     crate:localhost:4200
     crate:127.0.0.1:4200
-    crate:demo.crate.io:4200
+    crate:demo.crate.io:4200/my_schema
+
+The ``/schema`` part in the connection string is optional and can be omitted.
+If no schema is provided the Crate's default schema ``doc`` is used.
+
+Note that you can still implicitly provide a schema in SQL statements, e.g.::
+
+    SELECT * FROM other_schema.my_table LIMIT 10;
 
 Fetch Modes
 ===========
@@ -62,5 +69,24 @@ For ``PDOStatement::fetch``:
 - ``PDO::FETCH_NUM``
 
 
+Crate specific PDO attributes
+=============================
+
+The following attributes are Crate specific and used to set an attribute on the
+database handle (see `PDO::setAttribute`_).
+
+**PDO::CRATE_ATTR_HTTP_BASIC_AUTH** (string[])
+    | *Value:*    ``[username, password]``
+
+    Specifies the basic HTTP access authentication headers to provide a
+    user name and password when making a request.
+
+**PDO::CRATE_ATTR_DEFAULT_SCHEMA** (string)
+    | *Default-Value*    ``doc``
+
+    Set the default schema for the PDO connection.
+
+
 .. _`PDO API Documentation`: http://www.php.net/pdo
 .. _DSN: https://en.wikipedia.org/wiki/Data_source_name
+.. _`PDO::setAttribute`: http://php.net/manual/en/pdo.setattribute.php

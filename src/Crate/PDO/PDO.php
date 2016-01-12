@@ -31,9 +31,15 @@ class PDO extends BasePDO implements PDOInterface
     const VERSION = '0.3.1';
     const DRIVER_NAME = 'crate';
 
-    const DSN_REGEX = '/^(?:crate)?(?::([\w\d\.-]+:\d+))+/';
+    const DSN_REGEX = '/^(?:crate)?(?::([\w\d\.-]+:\d+))+\/?([\w]+)?$/';
 
-    const ATTR_HTTP_BASIC_AUTH    = 403;
+    const CRATE_ATTR_HTTP_BASIC_AUTH    = 1000;
+    /**
+     * deprecated since version 0.4
+     * @deprecated
+     */
+    const ATTR_HTTP_BASIC_AUTH          = self::CRATE_ATTR_HTTP_BASIC_AUTH;
+    const CRATE_ATTR_DEFAULT_SCHEMA     = 1001;
 
     const PARAM_FLOAT       = 6;
     const PARAM_DOUBLE      = 7;
@@ -51,7 +57,8 @@ class PDO extends BasePDO implements PDOInterface
         'errorMode'        => self::ERRMODE_SILENT,
         'statementClass'   => 'Crate\PDO\PDOStatement',
         'timeout'          => 5.0,
-        'auth'             => []
+        'auth'             => [],
+        'defaultSchema'    => 'doc'
     ];
 
     /**
@@ -83,15 +90,19 @@ class PDO extends BasePDO implements PDOInterface
             $this->setAttribute($attribute, $value);
         }
 
-        $servers = self::parseDSN($dsn);
-        $uri     = self::computeURI($servers[0]);
+        $dsnParts = self::parseDSN($dsn);
+        $uri     = self::computeURI($dsnParts[0]);
 
         $this->client = new Http\Client($uri, [
             'timeout' => $this->attributes['timeout']
         ]);
 
         if (!empty($username) && !empty($passwd)) {
-            $this->setAttribute(PDO::ATTR_HTTP_BASIC_AUTH, [$username, $passwd]);
+            $this->setAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH, [$username, $passwd]);
+        }
+
+        if (!empty($dsnParts[1])) {
+            $this->setAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA, $dsnParts[1]);
         }
 
         // Define a callback that will be used in the PDOStatements
@@ -267,11 +278,18 @@ class PDO extends BasePDO implements PDOInterface
                 }
                 break;
 
-            case self::ATTR_HTTP_BASIC_AUTH:
+            case self::CRATE_ATTR_HTTP_BASIC_AUTH:
                 $this->attributes['auth'] = $value;
                 if (is_object($this->client) && is_array($value)) {
                     list($user, $password) = $value;
                     $this->client->setHttpBasicAuth($user, $password);
+                }
+                break;
+
+            case self::CRATE_ATTR_DEFAULT_SCHEMA:
+                $this->attributes['defaultSchema'] = $value;
+                if (is_object($this->client)) {
+                    $this->client->setHttpHeader('default-schema', $value);
                 }
                 break;
 
@@ -304,7 +322,7 @@ class PDO extends BasePDO implements PDOInterface
             case PDO::ATTR_TIMEOUT:
                 return $this->attributes['timeout'];
 
-            case PDO::ATTR_HTTP_BASIC_AUTH:
+            case PDO::CRATE_ATTR_HTTP_BASIC_AUTH:
                 return $this->attributes['auth'];
 
             case PDO::ATTR_DEFAULT_FETCH_MODE:
@@ -318,6 +336,9 @@ class PDO extends BasePDO implements PDOInterface
 
             case PDO::ATTR_STATEMENT_CLASS:
                 return [$this->attributes['statementClass']];
+
+            case PDO::CRATE_ATTR_DEFAULT_SCHEMA:
+                return $this->attributes['defaultSchema'];
 
             default:
                 // PHP Switch is a lose comparison
