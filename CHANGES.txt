@@ -5,6 +5,12 @@
 Unreleased
 ==========
 
+2016/01/12 0.3.1
+================
+
+ - Verify support for PHP 7
+   Updated composer.json to meet dependencies
+
 2015/08/12 0.3.0
 ================
 
