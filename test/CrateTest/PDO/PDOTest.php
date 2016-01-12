@@ -76,6 +76,14 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf('PDO', $pdo);
     }
 
+    public function testInstantiationWithDefaultSchema()
+    {
+        $pdo = new PDO('crate:localhost:1234/my_schema', null, null, []);
+
+        $this->assertInstanceOf('Crate\PDO\PDO', $pdo);
+        $this->assertInstanceOf('PDO', $pdo);
+    }
+
     /**
      * @covers ::__construct
      */
@@ -102,7 +110,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $user = 'crate';
         $passwd = 'secret';
         $pdo = new PDO('crate:localhost:44200', $user, $passwd, []);
-        $this->assertEquals([$user, $passwd], $pdo->getAttribute(PDO::ATTR_HTTP_BASIC_AUTH));
+        $this->assertEquals([$user, $passwd], $pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH));
     }
 
     /**
@@ -125,8 +133,28 @@ class PDOTest extends PHPUnit_Framework_TestCase
             ->method('setHttpBasicAuth')
             ->with($user, $passwd);
 
-        $pdo->setAttribute(PDO::ATTR_HTTP_BASIC_AUTH, [$user, $passwd]);
-        $this->assertEquals($expectedCredentials, $pdo->getAttribute(PDO::ATTR_HTTP_BASIC_AUTH));
+        $pdo->setAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH, [$user, $passwd]);
+        $this->assertEquals($expectedCredentials, $pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH));
+    }
+
+    /**
+     * @covers ::setAttribute
+     */
+    public function testSetAttributeWithDefaultSchema()
+    {
+        $client = $this->getMock(ClientInterface::class);
+        $pdo = new PDO('crate:localhost:44200/my_schema', null, null, []);
+        $reflection = new ReflectionClass(PDO::class);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($pdo, $client);
+        $client
+            ->expects($this->once())
+            ->method('setHttpHeader')
+            ->with('default-schema', 'my_schema');
+
+        $pdo->setAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA, 'my_schema');
+        $this->assertEquals('my_schema', $pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA));
     }
 
     /**

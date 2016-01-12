@@ -65,4 +65,14 @@ interface ClientInterface
      * @return string
      */
     public function getServerVersion();
+
+    /**
+     * Set HTTP header for client requests
+     *
+     * @param string       $name
+     * @param string       $value
+     *
+     * @return void
+     */
+    public function setHttpHeader($name, $value);
 }

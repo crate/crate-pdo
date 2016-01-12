@@ -69,5 +69,24 @@ For ``PDOStatement::fetch``:
 - ``PDO::FETCH_NUM``
 
 
+Crate specific PDO attributes
+=============================
+
+The following attributes are Crate specific and used to set an attribute on the
+database handle (see `PDO::setAttribute`_).
+
+**PDO::CRATE_ATTR_HTTP_BASIC_AUTH** (string[])
+    | *Value:*    ``[username, password]``
+
+    Specifies the basic HTTP access authentication headers to provide a
+    user name and password when making a request.
+
+**PDO::CRATE_ATTR_DEFAULT_SCHEMA** (string)
+    | *Default-Value*    ``doc``
+
+    Set the default schema for the PDO connection.
+
+
 .. _`PDO API Documentation`: http://www.php.net/pdo
 .. _DSN: https://en.wikipedia.org/wiki/Data_source_name
+.. _`PDO::setAttribute`: http://php.net/manual/en/pdo.setattribute.php

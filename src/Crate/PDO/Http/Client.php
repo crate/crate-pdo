@@ -114,4 +114,12 @@ class Client implements ClientInterface
     {
         $this->client->setDefaultOption('auth', [$username, $passwd]);
     }
+
+    /**
+     * {@Inheritdoc}
+     */
+    public function setHttpHeader($name, $value)
+    {
+        $this->client->setDefaultOption('headers/'.$name, $value);
+    }
 }
