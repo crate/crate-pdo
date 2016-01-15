@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+ - Added support for using a default schema in PDO connection
+   via ``/schema`` suffix in connection string
+
 2016/01/12 0.3.1
 ================
 
