@@ -33,17 +33,33 @@ class PDOParseDSNTest extends PHPUnit_Framework_TestCase
     {
         $method = new ReflectionMethod('Crate\PDO\PDO', 'parseDSN');
         $method->setAccessible(true);
-
         return $method->invoke(null, $dsn);
+    }
+
+    private function serversFromDsnParts(array $dsnParts)
+    {
+        $method = new ReflectionMethod('Crate\PDO\PDO', 'serversFromDsnParts');
+        $method->setAccessible(true);
+        return $method->invoke(null, $dsnParts);
     }
 
     public function testParseDSNSingleHost()
     {
-        $dsn = 'crate:localhost:4200';
-        $servers = $this->parseDSN($dsn);
+        $parts = $this->parseDSN('crate:localhost:4200');
+        $servers = $this->serversFromDsnParts($parts);
 
         $this->assertEquals(1, count($servers));
         $this->assertEquals('localhost:4200', $servers[0]);
+    }
+
+    public function testParseDSNMultipleHosts()
+    {
+        $parts = $this->parseDSN('crate:crate1.example.com:4200,crate2.example.com:4200');
+        $servers = $this->serversFromDsnParts($parts);
+
+        $this->assertEquals(2, count($servers));
+        $this->assertEquals('crate1.example.com:4200', $servers[0]);
+        $this->assertEquals('crate2.example.com:4200', $servers[1]);
     }
 
     public function testParseDSNMissingName()

@@ -22,19 +22,45 @@
 
 namespace Crate\PDO\Http;
 
-use Crate\Stdlib\CollectionInterface;
-
-interface ClientInterface extends InternalClientInterface
+interface InternalClientInterface
 {
 
     /**
-     * Execute the PDOStatement and return the response from server
-     * wrapped inside a Collection
+     * Set the connection timeout
      *
-     * @param string       $queryString
-     * @param array        $parameters
+     * @param int $timeout
      *
-     * @return CollectionInterface|null
+     * @return void
      */
-    public function execute($queryString, array $parameters);
+    public function setTimeout($timeout);
+
+    /**
+     * Set the connection http basic auth
+     *
+     * @param string $username
+     * @param string $passwd
+     *
+     * @return void
+     */
+    public function setHttpBasicAuth($username, $passwd);
+
+    /**
+     * @return array
+     */
+    public function getServerInfo();
+
+    /**
+     * @return string
+     */
+    public function getServerVersion();
+
+    /**
+     * Set HTTP header for client requests
+     *
+     * @param string       $name
+     * @param string       $value
+     *
+     * @return void
+     */
+    public function setHttpHeader($name, $value);
 }

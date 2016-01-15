@@ -5,6 +5,8 @@
 Unreleased
 ==========
 
+ - Support for multiple hosts in DSN connection string
+
  - Added support for using a default schema in PDO connection
    via ``/schema`` suffix in connection string
 

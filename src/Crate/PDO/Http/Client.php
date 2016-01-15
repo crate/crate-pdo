@@ -22,27 +22,44 @@
 
 namespace Crate\PDO\Http;
 
-use GuzzleHttp\Client as HttpClient;
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\Collection;
 use GuzzleHttp\Exception\BadResponseException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\ParseException;
 
 class Client implements ClientInterface
 {
-    /**
-     * @var HttpClient
-     */
-    private $client;
+
+    const DEFAULT_SERVER = "localhost:4200";
 
     /**
-     * @param string $uri
-     * @param array  $options
+     * @var array
      */
-    public function __construct($uri, array $options)
+    private $availableServers = [];
+
+    /**
+     * @var array
+     */
+    private $serverPool = [];
+
+    /**
+     * Client constructor.
+     * @param array $servers
+     * @param array $options
+     */
+    public function __construct(array $servers, array $options)
     {
-        $this->client = new HttpClient(['base_url' => $uri] + $options);
+        if ($servers == null || count($servers) == 0) {
+            $this->serverPool[self::DEFAULT_SERVER] = new Server(self::DEFAULT_SERVER, $options);
+            $this->availableServers[] = self::DEFAULT_SERVER;
+        } else {
+            foreach ($servers as &$server) {
+                $this->serverPool[$server] = new Server($server, $options);
+                $this->availableServers[] = $server;
+            }
+        }
     }
 
     /**
@@ -55,32 +72,48 @@ class Client implements ClientInterface
             'args' => $parameters
         ];
 
-        try {
-            $response     = $this->client->post(null, ['json' => $body]);
-            $responseBody = $response->json();
-
-            return new Collection(
-                $responseBody['rows'],
-                $responseBody['cols'],
-                $responseBody['duration'],
-                $responseBody['rowcount']
-            );
-
-        } catch (BadResponseException $exception) {
+        while (true) {
+            $nextServer = $this->nextServer();
+            /**
+             * @var Server $s
+             */
+            $s = $this->serverPool[$nextServer];
 
             try {
 
-                $json = $exception->getResponse()->json();
+                $response = $s->doRequest($body);
+                $responseBody = $response->json();
 
-                $errorCode    = $json['error']['code'];
-                $errorMessage = $json['error']['message'];
+                return new Collection(
+                    $responseBody['rows'],
+                    $responseBody['cols'],
+                    $responseBody['duration'],
+                    $responseBody['rowcount']
+                );
 
-                throw new RuntimeException($errorMessage, $errorCode);
+            } catch (ConnectException $exception) {
+                // drop the server from the list of available servers
+                $this->dropServer($nextServer);
+                // break the loop if no more servers are available
+                $this->raiseIfNoMoreServers($exception);
+            } catch (BadResponseException $exception) {
 
-            } catch (ParseException $e) {
-                throw new RuntimeException('Unparsable response from server', 0, $exception);
+                try {
+
+                    $json = $exception->getResponse()->json();
+
+                    $errorCode    = $json['error']['code'];
+                    $errorMessage = $json['error']['message'];
+
+                    throw new RuntimeException($errorMessage, $errorCode, $exception);
+
+                } catch (ParseException $e) {
+                    throw new RuntimeException('Server returned non-JSON response.', 0, $exception);
+                }
+
             }
         }
+        return null;
     }
 
     /**
@@ -104,7 +137,12 @@ class Client implements ClientInterface
      */
     public function setTimeout($timeout)
     {
-        $this->client->setDefaultOption('timeout', (float) $timeout);
+        foreach ($this->serverPool as $k => &$s) {
+            /**
+             * @var $s Server
+             */
+            $s->setTimeout($timeout);
+        }
     }
 
     /**
@@ -112,7 +150,12 @@ class Client implements ClientInterface
      */
     public function setHttpBasicAuth($username, $passwd)
     {
-        $this->client->setDefaultOption('auth', [$username, $passwd]);
+        foreach ($this->serverPool as $k => &$s) {
+            /**
+             * @var $s Server
+             */
+            $s->setHttpBasicAuth($username, $passwd);
+        }
     }
 
     /**
@@ -120,6 +163,63 @@ class Client implements ClientInterface
      */
     public function setHttpHeader($name, $value)
     {
-        $this->client->setDefaultOption('headers/'.$name, $value);
+        foreach ($this->serverPool as $k => &$s) {
+            /**
+             * @var $s Server
+             */
+            $s->setHttpHeader($name, $value);
+        }
+    }
+
+    /**
+     * @return string The next available server instance
+     */
+    private function nextServer()
+    {
+        $server = $this->availableServers[0];
+        $this->roundRobin();
+        return $server;
+    }
+
+    /**
+     * Very simple round-robin implementation
+     * Pops the first item of the availableServers array and appends it at the end.
+     *
+     * @return void
+     */
+    private function roundRobin()
+    {
+        /**
+         * Performing round robin on the array only makes sense
+         * if there are more than 1 available servers.
+         */
+        if (count($this->availableServers) > 1) {
+            $this->availableServers[] = array_shift($this->availableServers);
+        }
+    }
+
+    /**
+     * @param string           $server
+     */
+    private function dropServer($server)
+    {
+        if (($idx = array_search($server, $this->availableServers)) !== false) {
+            unset($this->availableServers[$idx]);
+        }
+    }
+
+    /**
+     * @param ConnectException $exception
+     */
+    private function raiseIfNoMoreServers($exception)
+    {
+        if (count($this->availableServers) == 0) {
+            throw new ConnectException(
+                "No more servers available, exception from last server: " . $exception->getMessage(),
+                $exception->getRequest(),
+                $exception->getResponse(),
+                $exception
+            );
+        }
     }
 }

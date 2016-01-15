@@ -6,16 +6,15 @@
 namespace CrateTest\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
-use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\Collection;
-use GuzzleHttp\Client as GuzzleClient;
-use GuzzleHttp\ClientInterface as GuzzleClientInterface;
 use Crate\PDO\Http\Client;
+use Crate\PDO\Http\Server;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\Response;
+use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Stream\Stream;
-use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 
@@ -29,8 +28,6 @@ use ReflectionClass;
  */
 class ClientTest extends PHPUnit_Framework_TestCase
 {
-    const DSN = 'http://localhost:4200';
-    const SQL = 'SELECT * FROM test_table';
 
     /**
      * @var Client
@@ -38,23 +35,113 @@ class ClientTest extends PHPUnit_Framework_TestCase
     private $client;
 
     /**
-     * @var GuzzleClient|PHPUnit_Framework_MockObject_MockObject
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
-    private $internalClient;
+    private $server;
 
     /**
      * @covers ::__construct
      */
     protected function setUp()
     {
-        $this->client         = new Client(static::DSN, []);
-        $this->internalClient = $this->getMock(GuzzleClientInterface::class);
+        $server = 'localhost:4200';
+        $this->client = new Client([$server], []);
+        $this->server = $this->getMockBuilder(Server::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $reflection = new ReflectionClass(Client::class);
+        $clientReflection = new ReflectionClass($this->client);
 
-        $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
-        $property->setValue($this->client, $this->internalClient);
+        $availableServers = $clientReflection->getProperty('availableServers');
+        $availableServers->setAccessible(true);
+        $availableServers->setValue($this->client, [$server]);
+
+        $serverPool = $clientReflection->getProperty('serverPool');
+        $serverPool->setAccessible(true);
+        $serverPool->setValue($this->client, [$server => $this->server]);
+    }
+
+    /**
+     * @covers ::__construct
+     */
+    public function testMultiServerConstructor()
+    {
+        $servers = ['crate1:4200', 'crate2:4200', 'crate3:4200'];
+        $client = new Client($servers, []);
+        $clientReflection = new ReflectionClass($client);
+
+        $p = $clientReflection->getProperty('availableServers');
+        $p->setAccessible(true);
+        $availableServers = $p->getValue($client);
+        $this->assertEquals(3, count($availableServers));
+
+        $p = $clientReflection->getProperty('serverPool');
+        $p->setAccessible(true);
+        $serverPool = $p->getValue($client);
+        $this->assertEquals(3, count($serverPool));
+    }
+
+    /**
+     * @covers ::nextServer
+     */
+    public function testNextServer()
+    {
+        $servers = ['crate1:4200', 'crate2:4200', 'crate3:4200'];
+        $client = new Client($servers, []);
+        $clientReflection = new ReflectionClass($client);
+
+        $pAvailServers = $clientReflection->getProperty('availableServers');
+        $pAvailServers->setAccessible(true);
+        $pNextServer = $clientReflection->getMethod('nextServer');
+        $pNextServer->setAccessible(true);
+
+        $this->assertEquals('crate1:4200', $pNextServer->invoke($client));
+        $this->assertEquals('crate2:4200', $pNextServer->invoke($client));
+        $this->assertEquals('crate3:4200', $pNextServer->invoke($client));
+        $this->assertEquals('crate1:4200', $pNextServer->invoke($client));
+    }
+
+    /**
+     * @covers ::dropServer
+     */
+    public function testDropServer()
+    {
+        $servers = ['crate1:4200', 'crate2:4200'];
+        $client = new Client($servers, []);
+        $clientReflection = new ReflectionClass($client);
+
+        $pAvailServers = $clientReflection->getProperty('availableServers');
+        $pAvailServers->setAccessible(true);
+        $pDropServer = $clientReflection->getMethod('dropServer');
+        $pDropServer->setAccessible(true);
+
+        $this->assertEquals(2, count($pAvailServers->getValue($client)));
+        $pDropServer->invoke($client, 'crate2:4200', null);
+        $this->assertEquals(1, count($pAvailServers->getValue($client)));
+        $this->assertEquals(['crate1:4200'], $pAvailServers->getValue($client));
+    }
+
+    /**
+     * @covers ::dropServer
+     */
+    public function testDropLastServer()
+    {
+        $servers = ['localhost:4200'];
+        $client = new Client($servers, []);
+        $clientReflection = new ReflectionClass($client);
+
+
+        $this->setExpectedException(ConnectException::class, "No more servers available, exception from last server: Connection refused.");
+        $ex = $this->getMock(ConnectException::class, null,
+            ['Connection refused.', $this->getMock(RequestInterface::class), $this->getMock(ResponseInterface::class)]);
+
+        $pDropServer = $clientReflection->getMethod('dropServer');
+        $pDropServer->setAccessible(true);
+        $pDropServer->invoke($client, 'localhost:4200');
+
+        $pRaiseIfNoServers = $clientReflection->getMethod('raiseIfNoMoreServers');
+        $pRaiseIfNoServers->setAccessible(true);
+        $pRaiseIfNoServers->invoke($client, $ex);
     }
 
     /**
@@ -87,12 +174,12 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $exception = ClientException::create($request, $response);
 
-        $this->internalClient
+        $this->server
             ->expects($this->once())
-            ->method('post')
+            ->method('doRequest')
             ->will($this->throwException($exception));
 
-        $this->client->execute(static::SQL, ['foo' => 'bar']);
+        $this->client->execute('SELECT ? FROM', ['foo']);
     }
 
     /**
@@ -101,66 +188,22 @@ class ClientTest extends PHPUnit_Framework_TestCase
     public function testExecute()
     {
         $body = [
-            'cols'     => ['id', 'name'],
-            'rows'     => [],
-            'rowcount' => 0,
+            'cols'     => ['name'],
+            'rows'     => [['crate2'],['crate2']],
+            'rowcount' => 2,
             'duration' => 0
         ];
 
         $response = $this->createResponse(200, $body);
 
-        $this->internalClient
+        $this->server
             ->expects($this->once())
-            ->method('post')
+            ->method('doRequest')
             ->will($this->returnValue($response));
 
-        $result = $this->client->execute(static::SQL, ['foo' => 'bar']);
+        $result = $this->client->execute('SELECT name FROM sys.nodes', []);
 
         $this->assertInstanceOf(Collection::class, $result);
     }
 
-    /**
-     * @covers ::getServerInfo
-     */
-    public function testGetServerInfo()
-    {
-        $this->setExpectedException(UnsupportedException::class);
-        $this->client->getServerInfo();
-    }
-
-    /**
-     * @covers ::getServerVersion
-     */
-    public function testGetServerVersion()
-    {
-        $this->setExpectedException(UnsupportedException::class);
-        $this->client->getServerVersion();
-    }
-
-    /**
-     * @covers ::setTimeout
-     */
-    public function testSetTimeout()
-    {
-        $this->internalClient
-            ->expects($this->once())
-            ->method('setDefaultOption')
-            ->with('timeout', 4);
-
-        $this->client->setTimeout('4');
-    }
-
-    public function testSetHTTPHeader()
-    {
-        $pdoClient = new Client(static::DSN, []);
-        $reflection = new ReflectionClass(Client::class);
-        $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
-
-        $pdoClient->setHttpHeader('default-schema', 'my_schema');
-        $internalPDOClient = $property->getValue($pdoClient);
-        $header = $internalPDOClient->getDefaultOption('headers/default-schema');
-
-        $this->assertEquals('my_schema', $header);
-    }
 }

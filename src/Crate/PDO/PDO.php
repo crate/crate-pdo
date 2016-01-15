@@ -31,7 +31,7 @@ class PDO extends BasePDO implements PDOInterface
     const VERSION = '0.3.1';
     const DRIVER_NAME = 'crate';
 
-    const DSN_REGEX = '/^(?:crate)?(?::([\w\d\.-]+:\d+))+\/?([\w]+)?$/';
+    const DSN_REGEX = '/^(?:crate:)(?:((?:[\w\d\.-]+:\d+\,?)+))\/?([\w]+)?$/';
 
     const CRATE_ATTR_HTTP_BASIC_AUTH    = 1000;
     /**
@@ -91,9 +91,9 @@ class PDO extends BasePDO implements PDOInterface
         }
 
         $dsnParts = self::parseDSN($dsn);
-        $uri     = self::computeURI($dsnParts[0]);
+        $servers = self::serversFromDsnParts($dsnParts);
 
-        $this->client = new Http\Client($uri, [
+        $this->client = new Http\Client($servers, [
             'timeout' => $this->attributes['timeout']
         ]);
 
@@ -135,11 +135,11 @@ class PDO extends BasePDO implements PDOInterface
     }
 
     /**
-     * Extract host:port pairs out of the DSN string
+     * Extract servers and optional custom schema from DSN string
      *
      * @param string $dsn The DSN string
      *
-     * @return array An array of host:port strings
+     * @return array An array of ['host:post,host:port,...', 'schema']
      */
     private static function parseDSN($dsn)
     {
@@ -153,15 +153,15 @@ class PDO extends BasePDO implements PDOInterface
     }
 
     /**
-     * Compute a URI for usage with the HTTP client
+     * Extract host:port pairs out of the DSN parts
      *
-     * @param string $server A host:port string
+     * @param array $dsnParts The parts of the parsed DSN string
      *
-     * @return string An URI which can be used by the HTTP client
+     * @return array An array of host:port strings
      */
-    private static function computeURI($server)
+    private static function serversFromDsnParts($dsnParts)
     {
-        return 'http://' . $server . '/_sql';
+        return explode(',', trim($dsnParts[0], ','));
     }
 
     /**
