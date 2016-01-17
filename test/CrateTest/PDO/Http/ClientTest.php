@@ -6,6 +6,7 @@
 namespace CrateTest\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
+use Crate\PDO\Exception\UnsupportedException;
 use Crate\Stdlib\Collection;
 use Crate\PDO\Http\Client;
 use Crate\PDO\Http\Server;
@@ -206,4 +207,34 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf(Collection::class, $result);
     }
 
+    /**
+     * @covers ::getServerInfo
+     */
+    public function testGetServerInfo()
+    {
+        $this->setExpectedException(UnsupportedException::class);
+        $this->client->getServerInfo();
+    }
+
+    /**
+     * @covers ::getServerVersion
+     */
+    public function testGetServerVersion()
+    {
+        $this->setExpectedException(UnsupportedException::class);
+        $this->client->getServerVersion();
+    }
+
+    /**
+     * @covers ::setTimeout
+     */
+    public function testSetTimeout()
+    {
+        $this->server
+            ->expects($this->once())
+            ->method('setTimeout')
+            ->with(4);
+
+        $this->client->setTimeout('4');
+    }
 }
