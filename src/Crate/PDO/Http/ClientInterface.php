@@ -37,4 +37,13 @@ interface ClientInterface extends InternalClientInterface
      * @return CollectionInterface|null
      */
     public function execute($queryString, array $parameters);
+
+    /**
+     * Set the default schema for PDO connection
+     *
+     * @param string $schemaName
+     *
+     * @return void
+     */
+    public function setDefaultSchema($schemaName);
 }

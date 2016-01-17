@@ -25,10 +25,10 @@ namespace CrateTest\PDO;
 use Crate\PDO\Exception\InvalidArgumentException;
 use Crate\PDO\Exception\PDOException;
 use Crate\PDO\Exception\UnsupportedException;
+use Crate\PDO\Http\Client;
 use Crate\PDO\Http\ClientInterface;
 use Crate\PDO\PDO;
 use Crate\PDO\PDOStatement;
-use PHPUnit_Framework_MockObject_MockObject;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 
@@ -48,13 +48,15 @@ class PDOTest extends PHPUnit_Framework_TestCase
     protected $pdo;
 
     /**
-     * @var PHPUnit_Framework_MockObject_MockObject|ClientInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject
      */
     protected $client;
 
     protected function setUp()
     {
-        $this->client = $this->getMock(ClientInterface::class);
+        $this->client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $this->pdo = new PDO('crate:localhost:1234', null, null, []);
 
@@ -142,16 +144,17 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testSetAttributeWithDefaultSchema()
     {
-        $client = $this->getMock(ClientInterface::class);
+        $client = $this->getMockBuilder(Client::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $pdo = new PDO('crate:localhost:44200/my_schema', null, null, []);
         $reflection = new ReflectionClass(PDO::class);
         $property = $reflection->getProperty('client');
         $property->setAccessible(true);
         $property->setValue($pdo, $client);
-        $client
-            ->expects($this->once())
-            ->method('setHttpHeader')
-            ->with('default-schema', 'my_schema');
+        $client->expects($this->once())
+            ->method('setDefaultSchema')
+            ->with('my_schema');
 
         $pdo->setAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA, 'my_schema');
         $this->assertEquals('my_schema', $pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA));

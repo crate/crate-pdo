@@ -237,4 +237,18 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $this->client->setTimeout('4');
     }
+
+    /**
+     * @covers ::setDefaultSchema
+     */
+    public function testSetDefaultSchema()
+    {
+        $schema = 'my_schema';
+        $this->server
+            ->expects($this->once())
+            ->method('setHttpHeader')
+            ->with('Default-Schema', $schema);
+
+        $this->client->setDefaultSchema($schema);
+    }
 }

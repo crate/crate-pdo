@@ -289,7 +289,7 @@ class PDO extends BasePDO implements PDOInterface
             case self::CRATE_ATTR_DEFAULT_SCHEMA:
                 $this->attributes['defaultSchema'] = $value;
                 if (is_object($this->client)) {
-                    $this->client->setHttpHeader('default-schema', $value);
+                    $this->client->setDefaultSchema($value);
                 }
                 break;
 

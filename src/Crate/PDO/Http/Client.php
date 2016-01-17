@@ -172,6 +172,14 @@ class Client implements ClientInterface
     }
 
     /**
+     * {@Inheritdoc}
+     */
+    public function setDefaultSchema($schemaName)
+    {
+        $this->setHttpHeader("Default-Schema", $schemaName);
+    }
+
+    /**
      * @return string The next available server instance
      */
     private function nextServer()
