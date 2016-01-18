@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2016/01/18 0.4.0
+================
+
  - Support for multiple hosts in DSN connection string
 
  - Added support for using a default schema in PDO connection
