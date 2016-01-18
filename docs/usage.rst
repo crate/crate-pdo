@@ -46,6 +46,13 @@ Note that you can still implicitly provide a schema in SQL statements, e.g.::
 
     SELECT * FROM other_schema.my_table LIMIT 10;
 
+.. note::
+
+    Providing a default schema is only supported in ``Crate >= 0.55`` with
+    ``crate-pdo >= 0.4``. Due to this it gets ignored if a lower version is
+    used.
+
+
 Fetch Modes
 ===========
 
