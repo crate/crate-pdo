@@ -11,9 +11,11 @@ Then run ``composer install`` or ``composer update``.
 
 Inside your PHP script you will need to require the autoload file::
 
-    <?php
-    require 'vendor/autoload.php';
-    ...
+.. code-block:: php
+
+  <?php
+  require 'vendor/autoload.php';
+  ...
 
 For more information how to use Composer, please refer to the
 `Composer documentation`_.

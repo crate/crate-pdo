@@ -14,13 +14,13 @@ Connect to Crate
 To connect to your cluster, Crate follows standard PDO syntax to form a data
 source name string (DSN_) and then connect to it.
 
-::
+.. code-block:: php
 
-    require 'vendor/autoload.php';
-    use Crate\PDO\PDO as PDO;
+  require 'vendor/autoload.php';
+  use Crate\PDO\PDO as PDO;
 
-    $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
-    $connection = new PDO($dsn, null, null, null);
+  $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
+  $connection = new PDO($dsn, null, null, null);
 
 As Crate doesn't support authentication, the other parameters can be left null.
 
@@ -44,7 +44,9 @@ If no schema is provided the Crate's default schema ``doc`` is used.
 
 Note that you can still implicitly provide a schema in SQL statements, e.g.::
 
-    SELECT * FROM other_schema.my_table LIMIT 10;
+.. code-block:: psql
+
+  SELECT * FROM other_schema.my_table LIMIT 10;
 
 .. note::
 
