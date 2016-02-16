@@ -35,7 +35,7 @@ Help & Contact
 ==============
 
 Do you have any questions? Or suggestions? We would be very happy to
-help you. So, feel free to swing by our public room on HipChat_.
+help you. So, feel free to swing by our support channel on Slack_.
 Or for further information and official contact please
 visit `https://crate.io/ <https://crate.io/>`_.
 
@@ -66,4 +66,4 @@ software solely pursuant to the terms of the relevant commercial agreement.
 
 .. _PDO: http://www.php.net/manual/en/intro.pdo.php
 .. _Crate.io: https://crate.io
-.. _HipChat: https://www.hipchat.com/g7Pc2CYwi
+.. _Slack: https://crate.io/docs/support/slackin/
