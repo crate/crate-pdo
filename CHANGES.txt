@@ -5,6 +5,11 @@
 Unreleased
 ==========
 
+2016/04/27 0.4.1
+================
+
+ - fixed wrong version in documentation
+
 2016/01/18 0.4.0
 ================
 
