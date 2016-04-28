@@ -78,6 +78,15 @@ then
     exit 1
 fi
 
+# check if VERSION is in docs/installation.rst
+INST_DEP=`grep "crate/crate-pdo:~$VERSION" docs/installation.rst`
+if [ -z "$INST_DEP"]
+then
+    print_red "Version $VERSION not updated in docs/installation.rst"
+    echo "Aborting."
+    exit 1
+fi
+
 # create and push tag
 print_green "Creating tag $VERSION ..."
 git tag -a "$VERSION" -m "Crate PDO $VERSION"
