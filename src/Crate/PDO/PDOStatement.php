@@ -205,6 +205,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             $this->bindValue($parameter, $value);
         }
 
+        // Sort parameters by key so that [1 => 'b', 0 => 'a'] becomes just ['a', 'b']
+        // If this isn't done, json_encode creates {"1" : "b", "0" : "a"} instead of ["a", "b"]
+        ksort($this->parameters);
         $result = $this->request->__invoke($this, $this->sql, $this->parameters);
 
         if (is_array($result)) {
