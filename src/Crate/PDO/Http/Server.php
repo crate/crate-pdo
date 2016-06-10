@@ -38,6 +38,10 @@ class Server implements InternalClientInterface
      */
     private $client;
 
+    private $opts = [
+        'headers' => []
+    ];
+
     /**
      * @param string $uri
      * @param array  $options
@@ -45,22 +49,25 @@ class Server implements InternalClientInterface
     public function __construct($uri, array $options)
     {
         $uri = self::computeURI($uri);
-        $this->client = new HttpClient(['base_url' => $uri] + $options);
+        $this->client = new HttpClient([
+            'base_uri' => $uri
+        ]);
+        $this->opts += $options;
     }
 
     public function setTimeout($timeout)
     {
-        $this->client->setDefaultOption('timeout', (float) $timeout);
+        $this->opts['timeout'] = (float)$timeout;
     }
 
     public function setHttpBasicAuth($username, $passwd)
     {
-        $this->client->setDefaultOption('auth', [$username, $passwd]);
+        $this->opts['auth'] = [$username, $passwd];
     }
 
     public function setHttpHeader($name, $value)
     {
-        $this->client->setDefaultOption('headers/'.$name, $value);
+        $this->opts['headers'][$name] = $value;
     }
 
     public function getServerInfo()
@@ -85,7 +92,8 @@ class Server implements InternalClientInterface
      */
     public function doRequest(array $body)
     {
-        return $this->client->post(null, ['json' => $body]);
+        $args = ['json' => $body] + $this->opts;
+        return $this->client->post(null, $args);
     }
 
     /**

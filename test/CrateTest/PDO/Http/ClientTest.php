@@ -12,10 +12,9 @@ use Crate\PDO\Http\Client;
 use Crate\PDO\Http\Server;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
-use GuzzleHttp\Message\RequestInterface;
-use GuzzleHttp\Message\Response;
-use GuzzleHttp\Message\ResponseInterface;
-use GuzzleHttp\Stream\Stream;
+use Psr\Http\Message\RequestInterface;
+use GuzzleHttp\Psr7\Response;
+use guzzlehttp\psr7;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 
@@ -134,7 +133,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
 
         $this->setExpectedException(ConnectException::class, "No more servers available, exception from last server: Connection refused.");
         $ex = $this->getMock(ConnectException::class, null,
-            ['Connection refused.', $this->getMock(RequestInterface::class), $this->getMock(ResponseInterface::class)]);
+            ['Connection refused.', $this->getMock(RequestInterface::class), null]);
 
         $pDropServer = $clientReflection->getMethod('dropServer');
         $pDropServer->setAccessible(true);
@@ -155,7 +154,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     private function createResponse($statusCode, array $body)
     {
-        $body = Stream::factory(json_encode($body));
+        $body = psr7\stream_for(json_encode($body));
 
         return new Response($statusCode, [], $body);
     }

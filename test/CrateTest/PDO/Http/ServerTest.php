@@ -10,7 +10,7 @@ namespace CrateTest\PDO\Http;
 
 use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\Http\Server;
-use GuzzleHttp\ClientInterface as HttpClientInterface;
+use GuzzleHttp\Client as HttpClient;
 use PHPUnit_Framework_TestCase;
 use ReflectionClass;
 
@@ -41,7 +41,7 @@ class ServerTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->server = new Server('http://localhost:4200/_sql', []);
-        $this->client = $this->getMock(HttpClientInterface::class);
+        $this->client = $this->getMock(HttpClient::class);
 
         $reflection = new ReflectionClass($this->server);
         $property = $reflection->getProperty('client');
@@ -72,12 +72,21 @@ class ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testSetTimeout()
     {
+        $body = ['stmt' => 'select * from sys.cluster',
+                 'args' => []];
+        $args = [
+            null, // uri
+            ['json' => $body,
+             'headers' => [],
+             'timeout' => 4
+            ]
+        ];
         $this->client
             ->expects($this->once())
-            ->method('setDefaultOption')
-            ->with('timeout', 4);
-
+            ->method('__call')
+            ->with('post', $args);
         $this->server->setTimeout('4');
+        $this->server->doRequest($body);
     }
 
     /**
@@ -87,24 +96,48 @@ class ServerTest extends PHPUnit_Framework_TestCase
     {
         $schema = 'my_schema';
         $schemaHeader = 'Default-Schema';
+        $this->server->setHttpHeader($schemaHeader, $schema);
+
+
+        $body = ['stmt' => 'select * from sys.cluster',
+                 'args' => []];
+        $args = [
+            null, // uri
+            ['json' => $body,
+             'headers' => [$schemaHeader => $schema],
+            ]
+        ];
+        $this->client
+            ->expects($this->once())
+            ->method('__call')
+            ->with('post', $args);
+        $this->server->doRequest($body);
+    }
+
+    public function testInitialOptions()
+    {
+        $this->server = new Server('http://localhost:4200/_sql', ['timeout' => 3]);
+        $this->client = $this->getMock(HttpClient::class);
+
+        $reflection = new ReflectionClass($this->server);
+        $property = $reflection->getProperty('client');
+        $property->setAccessible(true);
+        $property->setValue($this->server, $this->client);
+
+        $body = ['stmt' => 'select * from sys.cluster',
+                 'args' => []];
+        $args = [
+            null,
+            ['json' => $body,
+             'headers' => [],
+             'timeout' => 3
+            ]
+        ];
 
         $this->client
             ->expects($this->once())
-            ->method('setDefaultOption')
-            ->with('headers/'.$schemaHeader, $schema);
-
-        $this->server->setHttpHeader($schemaHeader, $schema);
-
-        $server = new Server('http://localhost:4200/_sql', []);
-        $reflection = new ReflectionClass($server);
-        $property = $reflection->getProperty('client');
-        $property->setAccessible(true);
-
-        $server->setHttpHeader($schemaHeader, $schema);
-        $internalClient = $property->getValue($server);
-        $header = $internalClient->getDefaultOption('headers/'.$schemaHeader);
-
-        $this->assertEquals($schema, $header);
+            ->method('__call')
+            ->with('post', $args);
+        $this->server->doRequest($body);
     }
-
 }

@@ -7,7 +7,7 @@
     "require": {
         "php":     "~5.5|~7.0",
         "ext-pdo": "*",
-        "guzzlehttp/guzzle": "~5.0"
+        "guzzlehttp/guzzle": "~6.0"
     },
     "autoload": {
         "psr-0": {

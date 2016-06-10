@@ -82,7 +82,7 @@ class Client implements ClientInterface
             try {
 
                 $response = $s->doRequest($body);
-                $responseBody = $response->json();
+                $responseBody = json_decode($response->getBody(), true);
 
                 return new Collection(
                     $responseBody['rows'],
@@ -100,7 +100,7 @@ class Client implements ClientInterface
 
                 try {
 
-                    $json = $exception->getResponse()->json();
+                    $json = json_decode($exception->getResponse()->getBody(), true);
 
                     $errorCode    = $json['error']['code'];
                     $errorMessage = $json['error']['message'];
@@ -224,9 +224,7 @@ class Client implements ClientInterface
         if (count($this->availableServers) == 0) {
             throw new ConnectException(
                 "No more servers available, exception from last server: " . $exception->getMessage(),
-                $exception->getRequest(),
-                $exception->getResponse(),
-                $exception
+                $exception->getRequest()
             );
         }
     }
