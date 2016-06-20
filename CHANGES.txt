@@ -5,7 +5,11 @@
 Unreleased
 ==========
 
+2016/06/20 0.5.0
+================
+
  - Updated dependency: guzzlehttp/guzzle to ~6.0
+   WARNING: This is a backward incompatible change!
 
 2016/01/18 0.4.0
 ================
