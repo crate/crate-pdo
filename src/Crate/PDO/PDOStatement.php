@@ -205,6 +205,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             $this->bindValue($parameter, $value);
         }
 
+        // parameter binding might be unordered, so sort it before execute
+        ksort($this->parameters);
+
         $result = $this->request->__invoke($this, $this->sql, $this->parameters);
 
         if (is_array($result)) {

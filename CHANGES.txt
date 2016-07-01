@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+ - Fixed an issue that occur if parameters are passed in a different order 
+   than specified in the sql statement.
+
 2016/06/20 0.5.0
 ================
 
