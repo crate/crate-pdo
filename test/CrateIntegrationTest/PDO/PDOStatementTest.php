@@ -263,4 +263,20 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals([1, 2], $resultSet[0]['array_type']);
         $this->assertEquals(["foo" => "bar"], $resultSet[0]['object_type']);
     }
+
+    public function testUnorderedBindValue()
+    {
+        $this->insertRows(2);
+
+        $statement = $this->pdo->prepare('UPDATE test_table SET name = concat(name, :name) where id = :id');
+        $statement->bindValue(':id', 1);
+        $statement->bindValue(':name', '_abc');
+        $statement->execute();
+
+        $this->pdo->exec('REFRESH TABLE test_table');
+
+        $statement = $this->pdo->prepare('SELECT name FROM test_table WHERE ID=1');
+        $resultSet = $statement->fetch();
+        $this->assertEquals('hello world_abc', $resultSet[0]);
+    }
 }
