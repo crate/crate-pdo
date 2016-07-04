@@ -224,6 +224,41 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals($name, $resultSet[0]['name']);
     }
 
+    public function testBindNamedParamUnordered()
+    {
+        $this->insertRows(2);
+
+        $statement = $this->pdo->prepare('UPDATE test_table SET name = concat(name, :name) where id = :id');
+        $statement->bindValue(':id', 1);
+        $statement->bindValue(':name', '_abc');
+        $statement->execute();
+
+        $this->pdo->exec('REFRESH TABLE test_table');
+
+        $statement = $this->pdo->prepare('SELECT name FROM test_table WHERE ID=1');
+        $resultSet = $statement->fetch();
+        $this->assertEquals('hello world_abc', $resultSet[0]);
+    }
+
+    public function testBindNamedParamMultiple()
+    {
+        $this->pdo->exec("INSERT INTO test_table (id, name, int_type) VALUES (1, 'hello', 1), (2, 'world', 1), (3, 'hello', 2), (4, 'world', 3)");
+        $this->pdo->exec("REFRESH TABLE test_table");
+
+        $statement = $this->pdo->prepare('update test_table set name = concat(name, :name) where int_type = :int_type and name != :name');
+        $statement->bindValue(':int_type', 1, PDO::PARAM_INT);
+        $statement->bindValue(':name', 'world', PDO::PARAM_STR);
+        $statement->execute();
+
+        $this->pdo->exec("REFRESH TABLE test_table");
+
+        $statement = $this->pdo->prepare("SELECT id, name, int_type FROM test_table WHERE id=1");
+        $resultSet = $statement->fetch();
+        $this->assertEquals(1, $resultSet[0]);
+        $this->assertEquals('helloworld', $resultSet[1]);
+        $this->assertEquals(1, $resultSet[2]);
+    }
+    
     public function testBindValue()
     {
         $expected = [
@@ -264,19 +299,4 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals(["foo" => "bar"], $resultSet[0]['object_type']);
     }
 
-    public function testUnorderedBindValue()
-    {
-        $this->insertRows(2);
-
-        $statement = $this->pdo->prepare('UPDATE test_table SET name = concat(name, :name) where id = :id');
-        $statement->bindValue(':id', 1);
-        $statement->bindValue(':name', '_abc');
-        $statement->execute();
-
-        $this->pdo->exec('REFRESH TABLE test_table');
-
-        $statement = $this->pdo->prepare('SELECT name FROM test_table WHERE ID=1');
-        $resultSet = $statement->fetch();
-        $this->assertEquals('hello world_abc', $resultSet[0]);
-    }
 }

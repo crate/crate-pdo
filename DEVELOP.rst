@@ -42,6 +42,9 @@ Get composer & install dependencies::
     curl -sS https://getcomposer.org/installer | php
     ./composer.phar install
 
+or if environment is outdated::
+
+    ./composer.phar update
 
 Running the tests
 =================

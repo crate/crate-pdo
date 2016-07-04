@@ -900,8 +900,25 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $sql_converted = $method->invoke($this->statement, $sql);
         $this->assertEquals("select * from test_table where name = ? and hoschi = 'sld''fn:sdfsf' and id = ?", $sql_converted);
         $nameToPositionalMap = $property->getValue($this->statement);
-        $this->assertEquals(0, $nameToPositionalMap['name']);
-        $this->assertEquals(1, $nameToPositionalMap['id']);
+        $this->assertEquals("name", $nameToPositionalMap[1]);
+        $this->assertEquals("id", $nameToPositionalMap[2]);
     }
+    
+    public function testReplaceNamedParametersWithPositionalsMultiple()
+    {
+        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'replaceNamedParametersWithPositionals');
+        $method->setAccessible(true);
+        $property = new ReflectionProperty('Crate\PDO\PDOStatement', 'namedToPositionalMap');
+        $property->setAccessible(true);
+
+        $sql = "update test_table set name = concat(name, :name) where id = :id and name != :name";
+        $sql_converted = $method->invoke($this->statement, $sql);
+        $this->assertEquals("update test_table set name = concat(name, ?) where id = ? and name != ?", $sql_converted);
+        $nameToPositionalMap = $property->getValue($this->statement);
+        $this->assertEquals("name", $nameToPositionalMap[1]);
+        $this->assertEquals("id", $nameToPositionalMap[2]);
+        $this->assertEquals("name", $nameToPositionalMap[3]);
+    }
+    
 }
 

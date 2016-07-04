@@ -108,13 +108,13 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
         $pattern = '/:((?:[\w|\d|_](?=([^\'\\\]*(\\\.|\'([^\'\\\]*\\\.)*[^\'\\\]*\'))*[^\']*$))*)/';
 
-        $idx = 0;
+        $idx = 1;
         $callback = function ($matches) use (&$idx) {
             $value = $matches[1];
             if (empty($value)) {
                 return $matches[0];
             }
-            $this->namedToPositionalMap[$value] = $idx;
+            $this->namedToPositionalMap[$idx] = $value;
             $idx++;
             return '?';
         };
@@ -208,7 +208,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         // parameter binding might be unordered, so sort it before execute
         ksort($this->parameters);
 
-        $result = $this->request->__invoke($this, $this->sql, $this->parameters);
+        $result = $this->request->__invoke($this, $this->sql, array_values($this->parameters));
 
         if (is_array($result)) {
             $this->errorCode    = $result['code'];
@@ -281,18 +281,21 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             if ($parameter == 0) {
                 throw new Exception\UnsupportedException("0-based parameter binding not supported, use 1-based");
             }
-            $parameter--;
+            $this->parameters[$parameter-1] = &$variable;
         } else {
             $namedParameterKey = substr($parameter, 0, 1) === ':' ? substr($parameter, 1) : $parameter;
-            if (array_key_exists($namedParameterKey, $this->namedToPositionalMap)) {
-                $parameter = $this->namedToPositionalMap[$namedParameterKey];
+            if (in_array($namedParameterKey, $this->namedToPositionalMap, true)) {
+                foreach ($this->namedToPositionalMap as $key => $value) {
+                    if ($value == $namedParameterKey) {
+                        $this->parameters[$key] = &$variable;
+                    }
+                }
             } else {
                 throw new Exception\OutOfBoundsException(
                     sprintf('The named parameter "%s" does not exist', $parameter)
                 );
             }
         }
-        $this->parameters[$parameter] = &$variable;
     }
 
     /**
