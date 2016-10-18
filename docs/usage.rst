@@ -42,7 +42,7 @@ Examples::
 The ``/schema`` part in the connection string is optional and can be omitted.
 If no schema is provided the Crate's default schema ``doc`` is used.
 
-Note that you can still implicitly provide a schema in SQL statements, e.g.::
+Note that you can still implicitly provide a schema in SQL statements, e.g.:
 
 .. code-block:: psql
 
