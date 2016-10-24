@@ -16,6 +16,7 @@ use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Psr7\Response;
 use guzzlehttp\psr7;
 use PHPUnit_Framework_TestCase;
+use Psr\Http\Message\UriInterface;
 use ReflectionClass;
 
 /**
@@ -170,6 +171,7 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $this->setExpectedException(RuntimeException::class, $message, $code);
 
         $request = $this->getMock(RequestInterface::class);
+        $request->method('getUri')->willReturn($this->getMock(UriInterface::class));
         $response = $this->createResponse(400, ['error' => ['code' => $code, 'message' => $message]]);
 
         $exception = ClientException::create($request, $response);

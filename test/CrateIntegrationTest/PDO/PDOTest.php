@@ -44,7 +44,7 @@ class PDOTest extends AbstractIntegrationTest
 
         $this->assertEquals(42000, $ansiSQLError);
         $this->assertEquals(CrateConst::ERR_INVALID_SQL, $driverError);
-        $this->assertEquals('SQLActionException[line 1:1: no viable alternative at input \'bogus\']', $driverMessage);
+        $this->assertContains('no viable alternative at input \'bogus\']', $driverMessage);
     }
 
     public function testDelete()
@@ -64,6 +64,6 @@ class PDOTest extends AbstractIntegrationTest
         $statement = $this->pdo->prepare('DELETE FROM test_table WHERE id > 1');
 
         $this->assertTrue($statement->execute());
-        $this->assertEquals(-1, $statement->rowCount());
+        $this->assertEquals(4, $statement->rowCount());
     }
 }
