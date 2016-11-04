@@ -43,5 +43,7 @@ interface PDOInterface
     public function errorInfo();
     public function setAttribute($attribute, $value);
     public function getAttribute($attribute);
+    public function getServerVersion();
+    public function getServerInfo();
     public static function getAvailableDrivers();
 }

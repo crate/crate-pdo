@@ -383,4 +383,16 @@ class PDO extends BasePDO implements PDOInterface
     {
         return array_merge(parent::getAvailableDrivers(), [static::DRIVER_NAME]);
     }
+
+    public function getServerVersion()
+    {
+        $result = $this->client->getServerVersion();
+        $versions = $result->getRows();
+        return $versions[0][0];
+    }
+
+    public function getServerInfo()
+    {
+        return $this->getServerVersion();
+    }
 }

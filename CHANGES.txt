@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+ - Expose `getServerVersion()` and `getServerInfo()` on the PDO implementation
+   which return the version number of the Crate server connected to.
+
  - Fix: having the same named parameter multiple times in a prepared SQL
    statement caused incorrect parameter substitution with bound values
 

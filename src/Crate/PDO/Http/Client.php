@@ -121,7 +121,7 @@ class Client implements ClientInterface
      */
     public function getServerInfo()
     {
-        throw new UnsupportedException('Not yet implemented');
+        return $this->getServerVersion();
     }
 
     /**
@@ -129,7 +129,7 @@ class Client implements ClientInterface
      */
     public function getServerVersion()
     {
-        throw new UnsupportedException('Not yet implemented');
+        return $this->execute("select version['number'] from sys.nodes limit 1", []);
     }
 
     /**

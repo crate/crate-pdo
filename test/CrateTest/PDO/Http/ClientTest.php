@@ -209,24 +209,6 @@ class ClientTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::getServerInfo
-     */
-    public function testGetServerInfo()
-    {
-        $this->setExpectedException(UnsupportedException::class);
-        $this->client->getServerInfo();
-    }
-
-    /**
-     * @covers ::getServerVersion
-     */
-    public function testGetServerVersion()
-    {
-        $this->setExpectedException(UnsupportedException::class);
-        $this->client->getServerVersion();
-    }
-
-    /**
      * @covers ::setTimeout
      */
     public function testSetTimeout()

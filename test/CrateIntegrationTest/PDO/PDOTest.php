@@ -66,4 +66,10 @@ class PDOTest extends AbstractIntegrationTest
         $this->assertTrue($statement->execute());
         $this->assertEquals(4, $statement->rowCount());
     }
+
+    public function testGetServerVersion()
+    {
+        $result = $this->pdo->getServerVersion();
+        $this->assertEquals("0.56.3", $result);
+    }
 }
