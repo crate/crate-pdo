@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2016/11/04 0.6.0
+================
+
  - Expose `getServerVersion()` and `getServerInfo()` on the PDO implementation
    which return the version number of the Crate server connected to.
 
