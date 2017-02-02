@@ -258,7 +258,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
             ->method('setTimeout')
             ->with($timeout);
 
-        $this->assertEquals(5, $this->pdo->getAttribute(PDO::ATTR_TIMEOUT));
+        $this->assertEquals(0, $this->pdo->getAttribute(PDO::ATTR_TIMEOUT));
 
         $this->pdo->setAttribute(PDO::ATTR_TIMEOUT, $timeout);
 

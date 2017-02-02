@@ -56,7 +56,7 @@ class PDO extends BasePDO implements PDOInterface
         'defaultFetchMode' => self::FETCH_BOTH,
         'errorMode'        => self::ERRMODE_SILENT,
         'statementClass'   => 'Crate\PDO\PDOStatement',
-        'timeout'          => 5.0,
+        'timeout'          => 0.0,
         'auth'             => [],
         'defaultSchema'    => 'doc'
     ];
