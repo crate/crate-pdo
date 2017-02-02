@@ -55,6 +55,20 @@ Note that you can still implicitly provide a schema in SQL statements, e.g.:
     used.
 
 
+Timeout
+=======
+
+Crate-PDO uses the `CrateDB HTTP protocol`_. Setting the PDO attribute
+``PDO::ATTR_TIMEOUT`` will raise a timeout exception and cancel the HTTP request
+after the specified time has elapsed. Cancelling the HTTP connection, however,
+does not cancel/kill the executed statement on the server.
+
+The following setting specifies the request timeout duration in seconds:
+
+**PDO::ATTR_TIMEOUT** (int)
+    | *Default-Value:*    ``0`` (indefinitely)
+
+
 Fetch Modes
 ===========
 
@@ -93,7 +107,7 @@ database handle (see `PDO::setAttribute`_).
     user name and password when making a request.
 
 **PDO::CRATE_ATTR_DEFAULT_SCHEMA** (string)
-    | *Default-Value*    ``doc``
+    | *Default-Value:*    ``doc``
 
     Set the default schema for the PDO connection.
 
@@ -101,3 +115,4 @@ database handle (see `PDO::setAttribute`_).
 .. _`PDO API Documentation`: http://www.php.net/pdo
 .. _DSN: https://en.wikipedia.org/wiki/Data_source_name
 .. _`PDO::setAttribute`: http://php.net/manual/en/pdo.setattribute.php
+.. _`CrateDB HTTP protocol`: https://crate.io/docs/reference/en/latest/protocols/http.html

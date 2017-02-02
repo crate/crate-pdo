@@ -5,10 +5,12 @@
 Unreleased
 ==========
 
+ - Changed default request timeout to ``0`` (indefinitely)
+
 2016/11/04 0.6.0
 ================
 
- - Expose `getServerVersion()` and `getServerInfo()` on the PDO implementation
+ - Expose ``getServerVersion()`` and ``getServerInfo()`` on the PDO implementation
    which return the version number of the Crate server connected to.
 
  - Fix: having the same named parameter multiple times in a prepared SQL
