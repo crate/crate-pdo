@@ -1,68 +1,73 @@
-=====================
-Crate PDO development
-=====================
+===============
+Developer Guide
+===============
 
-Requirements
-============
-To be able to run the installation you need to first install vagrant (https://www.vagrantup.com/downloads.html)
-and one if it's providers. Development has been done using VirtualBox (https://www.virtualbox.org/) but any provider
-should work just as fine.
+Prerequisites
+=============
 
+You will need Vagrant_ and one of its providers.
+
+We currently use VirtualBox_ but any provider should work just as well.
 
 Installation
 ============
-Download the project::
 
-    git clone git@github.com:crate/crate-pdo.git
+Clone the project::
 
-Start up the vagrant machine, when run for the first time it will also run the needed provisioning::
+    $ git clone git@github.com:crate/crate-pdo.git
 
-    vagrant up
+Start up the Vagrant machine::
 
-If you are using IntelliJ/PhpStorm IDE you can `follow this guide <https://gist.github.com/mikethebeer/d8feda1bcc6b6ef6ea59>`_
-to setup your remote interpreter and test environment environment.
+    $ cd crate-pdo
+    $ vagrant up
+
+When run for the first time, it will also run the needed provisioning.
+
+If you are using IntelliJ or PhpStorm IDE you can follow the `IDE guide`_ to
+set up your remote interpreter and test environment.
 
 PHP Version
 -----------
 
-There are 2 PHP versions installed in the Vagrant box: ``5.6.3`` and ``7.0.2``.
-To activate a certain version you need to create a symlink to ``php5`` or ``php7``
-in ``/usr/bin/``::
+There are two PHP versions installed in the Vagrant box: 
 
-    sudo rm /usr/bin/php
-    sudo ln -s /usr/bin/phpX /usr/bin/php
+- 5.6.3
+- 7.0.2
 
-Installing dependencies
+To activate PHP 5, run::
+
+    $ sudo rm /usr/bin/php
+    $ sudo ln -s /usr/bin/php5 /usr/bin/php
+
+To activate PHP 7, run::
+
+    $ sudo rm /usr/bin/php
+    $ sudo ln -s /usr/bin/php7 /usr/bin/php
+
+Installing Dependencies
 -----------------------
 
-Get composer & install dependencies::
+Get Composer_ and install the dependencies::
 
-    vagrant ssh
-    cd /vagrant
-    curl -sS https://getcomposer.org/installer | php
-    ./composer.phar install
+    $ vagrant ssh
+    $ cd /vagrant
+    $ curl -sS https://getcomposer.org/installer | php
+    $ ./composer.phar install
 
-or if environment is outdated::
+If the environment is outdated, you upgrade like so::
 
-    ./composer.phar update
+    $ ./composer.phar update
 
-Running the tests
+Running the Tests
 =================
 
-Enter the vagrant machine by standing in the project root::
+You can run the tests like so::
 
-    vagrant ssh
+    $ vagrant ssh
+    $ cd /vagrant
+    $ ./vendor/bin/phpunit --coverage-html ./report
 
-Change directory to the mounted folder::
-
-    cd /vagrant
-
-Execute the tests::
-
-    ./vendor/bin/phpunit --coverage-html ./report
-
-Contributing
-============
-
-1. Fork the project
-2. Create a pull request
+.. _Composer: https://getcomposer.org
+.. _Vagrant: https://www.vagrantup.com/downloads.html
+.. _VirtualBox: https://www.virtualbox.org/
+.. _IDE guide: https://gist.github.com/mikethebeer/d8feda1bcc6b6ef6ea59
