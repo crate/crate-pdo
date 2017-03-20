@@ -16,7 +16,7 @@ CrateDB PDO Adapter
 
 |
 
-The CrateDB PDO adapter is a a CrateDB_ specific database driver implementation
+The CrateDB PDO adapter is a CrateDB_ specific database driver implementation
 of the PDO_ API.
 
 This adapter allows you to use the standardized PDO API you're already familiar
