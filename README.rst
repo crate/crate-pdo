@@ -30,7 +30,7 @@ You need to be using PHP and Composer_.
 Installation
 ============
 
-The CrateDB PDO adapter is available as a Composer_ package.
+The CrateDB PDO adapter is available as a Composer package.
 
 See the `installation documentation`_ for more info.
 
@@ -52,7 +52,7 @@ Looking for more help?
 - Chat with us on `Slack`_
 - Get `paid support`_
 
-.. _Composer: https://packagist.org/
+.. _Composer: https://getcomposer.org/
 .. _contribution docs: CONTRIBUTING.rst
 .. _Crate.io: https://crate.io
 .. _crate/crate-pdo: https://packagist.org/packages/crate/crate-pdo
