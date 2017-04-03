@@ -111,7 +111,26 @@ database handle (see `PDO::setAttribute`_).
 
     Set the default schema for the PDO connection.
 
+Custom Types
+============
 
+An example of inserting a custom type (`array`_) using the ``bindValue()``
+method on the prepared statement is given below. For creating a new connection
+please refer to `Connect to Crate`_.
+
+.. code-block:: php
+
+    $data = [1, 2];
+    $stmt = $connection->prepare('INSERT INTO custom_objects (col_array) VALUES(?)');
+    $stmt->bindValue($data, PDO::PARAM_ARRAY);
+
+For `array`_ and `geo_point`_ the PDO constant ``PDO::PARAM_ARRAY`` is  used
+while for `object`_ and `geo_shape`_ the type ``PDO:PARAM_OBJECT`` is used.
+
+.. _`array`: https://crate.io/docs/reference/sql/data_types.html#array
+.. _`object`: https://crate.io/docs/reference/sql/data_types.html#object
+.. _`geo_point`: https://crate.io/docs/reference/sql/data_types.html#geo-point
+.. _`geo_shape`: https://crate.io/docs/reference/sql/data_types.html#geo-shape
 .. _`PDO API Documentation`: http://www.php.net/pdo
 .. _DSN: https://en.wikipedia.org/wiki/Data_source_name
 .. _`PDO::setAttribute`: http://php.net/manual/en/pdo.setattribute.php
