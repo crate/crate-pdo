@@ -565,6 +565,20 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     /**
      * @covers ::fetchAll
      */
+    public function testFetchAllBothSameColumnTwice() 
+    {
+        $columns = ['id', 'id', 'name'];
+        $this->callbackReturnValue = new Collection([[1, 1, 'foo']], $columns, 0, 1);
+        $result = $this->statement->fetchAll(PDO::FETCH_BOTH);
+
+        $expected = [[0 => 1, 1 => 1, 2 => 'foo', 'id' => 1, 'id' => 1, 'name' => 'foo']];
+        $this->assertEquals($expected, $result);
+    }
+
+
+    /**
+     * @covers ::fetchAll
+     */
     public function testFetchAllWithFetchStyleFunc()
     {
         $this->callbackReturnValue = $this->getPopulatedCollection();
@@ -684,6 +698,20 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
     {
         $this->callbackReturnValue = $this->getPopulatedCollection();
         $this->assertEquals(3, $this->statement->columnCount());
+    }
+
+    /**
+     * @covers ::columnCount
+     */
+    public function testColumnCountSameColumnTwice()
+    {
+        $data = [
+            [1, 1],
+            [2, 2],
+        ];
+
+        $this->callbackReturnValue = new Collection($data, ['id', 'id'], 0, 2);
+        $this->assertEquals(2, $this->statement->columnCount());
     }
 
     /**
