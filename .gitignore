@@ -12,4 +12,4 @@ docs/out
 docs/bin
 docs/.installed.cfg
 .DS_Store
-
+env/

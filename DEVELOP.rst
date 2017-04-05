@@ -71,6 +71,19 @@ To run a single test you can use the `--filter` option::
 
     $ ./vendor/bin/phpunit --filter "testFetchColumn"
 
+Building the docs
+=================
+
+Make ``virtualenv`` and install requirements using ``pip``::
+
+    $ python3 -m venv env
+    $ source env/bin/activate
+    $ pip install -U crate-docs-theme
+
+To build the docs run::
+
+    $ sphinx-build -n -b html -E `pwd`/docs `pwd`/docs/out/html
+
 .. _Composer: https://getcomposer.org
 .. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _VirtualBox: https://www.virtualbox.org/
