@@ -77,6 +77,14 @@ class CollectionTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * @covers ::getColumns
+     */
+    public function testGetColumnsSameColumnTwice() {
+        $this->collection = new Collection([], ['id', 'id'], 0, 2);
+        $this->assertEquals(['id' => 0, 'id' => 1], $this->collection->getColumns());
+    }
+
+    /**
      * @covers ::getRows
      */
     public function testGetRows()

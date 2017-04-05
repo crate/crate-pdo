@@ -393,14 +393,13 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_NAMED:
             case PDO::FETCH_ASSOC:
-                $columns = array_flip($this->collection->getColumns());
-
+                $columns = $this->collection->getColumns(false);
                 return $this->collection->map(function (array $row) use ($columns) {
                     return array_combine($columns, $row);
                 });
 
             case PDO::FETCH_BOTH:
-                $columns = array_flip($this->collection->getColumns());
+                $columns = $this->collection->getColumns(false);
 
                 return $this->collection->map(function (array $row) use ($columns) {
                     return array_merge($row, array_combine($columns, $row));
@@ -506,7 +505,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             $this->execute();
         }
 
-        return count($this->collection->getColumns());
+        return count($this->collection->getColumns(false));
     }
 
     /**
