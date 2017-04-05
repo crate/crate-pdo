@@ -9,7 +9,7 @@ via Composer_::
 
 Then run ``composer install`` or ``composer update``.
 
-Inside your PHP script you will need to require the autoload file::
+Inside your PHP script you will need to require the autoload file:
 
 .. code-block:: php
 
