@@ -67,6 +67,10 @@ You can run the tests like so::
     $ cd /vagrant
     $ ./vendor/bin/phpunit --coverage-html ./report
 
+To run a single test you can use the `--filter` option::
+
+    $ ./vendor/bin/phpunit --filter "testFetchColumn"
+
 .. _Composer: https://getcomposer.org
 .. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _VirtualBox: https://www.virtualbox.org/
