@@ -5,7 +5,7 @@ Installation
 Install the library by adding it manually to your ``composer.json`` or directly
 via Composer_::
 
-    composer require crate/crate-pdo:~0.6.1
+    composer require crate/crate-pdo:~0.6.2
 
 Then run ``composer install`` or ``composer update``.
 
