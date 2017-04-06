@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2017/04/06 0.6.2
+================
+
  - Fix: fetching the same column twice could cause an error
 
 2017/02/06 0.6.1
