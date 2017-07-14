@@ -197,7 +197,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     public function execute($input_parameters = null)
     {
         $input_parameters_array = ArrayUtils::toArray($input_parameters);
-        $zero_based = isset($input_parameters_array[0]);
+        $zero_based = array_key_exists(0, $input_parameters_array);
         foreach ($input_parameters_array as $parameter => $value) {
             if (is_int($parameter) && $zero_based) {
                 $parameter++;

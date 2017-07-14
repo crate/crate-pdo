@@ -314,4 +314,16 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals(["foo" => "bar"], $resultSet[0]['object_type']);
     }
 
+    public function testNullParamBinding()
+    {
+        $name = NULL;
+        $statement = $this->pdo->prepare('INSERT INTO test_table (name) VALUES (?)');
+        $statement->bindParam(1, $name);
+        $statement->execute();
+
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
+        $this->assertEquals($name, $resultSet[0]['name']);
+
+    }
+
 }
