@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2017/07/17 0.6.3
+================
+
  - Fix: binding NULL as first param in queries is now supported
 
 2017/04/06 0.6.2
