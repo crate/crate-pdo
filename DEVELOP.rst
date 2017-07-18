@@ -29,7 +29,7 @@ set up your remote interpreter and test environment.
 PHP Version
 -----------
 
-There are two PHP versions installed in the Vagrant box: 
+There are two PHP versions installed in the Vagrant box:
 
 - 5.6.3
 - 7.0.2
@@ -84,7 +84,22 @@ To build the docs run::
 
     $ sphinx-build -n -b html -E `pwd`/docs `pwd`/docs/out/html
 
+Archiving Docs Versions
+=======================
+
+Check the `versions hosted on ReadTheDocs`_.
+
+We should only be hosting the docs for `latest`, `stable`, and the most recent
+patch versions for the last two minor releases.
+
+Sometimes you might find that there are multiple older releases that need to be
+archived.
+
+You can archive releases by selecting *Edit*, unselecting the *Active*
+checkbox, and then saving.
+
 .. _Composer: https://getcomposer.org
 .. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _VirtualBox: https://www.virtualbox.org/
 .. _IDE guide: https://gist.github.com/mikethebeer/d8feda1bcc6b6ef6ea59
+.. _versions hosted on ReadTheDocs: https://readthedocs.org/projects/crate-pdo/versions/
