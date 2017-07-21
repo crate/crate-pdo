@@ -1,19 +1,20 @@
-=======================
-Crate PDO Documentation
-=======================
+=========================
+CrateDB PDO Documentation
+=========================
 
 Introduction
 ============
 
-``Crate PDO`` is a Crate specific database driver implementation of the PDO_ API.
-This allows you to use the standardized PDO API you're already familiar with
-when developing PHP applications with a Crate.io_ database backend.
+``CrateDB PDO`` is a CrateDB specific database driver implementation of the
+PDO_ API. This allows you to use the standardized PDO API you're already
+familiar with when developing PHP applications with a Crate.io_ database
+backend.
 
 Installation
 ============
 
-If you are new to Crate PDO you might want to start with the :doc:`installation`
-section of the documentation.
+If you are new to CrateDB PDO you might want to start with the
+:doc:`installation` section of the documentation.
 
 Table of Contents
 =================

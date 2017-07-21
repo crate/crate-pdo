@@ -5,13 +5,13 @@ Usage
 First Steps
 ===========
 
-The general `PDO API Documentation`_ also applies to Crate PDO.
-However, Crate PDO does not fully implement the specification yet.
+The general `PDO API Documentation`_ also applies to CrateDB PDO.
+However, CrateDB PDO does not fully implement the specification yet.
 
-Connect to Crate
-================
+Connect to CrateDB
+==================
 
-To connect to your cluster, Crate follows standard PDO syntax to form a data
+To connect to your cluster, CrateDB follows standard PDO syntax to form a data
 source name string (DSN_) and then connect to it.
 
 .. code-block:: php
@@ -22,7 +22,8 @@ source name string (DSN_) and then connect to it.
   $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
   $connection = new PDO($dsn, null, null, null);
 
-As Crate doesn't support authentication, the other parameters can be left null.
+As CrateDB doesn't support authentication, the other parameters can be left
+null.
 
 DSN
 ---
@@ -40,7 +41,7 @@ Examples::
     crate:demo1.crate.io:4200,demo2.crate.io:4200/my_schema
 
 The ``/schema`` part in the connection string is optional and can be omitted.
-If no schema is provided the Crate's default schema ``doc`` is used.
+If no schema is provided the CrateDB's default schema ``doc`` is used.
 
 Note that you can still implicitly provide a schema in SQL statements, e.g.:
 
@@ -50,7 +51,7 @@ Note that you can still implicitly provide a schema in SQL statements, e.g.:
 
 .. note::
 
-    Providing a default schema is only supported in ``Crate >= 0.55`` with
+    Providing a default schema is only supported in ``CrateDB >= 0.55`` with
     ``crate-pdo >= 0.4``. Due to this it gets ignored if a lower version is
     used.
 
@@ -72,7 +73,7 @@ The following setting specifies the request timeout duration in seconds:
 Fetch Modes
 ===========
 
-Crate PDO only supports a subset of the PDO fetch modes.
+CrateDB PDO only supports a subset of the PDO fetch modes.
 
 Available fetch modes are:
 
@@ -94,11 +95,11 @@ For ``PDOStatement::fetch``:
 - ``PDO::FETCH_NUM``
 
 
-Crate specific PDO attributes
-=============================
+CrateDB specific PDO attributes
+===============================
 
-The following attributes are Crate specific and used to set an attribute on the
-database handle (see `PDO::setAttribute`_).
+The following attributes are CrateDB specific and used to set an attribute on
+the database handle (see `PDO::setAttribute`_).
 
 **PDO::CRATE_ATTR_HTTP_BASIC_AUTH** (string[])
     | *Value:*    ``[username, password]``
@@ -116,7 +117,7 @@ Custom Types
 
 An example of inserting a custom type (`array`_) using the ``bindValue()``
 method on the prepared statement is given below. For creating a new connection
-please refer to `Connect to Crate`_.
+please refer to `Connect to CrateDB`_.
 
 .. code-block:: php
 
