@@ -2,6 +2,11 @@
 Usage
 =====
 
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
+
 First Steps
 ===========
 
