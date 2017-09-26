@@ -90,6 +90,7 @@ For ``PDOStatement::fetchAll``:
 - ``PDO::FETCH_BOTH``
 - ``PDO::FETCH_FUNC``
 - ``PDO::FETCH_COLUMN``
+- ``PDO::FETCH_OBJ``
 
 For ``PDOStatement::fetch``:
 
@@ -98,6 +99,7 @@ For ``PDOStatement::fetch``:
 - ``PDO::FETCH_BOTH``
 - ``PDO::FETCH_BOUND``
 - ``PDO::FETCH_NUM``
+- ``PDO::FETCH_OBJ``
 
 
 CrateDB specific PDO attributes

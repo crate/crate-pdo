@@ -115,6 +115,24 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_ASSOC));
     }
 
+    public function testFetchAllWithObjectStyle()
+    {
+        $expected = [
+            (object)['id' => 1, 'name' => 'first'],
+            (object)['id' => 2, 'name' => 'second'],
+            (object)['id' => 3, 'name' => 'third'],
+        ];
+
+        foreach ($expected as $row) {
+            $this->insertRow($row->id, $row->name);
+        }
+
+        $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
+        $statement->execute();
+
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_OBJ));
+    }
+
     public function testFetchSameColumnTwiceWithAssocStyle()
     {
         $this->insertRows(3);
@@ -273,7 +291,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals('helloworld', $resultSet[1]);
         $this->assertEquals(1, $resultSet[2]);
     }
-    
+
     public function testBindValue()
     {
         $expected = [
