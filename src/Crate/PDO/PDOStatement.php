@@ -262,6 +262,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             case PDO::FETCH_NUM:
                 return $row;
 
+            case PDO::FETCH_OBJ:
+                return $this->getObjectResult($this->collection->getColumns(false), $row);
+
             default:
                 throw new Exception\UnsupportedException('Unsupported fetch style');
         }
@@ -431,6 +434,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 return $this->collection->map(function (array $row) use ($columnIndex) {
                     return $row[$columnIndex];
                 });
+            case PDO::FETCH_OBJ:
+                $columns = $this->collection->getColumns(false);
+
+                return $this->collection->map(function (array $row) use ($columns) {
+                    return $this->getObjectResult($columns, $row);
+                });
 
             default:
                 throw new Exception\UnsupportedException('Unsupported fetch style');
@@ -544,6 +553,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             case PDO::FETCH_BOTH:
             case PDO::FETCH_BOUND:
             case PDO::FETCH_NAMED:
+            case PDO::FETCH_OBJ:
                 if ($params !== null) {
                     throw new Exception\InvalidArgumentException('fetch mode doesn\'t allow any extra arguments');
                 }
@@ -634,6 +644,20 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             default:
                 throw new Exception\InvalidArgumentException(sprintf('Parameter type %s not supported', $data_type));
         }
+    }
 
+    /**
+     * Generate object from array
+     * @param array        $columns
+     * @param array        $row
+     */
+    private function getObjectResult(array $columns, array $row)
+    {
+        $obj = new \stdClass();
+        foreach ($columns as $key => $column) {
+            $obj->{$column} = $row[$key];
+        }
+
+        return $obj;
     }
 }
