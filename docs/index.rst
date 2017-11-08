@@ -1,6 +1,6 @@
-=========================
-CrateDB PDO Documentation
-=========================
+======================
+CrateDB PHP PDO Client
+======================
 
 ``CrateDB PDO`` is a CrateDB specific database driver implementation of the
 PDO_ API. This allows you to use the standardized PDO API you're already
