@@ -202,7 +202,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             if (is_int($parameter) && $zero_based) {
                 $parameter++;
             }
-            $this->bindValue($parameter, $value);
+            // to correctly save arrays and objects, we need to pass
+            // parameter type
+            $dataType = $this->guessDataType($parameter, $value);
+            $this->bindValue($parameter, $value, $dataType);
         }
 
         // parameter binding might be unordered, so sort it before execute
@@ -219,6 +222,29 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
         $this->collection = $result;
         return true;
+    }
+    
+    /**
+     * Returns PDO::PARAM_* type based on parameter value.
+     */
+    protected function guessDataType($parameter, $value) 
+    {
+        switch (gettype($value)) {
+            case 'array':
+                return PDO::PARAM_ARRAY;
+            case 'object':
+                return PDO::PARAM_OBJECT;
+            case 'double':
+                return PDO::PARAM_DOUBLE;
+            case 'boolean':
+                return PDO::PARAM_BOOL;
+            case 'NULL':
+                return PDO::PARAM_NULL;
+            case 'integer':
+                return PDO::PARAM_LONG;
+            default:
+                return PDO::PARAM_STR;
+        }
     }
 
     /**
