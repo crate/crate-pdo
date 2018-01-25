@@ -5,6 +5,9 @@
 Unreleased
 ==========
 
+2018/01/25 0.7.0
+================
+
  - Add support for fetch style ``PDO::FETCH_OBJ``.
 
 2017/07/17 0.6.3
