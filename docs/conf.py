@@ -12,3 +12,6 @@ html_theme_options.update({
     'canonical_url_path': 'docs/reference/pdo/',
     'tracking_project': 'crate-pdo',
 })
+
+site_url = 'https://crate.io/docs/clients/pdo/en/latest/'
+extensions = ['sphinx_sitemap']
