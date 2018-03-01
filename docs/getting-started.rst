@@ -54,7 +54,7 @@ and then connect to it.
    require_once __DIR__.'/vendor/autoload.php';
    use Crate\PDO\PDO as PDO;
 
-   $dsn = 'crate:SERVER_IP:4200';
+   $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
    $user = "crate";
    $password = null;
    $options = null;
