@@ -21,14 +21,14 @@ source name string (DSN_) and then connect to it.
 
 .. code-block:: php
 
-  require 'vendor/autoload.php';
-  use Crate\PDO\PDO as PDO;
+   require_once __DIR__.'/vendor/autoload.php';
+   use Crate\PDO\PDO as PDO;
 
-  $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
-  $connection = new PDO($dsn, null, null, null);
-
-As CrateDB doesn't support authentication, the other parameters can be left
-null.
+   $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
+   $user = "crate";
+   $password = null;
+   $options = null;
+   $connection = new PDO($dsn, $user, $password, $options);
 
 DSN
 ---
@@ -107,12 +107,6 @@ CrateDB specific PDO attributes
 
 The following attributes are CrateDB specific and used to set an attribute on
 the database handle (see `PDO::setAttribute`_).
-
-**PDO::CRATE_ATTR_HTTP_BASIC_AUTH** (string[])
-    | *Value:*    ``[username, password]``
-
-    Specifies the basic HTTP access authentication headers to provide a
-    user name and password when making a request.
 
 **PDO::CRATE_ATTR_DEFAULT_SCHEMA** (string)
     | *Default-Value:*    ``doc``
