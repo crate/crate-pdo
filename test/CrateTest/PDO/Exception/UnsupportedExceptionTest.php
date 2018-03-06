@@ -23,14 +23,14 @@
 namespace CrateTest\PDO\Exception;
 
 use Crate\PDO\Exception\UnsupportedException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for {@see \Crate\PDO\Exception\UnsupportedException}
  *
  * @coversDefaultClass \Crate\PDO\Exception\UnsupportedException
  */
-class UnsupportedExceptionTest extends PHPUnit_Framework_TestCase
+class UnsupportedExceptionTest extends TestCase
 {
     public function testInstantiation()
     {

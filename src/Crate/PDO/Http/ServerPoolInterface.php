@@ -24,19 +24,37 @@ namespace Crate\PDO\Http;
 
 use Crate\Stdlib\CollectionInterface;
 
-interface ClientInterface extends InternalClientInterface
+interface ServerPoolInterface
 {
 
     /**
-     * Execute the PDOStatement and return the response from server
-     * wrapped inside a Collection
+     * Set the connection timeout
      *
-     * @param string       $queryString
-     * @param array        $parameters
+     * @param int $timeout
      *
-     * @return CollectionInterface|null
+     * @return void
      */
-    public function execute($queryString, array $parameters);
+    public function setTimeout(int $timeout): void;
+
+    /**
+     * Set the connection http basic auth
+     *
+     * @param string $username
+     * @param string $password
+     *
+     * @return void
+     */
+    public function setHttpBasicAuth(string $username, string $password): void;
+
+    /**
+     * Set HTTP header for client requests
+     *
+     * @param string       $name
+     * @param string       $value
+     *
+     * @return void
+     */
+    public function setHttpHeader(string $name, string $value): void;
 
     /**
      * Set the default schema for PDO connection
@@ -45,5 +63,26 @@ interface ClientInterface extends InternalClientInterface
      *
      * @return void
      */
-    public function setDefaultSchema($schemaName);
+    public function setDefaultSchema(string $schemaName): void;
+
+    /**
+     * Execute the PDOStatement and return the response from server
+     * wrapped inside a Collection
+     *
+     * @param string       $queryString
+     * @param array        $parameters
+     *
+     * @return CollectionInterface
+     */
+    public function execute($queryString, array $parameters): CollectionInterface;
+
+    /**
+     * @return array
+     */
+    public function getServerInfo(): array;
+
+    /**
+     * @return string
+     */
+    public function getServerVersion(): string;
 }

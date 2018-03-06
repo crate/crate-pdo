@@ -62,7 +62,7 @@ class PDO extends BasePDO implements PDOInterface
     ];
 
     /**
-     * @var Http\ClientInterface
+     * @var Http\ServerPoolInterface
      */
     private $client;
 
@@ -93,7 +93,7 @@ class PDO extends BasePDO implements PDOInterface
         $dsnParts = self::parseDSN($dsn);
         $servers = self::serversFromDsnParts($dsnParts);
 
-        $this->client = new Http\Client($servers, [
+        $this->client = new Http\ServerPool($servers, [
             'timeout' => $this->attributes['timeout']
         ]);
 
@@ -386,9 +386,7 @@ class PDO extends BasePDO implements PDOInterface
 
     public function getServerVersion()
     {
-        $result = $this->client->getServerVersion();
-        $versions = $result->getRows();
-        return $versions[0][0];
+        return $this->client->getServerVersion();
     }
 
     public function getServerInfo()

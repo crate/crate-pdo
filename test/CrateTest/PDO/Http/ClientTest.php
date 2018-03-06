@@ -7,15 +7,16 @@ namespace CrateTest\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\Exception\UnsupportedException;
+use Crate\PDO\Http\ServerInterface;
 use Crate\Stdlib\Collection;
-use Crate\PDO\Http\Client;
+use Crate\PDO\Http\ServerPool;
 use Crate\PDO\Http\Server;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\ConnectException;
 use Psr\Http\Message\RequestInterface;
 use GuzzleHttp\Psr7\Response;
 use guzzlehttp\psr7;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\UriInterface;
 use ReflectionClass;
 
@@ -27,11 +28,11 @@ use ReflectionClass;
  *
  * @group unit
  */
-class ClientTest extends PHPUnit_Framework_TestCase
+class ClientTest extends TestCase
 {
 
     /**
-     * @var Client
+     * @var ServerPool
      */
     private $client;
 
@@ -45,9 +46,9 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     protected function setUp()
     {
-        $server = 'localhost:4200';
-        $this->client = new Client([$server], []);
-        $this->server = $this->getMockBuilder(Server::class)
+        $server       = 'localhost:4200';
+        $this->client = new ServerPool([$server], []);
+        $this->server = $this->getMockBuilder(ServerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -67,8 +68,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testMultiServerConstructor()
     {
-        $servers = ['crate1:4200', 'crate2:4200', 'crate3:4200'];
-        $client = new Client($servers, []);
+        $servers          = ['crate1:4200', 'crate2:4200', 'crate3:4200'];
+        $client           = new ServerPool($servers, []);
         $clientReflection = new ReflectionClass($client);
 
         $p = $clientReflection->getProperty('availableServers');
@@ -87,8 +88,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testNextServer()
     {
-        $servers = ['crate1:4200', 'crate2:4200', 'crate3:4200'];
-        $client = new Client($servers, []);
+        $servers          = ['crate1:4200', 'crate2:4200', 'crate3:4200'];
+        $client           = new ServerPool($servers, []);
         $clientReflection = new ReflectionClass($client);
 
         $pAvailServers = $clientReflection->getProperty('availableServers');
@@ -107,8 +108,8 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testDropServer()
     {
-        $servers = ['crate1:4200', 'crate2:4200'];
-        $client = new Client($servers, []);
+        $servers          = ['crate1:4200', 'crate2:4200'];
+        $client           = new ServerPool($servers, []);
         $clientReflection = new ReflectionClass($client);
 
         $pAvailServers = $clientReflection->getProperty('availableServers');
@@ -127,14 +128,20 @@ class ClientTest extends PHPUnit_Framework_TestCase
      */
     public function testDropLastServer()
     {
-        $servers = ['localhost:4200'];
-        $client = new Client($servers, []);
+        $this->expectException(ConnectException::class);
+        $this->expectExceptionMessage('No more servers available, exception from last server: Connection refused.');
+
+        $servers          = ['localhost:4200'];
+        $client           = new ServerPool($servers, []);
         $clientReflection = new ReflectionClass($client);
 
+        $request = $this->createMock(RequestInterface::class);
 
-        $this->setExpectedException(ConnectException::class, "No more servers available, exception from last server: Connection refused.");
-        $ex = $this->getMock(ConnectException::class, null,
-            ['Connection refused.', $this->getMock(RequestInterface::class), null]);
+        $ex = $this->getMockBuilder(ConnectException::class)
+            ->setConstructorArgs(['Connection refused.', $request])
+            ->getMock();
+
+        $ex->method('getRequest')->willReturn($request);
 
         $pDropServer = $clientReflection->getMethod('dropServer');
         $pDropServer->setAccessible(true);
@@ -168,17 +175,20 @@ class ClientTest extends PHPUnit_Framework_TestCase
         $code    = 1337;
         $message = 'hello world';
 
-        $this->setExpectedException(RuntimeException::class, $message, $code);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionCode($code);
+        $this->expectExceptionMessage($message);
 
-        $request = $this->getMock(RequestInterface::class);
-        $request->method('getUri')->willReturn($this->getMock(UriInterface::class));
+        $request = $this->createMock(RequestInterface::class);
+        $request->method('getUri')->willReturn($this->createMock(UriInterface::class));
+
         $response = $this->createResponse(400, ['error' => ['code' => $code, 'message' => $message]]);
 
         $exception = ClientException::create($request, $response);
 
         $this->server
             ->expects($this->once())
-            ->method('doRequest')
+            ->method('execute')
             ->will($this->throwException($exception));
 
         $this->client->execute('SELECT ? FROM', ['foo']);
@@ -191,16 +201,16 @@ class ClientTest extends PHPUnit_Framework_TestCase
     {
         $body = [
             'cols'     => ['name'],
-            'rows'     => [['crate2'],['crate2']],
+            'rows'     => [['crate2'], ['crate2']],
             'rowcount' => 2,
-            'duration' => 0
+            'duration' => 0,
         ];
 
-        $response = $this->createResponse(200, $body);
+        $response = new Collection($body['rows'], $body['cols'], $body['duration'], $body['rowcount']);
 
         $this->server
             ->expects($this->once())
-            ->method('doRequest')
+            ->method('execute')
             ->will($this->returnValue($response));
 
         $result = $this->client->execute('SELECT name FROM sys.nodes', []);

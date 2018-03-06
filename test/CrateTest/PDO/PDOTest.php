@@ -25,11 +25,11 @@ namespace CrateTest\PDO;
 use Crate\PDO\Exception\InvalidArgumentException;
 use Crate\PDO\Exception\PDOException;
 use Crate\PDO\Exception\UnsupportedException;
-use Crate\PDO\Http\Client;
-use Crate\PDO\Http\ClientInterface;
+use Crate\PDO\Http\ServerPool;
+use Crate\PDO\Http\ServerPoolInterface;
 use Crate\PDO\PDO;
 use Crate\PDO\PDOStatement;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 /**
@@ -40,7 +40,7 @@ use ReflectionClass;
  *
  * @group unit
  */
-class PDOTest extends PHPUnit_Framework_TestCase
+class PDOTest extends TestCase
 {
     /**
      * @var PDO
@@ -54,7 +54,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->client = $this->getMockBuilder(Client::class)
+        $this->client = $this->getMockBuilder(ServerPoolInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -97,11 +97,10 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::__construct
+     * @expectedException \Crate\Stdlib\Exception\InvalidArgumentException
      */
     public function testInstantiationWithInvalidOptions()
     {
-        $this->setExpectedException('Crate\Stdlib\Exception\InvalidArgumentException');
-
         new PDO('crate:localhost:1234', null, null, 'a invalid value');
     }
 
@@ -124,7 +123,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
         $passwd = 'secret';
         $expectedCredentials = [$user, $passwd];
 
-        $client = $this->getMock(ClientInterface::class);
+        $client = $this->createMock(ServerPoolInterface::class);
         $pdo = new PDO('crate:localhost:44200', null, null, []);
         $reflection = new ReflectionClass(PDO::class);
         $property = $reflection->getProperty('client');
@@ -144,10 +143,12 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testSetAttributeWithDefaultSchema()
     {
-        $client = $this->getMockBuilder(Client::class)
+        $client = $this->getMockBuilder(ServerPoolInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
+
         $pdo = new PDO('crate:localhost:44200/my_schema', null, null, []);
+
         $reflection = new ReflectionClass(PDO::class);
         $property = $reflection->getProperty('client');
         $property->setAccessible(true);
@@ -162,19 +163,19 @@ class PDOTest extends PHPUnit_Framework_TestCase
 
     /**
      * @covers ::getAttribute
+     * @expectedException PDOException
      */
     public function testGetAttributeWithInvalidAttribute()
     {
-        $this->setExpectedException(PDOException::class);
         $this->pdo->getAttribute('I DONT EXIST');
     }
 
     /**
      * @covers ::setAttribute
+     * @expectedException PDOException
      */
     public function testSetAttributeWithInvalidAttribute()
     {
-        $this->setExpectedException(PDOException::class);
         $this->pdo->setAttribute('I DONT EXIST', 'value');
     }
 
@@ -298,7 +299,9 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testQuoteWithExpectedException($paramType, $exception, $message)
     {
-        $this->setExpectedException($exception, $message);
+        $this->expectException($exception);
+        $this->expectExceptionMessage($message);
+
         $this->pdo->quote('helloWorld', $paramType);
     }
 
@@ -340,7 +343,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testRollbackThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->expectException(UnsupportedException::class);
         $this->pdo->rollBack();
     }
 
@@ -357,7 +360,7 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testLastInsertIdThrowsUnsupportedException()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $this->expectException(UnsupportedException::class);
         $this->pdo->lastInsertId();
     }
 }

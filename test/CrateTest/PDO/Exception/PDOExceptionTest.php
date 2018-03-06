@@ -23,7 +23,7 @@
 namespace CrateTest\PDO\Exception;
 
 use Crate\PDO\Exception\PDOException;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for {@see \Crate\PDO\Exception\PDOException}
@@ -32,7 +32,7 @@ use PHPUnit_Framework_TestCase;
  *
  * @group unit
  */
-class PDOExceptionTest extends PHPUnit_Framework_TestCase
+class PDOExceptionTest extends TestCase
 {
     public function testInstantiation()
     {
