@@ -22,32 +22,41 @@
 
 namespace Crate\PDO;
 
+use Crate\PDO\Exception\InvalidArgumentException;
 use Crate\PDO\Exception\PDOException;
+use Crate\PDO\Http\ServerPool;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
 
 class PDO extends BasePDO implements PDOInterface
 {
-    const VERSION = '0.8.0';
-    const DRIVER_NAME = 'crate';
+    public const VERSION     = '0.8.0';
+    public const DRIVER_NAME = 'crate';
 
-    const DSN_REGEX = '/^(?:crate:)(?:((?:[\w\d\.-]+:\d+\,?)+))\/?([\w]+)?$/';
+    public const DSN_REGEX = '/^(?:crate:)(?:((?:[\w\.-]+:\d+\,?)+))\/?([\w]+)?$/';
 
-    const CRATE_ATTR_HTTP_BASIC_AUTH    = 1000;
-    /**
-     * deprecated since version 0.4
-     * @deprecated
-     */
-    const ATTR_HTTP_BASIC_AUTH          = self::CRATE_ATTR_HTTP_BASIC_AUTH;
-    const CRATE_ATTR_DEFAULT_SCHEMA     = 1001;
+    public const CRATE_ATTR_HTTP_BASIC_AUTH = 1000;
+    public const CRATE_ATTR_DEFAULT_SCHEMA  = 1001;
 
-    const PARAM_FLOAT       = 6;
-    const PARAM_DOUBLE      = 7;
-    const PARAM_LONG        = 8;
-    const PARAM_ARRAY       = 9;
-    const PARAM_OBJECT      = 10;
-    const PARAM_TIMESTAMP   = 11;
-    const PARAM_IP          = 12;
+    public const CRATE_ATTR_SSL_MODE          = 1008;
+    public const CRATE_ATTR_SSL_MODE_DISABLED = 1;
+    public const CRATE_ATTR_SSL_MODE_ENABLED  = 2;
+    public const CRATE_ATTR_SSL_MODE_REQUIRED = 3;
+
+    public const CRATE_ATTR_SSL_KEY           = 1002;
+    public const CRATE_ATTR_SSL_KEY_PASSWORD  = 1003;
+    public const CRATE_ATTR_SSL_CERT          = 1004;
+    public const CRATE_ATTR_SSL_CERT_PASSWORD = 1005;
+    public const CRATE_ATTR_SSL_CA            = 1006;
+    public const CRATE_ATTR_SSL_CA_PASSWORD   = 1007;
+
+    public const PARAM_FLOAT     = 6;
+    public const PARAM_DOUBLE    = 7;
+    public const PARAM_LONG      = 8;
+    public const PARAM_ARRAY     = 9;
+    public const PARAM_OBJECT    = 10;
+    public const PARAM_TIMESTAMP = 11;
+    public const PARAM_IP        = 12;
 
     /**
      * @var array
@@ -55,16 +64,17 @@ class PDO extends BasePDO implements PDOInterface
     private $attributes = [
         'defaultFetchMode' => self::FETCH_BOTH,
         'errorMode'        => self::ERRMODE_SILENT,
-        'statementClass'   => 'Crate\PDO\PDOStatement',
+        'sslMode'          => self::CRATE_ATTR_SSL_MODE_DISABLED,
+        'statementClass'   => PDOStatement::class,
         'timeout'          => 0.0,
         'auth'             => [],
-        'defaultSchema'    => 'doc'
+        'defaultSchema'    => 'doc',
     ];
 
     /**
-     * @var Http\ServerPoolInterface
+     * @var Http\ServerInterface
      */
-    private $client;
+    private $serverPool;
 
     /**
      * @var PDOStatement|null
@@ -80,29 +90,27 @@ class PDO extends BasePDO implements PDOInterface
      * {@inheritDoc}
      *
      * @param string     $dsn      The HTTP endpoint to call
-     * @param null       $username Unused
+     * @param null       $username Username for basic auth
      * @param null       $passwd   Unused
      * @param null|array $options  Attributes to set on the PDO
      */
-    public function __construct($dsn, $username, $passwd, $options)
+    public function __construct($dsn, $username = null, $passwd = null, $options = [])
     {
         foreach (ArrayUtils::toArray($options) as $attribute => $value) {
             $this->setAttribute($attribute, $value);
         }
 
         $dsnParts = self::parseDSN($dsn);
-        $servers = self::serversFromDsnParts($dsnParts);
+        $servers  = self::serversFromDsnParts($dsnParts);
 
-        $this->client = new Http\ServerPool($servers, [
-            'timeout' => $this->attributes['timeout']
-        ]);
+        $this->serverPool = new ServerPool($this, $servers);
 
-        if (!empty($username) && !empty($passwd)) {
-            $this->setAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH, [$username, $passwd]);
+        if (!empty($username)) {
+            $this->setAttribute(self::CRATE_ATTR_HTTP_BASIC_AUTH, [$username, $passwd]);
         }
 
         if (!empty($dsnParts[1])) {
-            $this->setAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA, $dsnParts[1]);
+            $this->setAttribute(self::CRATE_ATTR_DEFAULT_SCHEMA, $dsnParts[1]);
         }
 
         // Define a callback that will be used in the PDOStatements
@@ -113,22 +121,22 @@ class PDO extends BasePDO implements PDOInterface
 
             try {
 
-                return $this->client->execute($sql, $parameters);
+                return $this->serverPool->execute($sql, $parameters);
 
             } catch (Exception\RuntimeException $e) {
 
-                if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_EXCEPTION) {
+                if ($this->getAttribute(self::ATTR_ERRMODE) === self::ERRMODE_EXCEPTION) {
                     throw new Exception\PDOException($e->getMessage(), $e->getCode());
                 }
 
-                if ($this->getAttribute(PDO::ATTR_ERRMODE) === PDO::ERRMODE_WARNING) {
+                if ($this->getAttribute(self::ATTR_ERRMODE) === self::ERRMODE_WARNING) {
                     trigger_error(sprintf('[%d] %s', $e->getCode(), $e->getMessage()), E_USER_WARNING);
                 }
 
                 // should probably wrap this in a error object ?
                 return [
                     'code'    => $e->getCode(),
-                    'message' => $e->getMessage()
+                    'message' => $e->getMessage(),
                 ];
             }
         };
@@ -139,11 +147,13 @@ class PDO extends BasePDO implements PDOInterface
      *
      * @param string $dsn The DSN string
      *
+     * @throws \Crate\PDO\Exception\PDOException on an invalid DSN string
+     *
      * @return array An array of ['host:post,host:port,...', 'schema']
      */
     private static function parseDSN($dsn)
     {
-        $matches = array();
+        $matches = [];
 
         if (!preg_match(static::DSN_REGEX, $dsn, $matches)) {
             throw new PDOException(sprintf('Invalid DSN %s', $dsn));
@@ -171,8 +181,9 @@ class PDO extends BasePDO implements PDOInterface
     {
         $options = ArrayUtils::toArray($options);
 
-        if (isset($options[PDO::ATTR_CURSOR])) {
+        if (isset($options[self::ATTR_CURSOR])) {
             trigger_error(sprintf('%s not supported', __METHOD__), E_USER_WARNING);
+
             return true;
         }
 
@@ -273,24 +284,48 @@ class PDO extends BasePDO implements PDOInterface
 
             case self::ATTR_TIMEOUT:
                 $this->attributes['timeout'] = (int)$value;
-                if (is_object($this->client)) {
-                    $this->client->setTimeout((int)$value);
-                }
                 break;
 
             case self::CRATE_ATTR_HTTP_BASIC_AUTH:
-                $this->attributes['auth'] = $value;
-                if (is_object($this->client) && is_array($value)) {
-                    list($user, $password) = $value;
-                    $this->client->setHttpBasicAuth($user, $password);
+                if (!is_array($value)) {
+                    throw new InvalidArgumentException(
+                        'Value probided to CRATE_ATTR_HTTP_BASIC_AUTH must be null or an array'
+                    );
                 }
+
+                $this->attributes['auth'] = $value;
                 break;
 
             case self::CRATE_ATTR_DEFAULT_SCHEMA:
                 $this->attributes['defaultSchema'] = $value;
-                if (is_object($this->client)) {
-                    $this->client->setDefaultSchema($value);
-                }
+                break;
+
+            case self::CRATE_ATTR_SSL_MODE:
+                $this->attributes['sslMode'] = $value;
+                break;
+
+            case self::CRATE_ATTR_SSL_CA:
+                $this->attributes['sslCa'] = $value;
+                break;
+
+            case self::CRATE_ATTR_SSL_CA_PASSWORD:
+                $this->attributes['sslCaPassword'] = $value;
+                break;
+
+            case self::CRATE_ATTR_SSL_CERT:
+                $this->attributes['sslCert'] = $value;
+                break;
+
+            case self::CRATE_ATTR_SSL_CERT_PASSWORD:
+                $this->attributes['sslCertPassword'] = $value;
+                break;
+
+            case self::CRATE_ATTR_SSL_KEY:
+                $this->attributes['sslKey'] = $value;
+                break;
+
+            case self::CRATE_ATTR_SSL_KEY_PASSWORD:
+                $this->attributes['sslKeyPassword'] = $value;
                 break;
 
             default:
@@ -304,71 +339,92 @@ class PDO extends BasePDO implements PDOInterface
     public function getAttribute($attribute)
     {
         switch ($attribute) {
-            case PDO::ATTR_PERSISTENT:
+            case self::ATTR_PERSISTENT:
                 return false;
 
-            case PDO::ATTR_PREFETCH:
+            case self::ATTR_PREFETCH:
                 return false;
 
-            case PDO::ATTR_CLIENT_VERSION:
+            case self::ATTR_CLIENT_VERSION:
                 return self::VERSION;
 
-            case PDO::ATTR_SERVER_VERSION:
-                return $this->client->getServerVersion();
+            case self::ATTR_SERVER_VERSION:
+                return $this->serverPool->getServerVersion();
 
-            case PDO::ATTR_SERVER_INFO:
-                return $this->client->getServerInfo();
+            case self::ATTR_SERVER_INFO:
+                return $this->serverPool->getServerInfo();
 
-            case PDO::ATTR_TIMEOUT:
+            case self::ATTR_TIMEOUT:
                 return $this->attributes['timeout'];
 
-            case PDO::CRATE_ATTR_HTTP_BASIC_AUTH:
+            case self::CRATE_ATTR_HTTP_BASIC_AUTH:
                 return $this->attributes['auth'];
 
-            case PDO::ATTR_DEFAULT_FETCH_MODE:
+            case self::ATTR_DEFAULT_FETCH_MODE:
                 return $this->attributes['defaultFetchMode'];
 
-            case PDO::ATTR_ERRMODE:
+            case self::ATTR_ERRMODE:
                 return $this->attributes['errorMode'];
 
-            case PDO::ATTR_DRIVER_NAME:
+            case self::ATTR_DRIVER_NAME:
                 return static::DRIVER_NAME;
 
-            case PDO::ATTR_STATEMENT_CLASS:
+            case self::ATTR_STATEMENT_CLASS:
                 return [$this->attributes['statementClass']];
 
-            case PDO::CRATE_ATTR_DEFAULT_SCHEMA:
+            case self::CRATE_ATTR_DEFAULT_SCHEMA:
                 return $this->attributes['defaultSchema'];
+
+            case self::CRATE_ATTR_SSL_MODE:
+                return $this->attributes['sslMode'];
+
+            case self::CRATE_ATTR_SSL_CA:
+                return $this->attributes['sslCa'] ?? null;
+
+            case self::CRATE_ATTR_SSL_CA_PASSWORD:
+                return $this->attributes['sslCaPassword'] ?? null;
+
+            case self::CRATE_ATTR_SSL_CERT:
+                return $this->attributes['sslCert'] ?? null;
+
+            case self::CRATE_ATTR_SSL_CERT_PASSWORD:
+                return $this->attributes['sslCertPassword'] ?? null;
+
+            case self::CRATE_ATTR_SSL_KEY:
+                return $this->attributes['sslKey'] ?? null;
+
+            case self::CRATE_ATTR_SSL_KEY_PASSWORD:
+                return $this->attributes['sslKeyPassword'] ?? null;
 
             default:
                 // PHP Switch is a lose comparison
-                if ($attribute === PDO::ATTR_AUTOCOMMIT) {
+                if ($attribute === self::ATTR_AUTOCOMMIT) {
                     return true;
                 }
 
-                throw new Exception\PDOException('Unsupported driver attribute');
+                throw new Exception\PDOException(sprintf('Unsupported driver attribute: %s', $attribute));
         }
     }
 
     /**
      * {@inheritDoc}
      */
-    public function quote($string, $parameter_type = PDO::PARAM_STR)
+    public function quote($string, $parameter_type = self::PARAM_STR)
     {
         switch ($parameter_type) {
-            case PDO::PARAM_INT:
+            case self::PARAM_INT:
                 return (int)$string;
 
-            case PDO::PARAM_BOOL:
+            case self::PARAM_BOOL:
                 return (bool)$string;
 
-            case PDO::PARAM_NULL:
+            case self::PARAM_NULL:
                 return null;
 
-            case PDO::PARAM_LOB:
+            case self::PARAM_LOB:
                 throw new Exception\UnsupportedException('This is not supported by crate.io');
 
-            case PDO::PARAM_STR:
+            case self::PARAM_STR:
                 throw new Exception\UnsupportedException('This is not supported, please use prepared statements.');
 
             default:
@@ -386,7 +442,7 @@ class PDO extends BasePDO implements PDOInterface
 
     public function getServerVersion()
     {
-        return $this->client->getServerVersion();
+        return $this->serverPool->getServerVersion();
     }
 
     public function getServerInfo()

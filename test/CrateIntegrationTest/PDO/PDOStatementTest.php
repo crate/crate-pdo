@@ -38,8 +38,8 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->insertRows(5);
 
         $statement = $this->pdo->prepare('SELECT id FROM test_table');
-
         $result = [];
+
 
         while ($columnValue = $statement->fetchColumn()) {
             $result[] = $columnValue;

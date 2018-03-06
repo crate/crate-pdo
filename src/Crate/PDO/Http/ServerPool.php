@@ -23,12 +23,15 @@
 namespace Crate\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
+use Crate\PDO\PDO;
 use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
+use GuzzleHttp\Client;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\RequestOptions;
 
-final class ServerPool implements ServerPoolInterface
+final class ServerPool implements ServerInterface
 {
     private const DEFAULT_SERVER = 'localhost:4200';
 
@@ -38,40 +41,58 @@ final class ServerPool implements ServerPoolInterface
     private $availableServers = [];
 
     /**
-     * @var Server[]
+     * @var Client
      */
-    private $serverPool = [];
+    private $httpClient;
+    /**
+     * @var PDO
+     */
+    private $pdo;
 
     /**
      * Client constructor.
      *
+     * @param PDO   $pdo
      * @param array $servers
-     * @param array $options
      */
-    public function __construct(array $servers, array $options)
+    public function __construct(PDO $pdo, array $servers)
     {
-        if (count($servers) === 0) {
+        if (\count($servers) === 0) {
             $servers = [self::DEFAULT_SERVER];
         }
 
+        // micro optimization so we don't always hit the same server first
+        shuffle($servers);
+
         foreach ($servers as $server) {
-            $this->serverPool[$server] = new Server($server, $options);
-            $this->availableServers[]  = $server;
+            $this->availableServers[] = $server;
         }
+
+        $this->pdo        = $pdo;
+        $this->httpClient = new Client();
     }
 
     /**
      * {@Inheritdoc}
      */
-    public function execute($query, array $parameters): CollectionInterface
+    public function execute(string $query, array $parameters): CollectionInterface
     {
-
         while (true) {
             $nextServer = $this->nextServer();
-            $s          = $this->serverPool[$nextServer];
+
+            $options = $this->getHttpOptions($nextServer, $query, $parameters);
 
             try {
-                return $s->execute($query, $parameters);
+                $response     = $this->httpClient->post('/_sql', $options);
+                $responseBody = json_decode($response->getBody(), true);
+
+                return new Collection(
+                    $responseBody['rows'],
+                    $responseBody['cols'],
+                    $responseBody['duration'],
+                    $responseBody['rowcount']
+                );
+
             } catch (ConnectException $exception) {
                 // drop the server from the list of available servers
                 $this->dropServer($nextServer);
@@ -79,10 +100,11 @@ final class ServerPool implements ServerPoolInterface
                 $this->raiseIfNoMoreServers($exception);
             } catch (BadResponseException $exception) {
 
-                $json = json_decode((string)$exception->getResponse()->getBody(), true);
+                $body = (string)$exception->getResponse()->getBody();
+                $json = json_decode($body, true);
 
                 if ($json === null && json_last_error() !== JSON_ERROR_NONE) {
-                    throw new RuntimeException('Server returned non-JSON response.', 0, $exception);
+                    throw new RuntimeException(sprintf('Server returned non-JSON response: %s', $body), 0, $exception);
                 }
 
                 $errorCode    = $json['error']['code'];
@@ -118,41 +140,72 @@ final class ServerPool implements ServerPoolInterface
     }
 
     /**
-     * {@Inheritdoc}
+     * Determines the options to pass to guzzle for each request
+     *
+     * @param string $server
+     * @param string $query
+     * @param array  $parameters
+     *
+     * @return array
      */
-    public function setTimeout(int $timeout): void
+    private function getHttpOptions(string $server, string $query, array $parameters): array
     {
-        foreach ($this->serverPool as $k => $s) {
-            $s->setTimeout($timeout);
-        }
-    }
+        $sslMode = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_MODE);
 
-    /**
-     * {@Inheritdoc}
-     */
-    public function setHttpBasicAuth(string $username, string $password): void
-    {
-        foreach ($this->serverPool as $k => $s) {
-            $s->setHttpBasicAuth($username, $password);
-        }
-    }
+        $protocol = $sslMode === PDO::CRATE_ATTR_SSL_MODE_DISABLED ? 'http' : 'https';
 
-    /**
-     * {@Inheritdoc}
-     */
-    public function setHttpHeader(string $name, string $value): void
-    {
-        foreach ($this->serverPool as $k => $s) {
-            $s->setHttpHeader($name, $value);
-        }
-    }
+        $options = [
+            'base_uri' => sprintf('%s://%s', $protocol, $server),
+            'timeout'  => (float)$this->pdo->getAttribute(PDO::ATTR_TIMEOUT),
+            'auth'     => $this->pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
+            'json'     => [
+                'stmt' => $query,
+                'args' => $parameters,
+            ],
 
-    /**
-     * {@Inheritdoc}
-     */
-    public function setDefaultSchema(string $schemaName): void
-    {
-        $this->setHttpHeader('Default-Schema', $schemaName);
+            'headers' => [
+                'Default-Scheme' => $this->pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA),
+            ],
+        ];
+
+        if ($sslMode === PDO::CRATE_ATTR_SSL_MODE_ENABLED) {
+            $options['verify'] = false;
+        }
+
+        $ca         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA);
+        $caPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PASSWORD);
+
+        if ($ca) {
+            if ($caPassword) {
+                $options[RequestOptions::VERIFY] = [$ca, $caPassword];
+            } else {
+                $options[RequestOptions::VERIFY] = $ca;
+            }
+        }
+
+        $cert         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT);
+        $certPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PASSWORD);
+
+        if ($cert) {
+            if ($certPassword) {
+                $options[RequestOptions::CERT] = [$cert, $certPassword];
+            } else {
+                $options[RequestOptions::CERT] = $cert;
+            }
+        }
+
+        $key         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY);
+        $keyPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PASSWORD);
+
+        if ($key) {
+            if ($keyPassword) {
+                $options[RequestOptions::SSL_KEY] = [$key, $keyPassword];
+            } else {
+                $options[RequestOptions::SSL_KEY] = $key;
+            }
+        }
+
+        return $options;
     }
 
     /**

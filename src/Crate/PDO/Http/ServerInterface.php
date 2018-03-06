@@ -1,53 +1,41 @@
 <?php
 /**
- * @copyright Interactive Solutions
+ * Licensed to CRATE Technology GmbH("Crate") under one or more contributor
+ * license agreements.  See the NOTICE file distributed with this work for
+ * additional information regarding copyright ownership.  Crate licenses
+ * this file to you under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.  You may
+ * obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ *
+ * However, if you have executed another commercial license agreement
+ * with Crate these terms will supersede the license and you may use the
+ * software solely pursuant to the terms of the relevant commercial agreement.
  */
-
-declare(strict_types=1);
 
 namespace Crate\PDO\Http;
 
 use Crate\Stdlib\CollectionInterface;
-use Psr\Http\Message\ResponseInterface;
 
 interface ServerInterface
 {
     /**
-     * Set the connection timeout
+     * Execute the PDOStatement and return the response from server
+     * wrapped inside a Collection
      *
-     * @param int $timeout
-     *
-     * @return void
-     */
-    public function setTimeout(int $timeout): void;
-
-    /**
-     * Set the connection http basic auth
-     *
-     * @param string $username
-     * @param string $password
-     *
-     * @return void
-     */
-    public function setHttpBasicAuth(string $username, string $password): void;
-
-    /**
-     * Set HTTP header for client requests
-     *
-     * @param string       $name
-     * @param string       $value
-     *
-     * @return void
-     */
-    public function setHttpHeader(string $name, string $value): void;
-
-    /**
-     * @param string $query
-     * @param array  $parameters
+     * @param string       $queryString
+     * @param array        $parameters
      *
      * @return CollectionInterface
      */
-    public function execute(string $query, array $parameters = []): CollectionInterface;
+    public function execute(string $queryString, array $parameters): CollectionInterface;
 
     /**
      * @return array
