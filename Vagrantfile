@@ -6,7 +6,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
     config.vm.network "forwarded_port", guest: 4200, host: 44200
 
-    config.vm.provision "shell", path: "provisioning.sh"
+    config.vm.provision "shell", path: "provisioning/provisioning.sh"
 
     config.vm.provider "virtualbox" do |vb|
         vb.customize ["modifyvm", :id, "--memory", "1024"]

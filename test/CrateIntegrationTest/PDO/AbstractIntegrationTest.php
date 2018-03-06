@@ -35,7 +35,10 @@ abstract class AbstractIntegrationTest extends TestCase
 
     protected function setUp()
     {
-        $this->pdo = new PDO('crate:localhost:4200', null, null, []);
+        $this->pdo = new PDO('crate:localhost:4200', null, null, [
+            PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_DISABLED,
+        ]);
+
         $query = 'CREATE TABLE test_table (id INTEGER PRIMARY KEY, name STRING,';
         $query .= 'int_type INTEGER, long_type LONG, boolean_type BOOLEAN,';
         $query .= 'double_type DOUBLE, float_type FLOAT, array_type ARRAY(INTEGER),';
