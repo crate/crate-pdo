@@ -23,9 +23,10 @@
 namespace CrateIntegrationTest\PDO;
 
 use Crate\PDO\PDO;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\TestCase;
 
-abstract class AbstractIntegrationTest extends PHPUnit_Framework_TestCase
+abstract class AbstractIntegrationTest extends TestCase
 {
     /**
      * @var PDO

@@ -6,7 +6,7 @@
 namespace CrateTest\Stdlib;
 
 use Crate\Stdlib\Collection;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Class CollectionTest
@@ -16,7 +16,7 @@ use PHPUnit_Framework_TestCase;
  *
  * @group unit
  */
-class CollectionTest extends PHPUnit_Framework_TestCase
+class CollectionTest extends TestCase
 {
     /**
      * @var array

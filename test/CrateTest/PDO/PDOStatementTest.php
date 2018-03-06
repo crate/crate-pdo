@@ -28,7 +28,7 @@ use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
 use PHPUnit_Framework_MockObject_MockObject;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use ReflectionMethod;
 use ReflectionProperty;
@@ -42,7 +42,7 @@ use ReflectionProperty;
  * @group unit
  * @group statement
  */
-class PDOStatementTest extends PHPUnit_Framework_TestCase
+class PDOStatementTest extends TestCase
 {
     const SQL = 'SELECT * FROM table_name';
 
@@ -68,7 +68,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->pdo = $this->getMock('Crate\PDO\PDOInterface');
+        $this->pdo = $this->createMock('Crate\PDO\PDOInterface');
 
 
         $callback = function() {
@@ -167,7 +167,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $this->callbackCallParams  = [$this->statement, static::SQL, [0 => $expected]];
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
         $this->statement->bindParam(0, $initial);
     }
 
@@ -246,7 +246,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchWithEmptyResult()
     {
-        $collection = $this->getMock('Crate\Stdlib\CollectionInterface');
+        $collection = $this->createMock('Crate\Stdlib\CollectionInterface');
         $collection
             ->expects($this->once())
             ->method('valid')
@@ -320,7 +320,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchWithUnsupportedFetchStyle()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
 
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
@@ -351,7 +351,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchColumnWithInvalidColumnNumberType()
     {
-        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
         $this->statement->fetchColumn('test');
     }
 
@@ -369,7 +369,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchColumnWithWithEmptyCollection()
     {
-        $collection = $this->getMock('Crate\Stdlib\CollectionInterface');
+        $collection = $this->createMock('Crate\Stdlib\CollectionInterface');
         $collection
             ->expects($this->once())
             ->method('valid')
@@ -384,7 +384,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchColumnWithInvalidColumnIndex()
     {
-        $this->setExpectedException('Crate\PDO\Exception\OutOfBoundsException');
+        $this->expectException('Crate\PDO\Exception\OutOfBoundsException');
 
         $this->callbackReturnValue = $this->getPopulatedCollection();
         $this->statement->fetchColumn(10);
@@ -417,7 +417,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchAllWithInvalidFetchStyle()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_INTO);
@@ -556,7 +556,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchAllWithFetchStyleFuncAndInvalidCallback()
     {
-        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_FUNC, 'void');
@@ -595,7 +595,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndexType()
     {
-        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_COLUMN, 'test');
@@ -606,7 +606,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndex()
     {
-        $this->setExpectedException('Crate\PDO\Exception\OutOfBoundsException');
+        $this->expectException('Crate\PDO\Exception\OutOfBoundsException');
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_COLUMN, 100);
@@ -617,7 +617,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testFetchObject()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
         $this->statement->fetchObject();
     }
 
@@ -678,7 +678,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAttribute()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
         $this->statement->getAttribute(null, null);
     }
 
@@ -687,7 +687,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testSetAttribute()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
         $this->statement->setAttribute(null, null);
     }
 
@@ -719,7 +719,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testGetColumnMeta()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
         $this->statement->getColumnMeta(null);
     }
 
@@ -728,7 +728,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testSetFetchModeWithColumnAndMissingColNo()
     {
-        $this->setExpectedException(
+        $this->expectException(
             'Crate\PDO\Exception\InvalidArgumentException',
             'fetch mode requires the colno argument'
         );
@@ -741,7 +741,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testSetFetchModeWithColumnAndInvalidColNo()
     {
-        $this->setExpectedException(
+        $this->expectException(
             'Crate\PDO\Exception\InvalidArgumentException',
             'colno must be an integer'
         );
@@ -803,7 +803,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testSetFetchModeWithInvalidFetchStyle()
     {
-        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException('Crate\PDO\Exception\UnsupportedException');
         $this->statement->setFetchMode(PDO::FETCH_INTO);
     }
 
@@ -815,7 +815,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testSetFetchModeWithInvalidExtraParam($fetchStyle)
     {
-        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
         $this->statement->setFetchMode($fetchStyle, 'fooBar');
     }
 
@@ -844,7 +844,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
      */
     public function testDumpDebugParams()
     {
-        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $this->expectException('Crate\PDO\Exception\PDOException');
         $this->statement->debugDumpParams();
     }
 
@@ -910,7 +910,7 @@ class PDOStatementTest extends PHPUnit_Framework_TestCase
         $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'typedValue');
         $method->setAccessible(true);
 
-        $this->setExpectedException('Crate\PDO\Exception\PDOException');
+        $this->expectException('Crate\PDO\Exception\PDOException');
         $method->invoke($this->statement, 1, PDO::PARAM_LOB);
     }
 

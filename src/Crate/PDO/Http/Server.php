@@ -22,89 +22,101 @@
 
 namespace Crate\PDO\Http;
 
-use Crate\PDO\Exception\UnsupportedException;
+use Crate\PDO\Exception\RuntimeException;
+use Crate\Stdlib\Collection;
+use Crate\Stdlib\CollectionInterface;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface;
 
-class Server implements InternalClientInterface
+final class Server implements ServerInterface
 {
 
-    const PROTOCOL = 'http';
-    const SQL_PATH = '/_sql';
+    private const PROTOCOL = 'http';
+    private const SQL_PATH = '/_sql';
 
     /**
      * @var HttpClient
      */
     private $client;
 
+    /**
+     * @var array
+     */
     private $opts = [
-        'headers' => []
+        'headers' => [],
     ];
 
     /**
      * @param string $uri
      * @param array  $options
      */
-    public function __construct($uri, array $options)
+    public function __construct(string $uri, array $options)
     {
-        $uri = self::computeURI($uri);
         $this->client = new HttpClient([
-            'base_uri' => $uri
+            'base_uri' => sprintf('%s://%s%s', self::PROTOCOL, $uri, self::SQL_PATH),
         ]);
-        $this->opts += $options;
+
+        $this->opts = array_merge($this->opts, $options);
     }
 
-    public function setTimeout($timeout)
+    public function setTimeout(int $timeout): void
     {
         $this->opts['timeout'] = (float)$timeout;
     }
 
-    public function setHttpBasicAuth($username, $passwd)
+    public function setHttpBasicAuth(string $username, string $password): void
     {
-        $this->opts['auth'] = [$username, $passwd];
+        $this->opts['auth'] = [$username, $password];
     }
 
-    public function setHttpHeader($name, $value)
+    public function setHttpHeader(string $name, string $value): void
     {
         $this->opts['headers'][$name] = $value;
     }
 
-    public function getServerInfo()
+    public function getServerInfo(): array
     {
-        // TODO: Implement getServerInfo() method.
-        throw new UnsupportedException('Not yet implemented');
+        return [
+            'serverVersion' => $this->getServerVersion(),
+        ];
     }
 
-    public function getServerVersion()
+    public function getServerVersion(): string
     {
-        // TODO: Implement getServerVersion() method.
-        throw new UnsupportedException('Not yet implemented');
+        $result = $this->execute("select version['number'] from sys.nodes limit 1");
+
+        if (count($result->getRows()) !== 1) {
+            throw new RuntimeException('Failed to determine server version');
+        }
+
+        return $result->getRows()[0][0];
     }
 
     /**
      * Execute a HTTP/1.1 POST request with JSON body
      *
-     * @param array $body
-
-     * @return ResponseInterface
-     * @throws RequestException When an error is encountered
-     */
-    public function doRequest(array $body)
-    {
-        $args = ['json' => $body] + $this->opts;
-        return $this->client->post(null, $args);
-    }
-
-    /**
-     * Compute a URI for usage with the HTTP client
+     * @param string $query
+     * @param array  $parameters
      *
-     * @param string $server A host:port string
-     *
-     * @return string An URI which can be used by the HTTP client
+     * @return CollectionInterface
      */
-    private static function computeURI($server)
+    public function execute(string $query, array $parameters = []): CollectionInterface
     {
-        return self::PROTOCOL .'://' . $server . self::SQL_PATH;
+        $body = array_merge($this->opts, ['json' => [
+            'stmt' => $query,
+            'args' => $parameters,
+        ]]);
+
+        $response = $this->client->post(null, $body);
+
+        $responseBody = json_decode($response->getBody(), true);
+
+        return new Collection(
+            $responseBody['rows'],
+            $responseBody['cols'],
+            $responseBody['duration'],
+            $responseBody['rowcount']
+        );
     }
 }

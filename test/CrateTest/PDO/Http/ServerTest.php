@@ -11,7 +11,8 @@ namespace CrateTest\PDO\Http;
 use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\Http\Server;
 use GuzzleHttp\Client as HttpClient;
-use PHPUnit_Framework_TestCase;
+use GuzzleHttp\Psr7\Response;
+use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 /**
@@ -22,8 +23,14 @@ use ReflectionClass;
  *
  * @group unit
  */
-class ServerTest extends PHPUnit_Framework_TestCase
+class ServerTest extends TestCase
 {
+    private const EMPTY_RESPONSE = [
+        'rows'     => [],
+        'cols'     => [],
+        'duration' => 0,
+        'rowcount' => 0,
+    ];
 
     /**
      * @var Server $client
@@ -41,10 +48,10 @@ class ServerTest extends PHPUnit_Framework_TestCase
     protected function setUp()
     {
         $this->server = new Server('http://localhost:4200/_sql', []);
-        $this->client = $this->getMock(HttpClient::class);
+        $this->client = $this->createMock(HttpClient::class);
 
         $reflection = new ReflectionClass($this->server);
-        $property = $reflection->getProperty('client');
+        $property   = $reflection->getProperty('client');
         $property->setAccessible(true);
         $property->setValue($this->server, $this->client);
     }
@@ -54,7 +61,18 @@ class ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGetServerInfo()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $resp = [
+            'rows'     => [['2.0.5']],
+            'cols'     => ['version'],
+            'duration' => 0,
+            'rowcount' => 1,
+        ];
+
+        $this->client
+            ->expects($this->once())
+            ->method('__call')
+            ->willReturn(new Response(200, [], json_encode($resp)));
+
         $this->server->getServerInfo();
     }
 
@@ -63,7 +81,18 @@ class ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testGetServerVersion()
     {
-        $this->setExpectedException(UnsupportedException::class);
+        $resp = [
+            'rows'     => [['2.0.5']],
+            'cols'     => ['version'],
+            'duration' => 0,
+            'rowcount' => 1,
+        ];
+
+        $this->client
+            ->expects($this->once())
+            ->method('__call')
+            ->willReturn(new Response(200, [], json_encode($resp)));
+
         $this->server->getServerVersion();
     }
 
@@ -76,17 +105,20 @@ class ServerTest extends PHPUnit_Framework_TestCase
                  'args' => []];
         $args = [
             null, // uri
-            ['json' => $body,
+            ['json'    => $body,
              'headers' => [],
-             'timeout' => 4
-            ]
+             'timeout' => 4,
+            ],
         ];
+
         $this->client
             ->expects($this->once())
             ->method('__call')
-            ->with('post', $args);
+            ->with('post', $args)
+            ->willReturn(new Response(200, [], json_encode(self::EMPTY_RESPONSE)));
+
         $this->server->setTimeout('4');
-        $this->server->doRequest($body);
+        $this->server->execute('select * from sys.cluster');
     }
 
     /**
@@ -94,33 +126,35 @@ class ServerTest extends PHPUnit_Framework_TestCase
      */
     public function testSetHTTPHeader()
     {
-        $schema = 'my_schema';
+        $schema       = 'my_schema';
         $schemaHeader = 'Default-Schema';
         $this->server->setHttpHeader($schemaHeader, $schema);
-
 
         $body = ['stmt' => 'select * from sys.cluster',
                  'args' => []];
         $args = [
             null, // uri
-            ['json' => $body,
+            ['json'    => $body,
              'headers' => [$schemaHeader => $schema],
-            ]
+            ],
         ];
+
         $this->client
             ->expects($this->once())
             ->method('__call')
-            ->with('post', $args);
-        $this->server->doRequest($body);
+            ->with('post', $args)
+            ->willReturn(new Response(200, [], json_encode(self::EMPTY_RESPONSE)));
+
+        $this->server->execute($body['stmt']);
     }
 
     public function testInitialOptions()
     {
         $this->server = new Server('http://localhost:4200/_sql', ['timeout' => 3]);
-        $this->client = $this->getMock(HttpClient::class);
+        $this->client = $this->createMock(HttpClient::class);
 
         $reflection = new ReflectionClass($this->server);
-        $property = $reflection->getProperty('client');
+        $property   = $reflection->getProperty('client');
         $property->setAccessible(true);
         $property->setValue($this->server, $this->client);
 
@@ -128,16 +162,18 @@ class ServerTest extends PHPUnit_Framework_TestCase
                  'args' => []];
         $args = [
             null,
-            ['json' => $body,
+            ['json'    => $body,
              'headers' => [],
-             'timeout' => 3
-            ]
+             'timeout' => 3,
+            ],
         ];
 
         $this->client
             ->expects($this->once())
             ->method('__call')
-            ->with('post', $args);
-        $this->server->doRequest($body);
+            ->with('post', $args)
+            ->willReturn(new Response(200, [], json_encode(self::EMPTY_RESPONSE)));
+
+        $this->server->execute($body['stmt']);
     }
 }
