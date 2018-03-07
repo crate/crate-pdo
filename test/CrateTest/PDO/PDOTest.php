@@ -270,11 +270,26 @@ class PDOTest extends PHPUnit_Framework_TestCase
      */
     public function testQuote()
     {
-        $this->assertTrue($this->pdo->quote('1', PDO::PARAM_BOOL));
-        $this->assertFalse($this->pdo->quote('0', PDO::PARAM_BOOL));
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->pdo->quote('helloWorld', PDO::PARAM_STR);
+    }
 
-        $this->assertEquals(100, $this->pdo->quote('100', PDO::PARAM_INT));
-        $this->assertNull($this->pdo->quote('helloWorld', PDO::PARAM_NULL));
+    /**
+     * @covers ::quote
+     */
+    public function testQuoteUnsupportedType()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\UnsupportedException');
+        $this->pdo->quote('helloWorld', PDO::PARAM_LOB);
+    }
+
+    /**
+     * @covers ::quote
+     */
+    public function testQuoteInvalidType()
+    {
+        $this->setExpectedException('Crate\PDO\Exception\InvalidArgumentException');
+        $this->pdo->quote('helloWorld', 100);
     }
 
     /**
