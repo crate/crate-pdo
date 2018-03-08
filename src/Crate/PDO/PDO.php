@@ -93,7 +93,7 @@ class PDO extends BasePDO implements PDOInterface
      *
      * @param string     $dsn      The HTTP endpoint to call
      * @param null       $username Username for basic auth
-     * @param null       $passwd   Unused
+     * @param null       $passwd   Password for basic auth
      * @param null|array $options  Attributes to set on the PDO
      */
     public function __construct($dsn, $username = null, $passwd = null, $options = [])
