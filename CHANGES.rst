@@ -1,9 +1,18 @@
-=======================
  CHANGES for crate-pdo
 =======================
 
 Unreleased
-==========
+=================
+
+- Added support for SSL via `PDO::CRATE_ATTR_SSL_MODE`
+
+- Updated provisioning using ubuntu xenial64 and the latest version of crate
+
+- BREAKING: Refactored the internal http server/client implementation to a
+  simpler more contained version in the ``ServerPool``
+
+- BREAKING: Upgraded the library to use php 7.2 features
+
 
 2018/01/25 0.7.0
 ================

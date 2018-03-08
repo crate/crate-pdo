@@ -119,6 +119,23 @@ the database handle (see `PDO::setAttribute`_).
 
     Set the default schema for the PDO connection.
 
+**PDO::CRATE_ATTR_SSL_MODE** (int)
+   | *Value:* ``PDO::CRATE_ATTR_SSL_MODE_DISABLED``
+
+   Set the ssl mode for the http connection to crate.
+   Recommended value is ``PDO::CRATE_ATTR_SSL_MODE_REQUIRED`` since
+   ``PDO:CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION`` only enables the SSL protocol
+   but disables verification.
+
+   You can also configure the CA, Server and client certificates using the following attributes:
+
+   - ``PDO::CRATE_ATTR_SSL_KEY``
+   - ``PDO::CRATE_ATTR_SSL_KEY_PASSWORD``
+   - ``PDO::CRATE_ATTR_SSL_CERT``
+   - ``PDO::CRATE_ATTR_SSL_CERT_PASSWORD``
+   - ``PDO::CRATE_ATTR_SSL_CA``
+   - ``PDO::CRATE_ATTR_SSL_CA_PASSWORD``
+
 Custom Types
 ============
 

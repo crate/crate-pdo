@@ -26,24 +26,6 @@ When run for the first time, it will also run the needed provisioning.
 If you are using IntelliJ or PhpStorm IDE you can follow the `IDE guide`_ to
 set up your remote interpreter and test environment.
 
-PHP Version
------------
-
-There are two PHP versions installed in the Vagrant box:
-
-- 5.6.3
-- 7.0.2
-
-To activate PHP 5, run::
-
-    $ sudo rm /usr/bin/php
-    $ sudo ln -s /usr/bin/php5 /usr/bin/php
-
-To activate PHP 7, run::
-
-    $ sudo rm /usr/bin/php
-    $ sudo ln -s /usr/bin/php7 /usr/bin/php
-
 Installing Dependencies
 -----------------------
 
