@@ -20,6 +20,8 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
+declare(strict_types=1);
+
 namespace Crate\PDO;
 
 use ArrayIterator;
@@ -27,7 +29,6 @@ use Closure;
 use Crate\Stdlib\ArrayUtils;
 use Crate\Stdlib\CollectionInterface;
 use Crate\Stdlib\CrateConst;
-use InvalidArgumentException;
 use IteratorAggregate;
 use PDOStatement as BasePDOStatement;
 

@@ -23,7 +23,6 @@
 namespace CrateIntegrationTest\PDO;
 
 use Crate\PDO\PDO;
-use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractIntegrationTest extends TestCase
@@ -37,6 +36,7 @@ abstract class AbstractIntegrationTest extends TestCase
     {
         $this->pdo = new PDO('crate:localhost:4200', null, null, [
             PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_DISABLED,
+            PDO::ATTR_TIMEOUT        => 1,
         ]);
 
         $query = 'CREATE TABLE test_table (id INTEGER PRIMARY KEY, name STRING,';

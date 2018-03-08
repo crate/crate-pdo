@@ -20,6 +20,8 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
+declare(strict_types=1);
+
 namespace Crate\PDO;
 
 use Crate\PDO\Exception\InvalidArgumentException;
@@ -270,6 +272,9 @@ class PDO extends BasePDO implements PDOInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \Crate\PDO\Exception\PDOException
+     * @throws \Crate\PDO\Exception\InvalidArgumentException
      */
     public function setAttribute($attribute, $value)
     {
@@ -335,6 +340,8 @@ class PDO extends BasePDO implements PDOInterface
 
     /**
      * {@inheritDoc}
+     *
+     * @throws \Crate\PDO\Exception\PDOException
      */
     public function getAttribute($attribute)
     {

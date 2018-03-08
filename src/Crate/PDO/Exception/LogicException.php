@@ -19,6 +19,9 @@
  * with Crate these terms will supersede the license and you may use the
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
+
+declare(strict_types=1);
+
 namespace Crate\PDO\Exception;
 
 class LogicException extends PDOException implements ExceptionInterface

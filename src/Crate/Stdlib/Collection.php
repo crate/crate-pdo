@@ -20,10 +20,9 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-namespace Crate\Stdlib;
+declare(strict_types=1);
 
-use Countable;
-use Iterator;
+namespace Crate\Stdlib;
 
 final class Collection implements CollectionInterface
 {
