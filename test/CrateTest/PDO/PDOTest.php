@@ -29,7 +29,6 @@ use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\PDO;
 use Crate\PDO\PDOStatement;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 /**
  * Tests for {@see \Crate\PDO\PDO}

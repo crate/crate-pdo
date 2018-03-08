@@ -20,6 +20,8 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
+declare(strict_types=1);
+
 namespace Crate\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
@@ -38,12 +40,14 @@ final class ServerPool implements ServerInterface
     /**
      * @var string[]
      */
-    private $availableServers = [];
+    private $availableServers  = [];
+    private $lastVisitedServer = 0;
 
     /**
      * @var Client
      */
     private $httpClient;
+
     /**
      * @var PDO
      */
@@ -74,17 +78,25 @@ final class ServerPool implements ServerInterface
 
     /**
      * {@Inheritdoc}
+     * @throws \GuzzleHttp\Exception\ConnectException
      */
     public function execute(string $query, array $parameters): CollectionInterface
     {
-        while (true) {
-            $nextServer = $this->nextServer();
+        $numServers = count($this->availableServers) - 1;
 
-            $options = $this->getHttpOptions($nextServer, $query, $parameters);
+        for ($i = 0; $i <= $numServers; $i++) {
+
+            // always get the first available server
+            $server = $this->availableServers[0];
+
+            // Move the selected server to the end of the stack
+            $this->availableServers[] = array_shift($this->availableServers);
+
+            $options = $this->getHttpOptions($server, $query, $parameters);
 
             try {
-                $response     = $this->httpClient->post('/_sql', $options);
-                $responseBody = json_decode($response->getBody(), true);
+                $response     = $this->httpClient->request('POST', '/_sql', $options);
+                $responseBody = json_decode((string) $response->getBody(), true);
 
                 return new Collection(
                     $responseBody['rows'],
@@ -94,10 +106,10 @@ final class ServerPool implements ServerInterface
                 );
 
             } catch (ConnectException $exception) {
-                // drop the server from the list of available servers
-                $this->dropServer($nextServer);
-                // break the loop if no more servers are available
-                $this->raiseIfNoMoreServers($exception);
+
+                // Catch it before the BadResponseException but do nothing.
+                continue;
+
             } catch (BadResponseException $exception) {
 
                 $body = (string)$exception->getResponse()->getBody();
@@ -113,6 +125,12 @@ final class ServerPool implements ServerInterface
                 throw new RuntimeException($errorMessage, $errorCode, $exception);
             }
         }
+
+        throw new ConnectException(
+            sprintf('No more servers available, exception from last server: %s', $exception->getMessage()),
+            $exception->getRequest(),
+            $exception
+        );
     }
 
     /**
@@ -155,16 +173,17 @@ final class ServerPool implements ServerInterface
         $protocol = $sslMode === PDO::CRATE_ATTR_SSL_MODE_DISABLED ? 'http' : 'https';
 
         $options = [
-            'base_uri' => sprintf('%s://%s', $protocol, $server),
-            'timeout'  => (float)$this->pdo->getAttribute(PDO::ATTR_TIMEOUT),
-            'auth'     => $this->pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
-            'json'     => [
+            'base_uri'                      => sprintf('%s://%s', $protocol, $server),
+            RequestOptions::TIMEOUT         => $this->pdo->getAttribute(PDO::ATTR_TIMEOUT),
+            RequestOptions::CONNECT_TIMEOUT => $this->pdo->getAttribute(PDO::ATTR_TIMEOUT),
+            RequestOptions::AUTH            => $this->pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
+            RequestOptions::JSON            => [
                 'stmt' => $query,
                 'args' => $parameters,
             ],
 
-            'headers' => [
-                'Default-Scheme' => $this->pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA),
+            RequestOptions::HEADERS => [
+                'Default-Schema' => $this->pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA),
             ],
         ];
 
@@ -206,52 +225,5 @@ final class ServerPool implements ServerInterface
         }
 
         return $options;
-    }
-
-    /**
-     * @return string
-     */
-    private function nextServer(): string
-    {
-        $server = $this->availableServers[0];
-        $this->roundRobin();
-
-        return $server;
-    }
-
-    /**
-     * Very simple round-robin implementation
-     * Pops the first item of the availableServers array and appends it at the end.
-     *
-     * @return void
-     */
-    private function roundRobin(): void
-    {
-        $this->availableServers[] = array_shift($this->availableServers);
-    }
-
-    /**
-     * @param string $server
-     */
-    private function dropServer(string $server): void
-    {
-        if (($idx = array_search($server, $this->availableServers, false)) !== false) {
-            unset($this->availableServers[$idx]);
-        }
-    }
-
-    /**
-     * @param ConnectException $exception
-     *
-     * @throws \GuzzleHttp\Exception\ConnectException
-     */
-    private function raiseIfNoMoreServers(ConnectException $exception): void
-    {
-        if (count($this->availableServers) === 0) {
-            throw new ConnectException(
-                sprintf('No more servers available, exception from last server: %s', $exception->getMessage()),
-                $exception->getRequest()
-            );
-        }
     }
 }

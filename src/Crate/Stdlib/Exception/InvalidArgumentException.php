@@ -20,6 +20,8 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
+declare(strict_types=1);
+
 namespace Crate\Stdlib\Exception;
 
 use Crate\PDO\Exception\PDOException;

@@ -23,7 +23,6 @@
 namespace CrateTest\PDO;
 
 use Crate\PDO\Exception\PDOException;
-use Crate\PDO\PDO;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
