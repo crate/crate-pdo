@@ -114,41 +114,6 @@ class PDOTest extends TestCase
     }
 
     /**
-     * @covers ::setAttribute
-     */
-    public function testSetAttributeWithHttpBasicAuth()
-    {
-        $this->markTestIncomplete('Missing implementation');
-    }
-
-    /**
-     * @covers ::setAttribute
-     */
-    public function testSetAttributeWithDefaultSchema()
-    {
-        $this->markTestIncomplete('Missing implementation');
-
-        return;
-
-        $client = $this->getMockBuilder(ServerInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $pdo = new PDO('crate:localhost:44200/my_schema', null, null, []);
-
-        $reflection = new ReflectionClass(PDO::class);
-        $property   = $reflection->getProperty('client');
-        $property->setAccessible(true);
-        $property->setValue($pdo, $client);
-        $client->expects($this->once())
-            ->method('setDefaultSchema')
-            ->with('my_schema');
-
-        $pdo->setAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA, 'my_schema');
-        $this->assertEquals('my_schema', $pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA));
-    }
-
-    /**
      * @covers ::getAttribute
      * @expectedException PDOException
      */
@@ -231,6 +196,17 @@ class PDOTest extends TestCase
     public function testAutoCommit()
     {
         $this->assertTrue($this->pdo->getAttribute(PDO::ATTR_AUTOCOMMIT));
+    }
+
+    /**
+     * @covers ::getAttribute
+     * @covers ::setAttribute
+     */
+    public function testGetAndSetDefaultSchema()
+    {
+        $this->assertEquals('doc', $this->pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA));
+        $this->pdo->setAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA, 'new');
+        $this->assertEquals('new', $this->pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA));
     }
 
     /**
