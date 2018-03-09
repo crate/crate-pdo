@@ -123,11 +123,11 @@ the database handle (see `PDO::setAttribute`_).
 
    You can also configure the CA, Server and client certificates using the following attributes:
 
-   - ``PDO::CRATE_ATTR_SSL_KEY``
+   - ``PDO::CRATE_ATTR_SSL_KEY_PATH``
    - ``PDO::CRATE_ATTR_SSL_KEY_PASSWORD``
-   - ``PDO::CRATE_ATTR_SSL_CERT``
+   - ``PDO::CRATE_ATTR_SSL_CERT_PATH``
    - ``PDO::CRATE_ATTR_SSL_CERT_PASSWORD``
-   - ``PDO::CRATE_ATTR_SSL_CA``
+   - ``PDO::CRATE_ATTR_SSL_CA_PATH``
    - ``PDO::CRATE_ATTR_SSL_CA_PASSWORD``
 
 Custom Types

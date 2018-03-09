@@ -87,7 +87,7 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_ENABLED,
+                    PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
                 ],
                 [
                     RequestOptions::VERIFY => false,
@@ -104,8 +104,8 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CA   => 'foo.pem',
+                    PDO::CRATE_ATTR_SSL_MODE    => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDO::CRATE_ATTR_SSL_CA_PATH => 'foo.pem',
                 ],
                 [
                     'base_uri'             => 'https://localhost:4200',
@@ -115,7 +115,7 @@ final class ServerPoolTest extends TestCase
             [
                 [
                     PDO::CRATE_ATTR_SSL_MODE        => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CA          => 'foo.pem',
+                    PDO::CRATE_ATTR_SSL_CA_PATH     => 'foo.pem',
                     PDO::CRATE_ATTR_SSL_CA_PASSWORD => 'foo',
                 ],
                 [
@@ -125,8 +125,8 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_KEY  => 'foo.pem',
+                    PDO::CRATE_ATTR_SSL_MODE     => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDO::CRATE_ATTR_SSL_KEY_PATH => 'foo.pem',
                 ],
                 [
                     'base_uri'              => 'https://localhost:4200',
@@ -136,7 +136,7 @@ final class ServerPoolTest extends TestCase
             [
                 [
                     PDO::CRATE_ATTR_SSL_MODE         => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_KEY          => 'foo.pem',
+                    PDO::CRATE_ATTR_SSL_KEY_PATH     => 'foo.pem',
                     PDO::CRATE_ATTR_SSL_KEY_PASSWORD => 'foo',
                 ],
                 [
@@ -146,8 +146,8 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CERT => 'foo.pem',
+                    PDO::CRATE_ATTR_SSL_MODE      => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDO::CRATE_ATTR_SSL_CERT_PATH => 'foo.pem',
                 ],
                 [
                     'base_uri'           => 'https://localhost:4200',
@@ -157,7 +157,7 @@ final class ServerPoolTest extends TestCase
             [
                 [
                     PDO::CRATE_ATTR_SSL_MODE          => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CERT          => 'foo.pem',
+                    PDO::CRATE_ATTR_SSL_CERT_PATH     => 'foo.pem',
                     PDO::CRATE_ATTR_SSL_CERT_PASSWORD => 'foo',
                 ],
                 [
@@ -209,13 +209,12 @@ final class ServerPoolTest extends TestCase
 
     public function testExecuteWithNoRespondingServers()
     {
-        $this->expectException(ConnectException::class);
-
         $this->client
             ->expects($this->any())
             ->method('request')
             ->willThrowException(new ConnectException('helloWorld', new Request('post', 'localhost')));
 
+        $this->expectException(ConnectException::class);
         $this->serverPool->execute('helloWorld', []);
     }
 
@@ -238,8 +237,6 @@ final class ServerPoolTest extends TestCase
 
     public function testWithBadRequest()
     {
-        $this->expectException(RuntimeException::class);
-
         $body = json_encode(['error' => ['code' => 1337, 'message' => 'invalid sql, u fool.']]);
 
         $request  = new Request('post', 'localhost');
@@ -250,6 +247,7 @@ final class ServerPoolTest extends TestCase
             ->method('request')
             ->willThrowException(new BadResponseException('error', $request, $response));
 
+        $this->expectException(RuntimeException::class);
         $this->serverPool->execute('helloWorld', []);
     }
 }
