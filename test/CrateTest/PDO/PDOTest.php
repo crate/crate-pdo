@@ -72,7 +72,7 @@ class PDOTest extends TestCase
     {
         $pdo = new PDO('crate:localhost:1234', null, null, []);
 
-        $this->assertInstanceOf('Crate\PDO\PDO', $pdo);
+        $this->assertInstanceOf(PDO::class, $pdo);
         $this->assertInstanceOf('PDO', $pdo);
     }
 
@@ -80,8 +80,8 @@ class PDOTest extends TestCase
     {
         $pdo = new PDO('crate:localhost:1234/my_schema', null, null, []);
 
-        $this->assertInstanceOf('Crate\PDO\PDO', $pdo);
-        $this->assertInstanceOf('PDO', $pdo);
+        $this->assertInstanceOf(PDO::class, $pdo);
+        $this->assertInstanceOf(\PDO::CLASS, $pdo);
     }
 
     /**
@@ -91,15 +91,6 @@ class PDOTest extends TestCase
     {
         $pdo = new PDO('crate:localhost:1234', null, null, new \ArrayObject([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]));
         $this->assertEquals(PDO::ERRMODE_EXCEPTION, $pdo->getAttribute(PDO::ATTR_ERRMODE));
-    }
-
-    /**
-     * @covers ::__construct
-     * @expectedException \Crate\Stdlib\Exception\InvalidArgumentException
-     */
-    public function testInstantiationWithInvalidOptions()
-    {
-        new PDO('crate:localhost:1234', null, null, 'a invalid value');
     }
 
     /**
@@ -115,19 +106,19 @@ class PDOTest extends TestCase
 
     /**
      * @covers ::getAttribute
-     * @expectedException PDOException
      */
     public function testGetAttributeWithInvalidAttribute()
     {
+        $this->expectException(PDOException::class);
         $this->pdo->getAttribute('I DONT EXIST');
     }
 
     /**
      * @covers ::setAttribute
-     * @expectedException PDOException
      */
     public function testSetAttributeWithInvalidAttribute()
     {
+        $this->expectException(PDOException::class);
         $this->pdo->setAttribute('I DONT EXIST', 'value');
     }
 

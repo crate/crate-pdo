@@ -187,11 +187,11 @@ final class ServerPool implements ServerInterface
             ],
         ];
 
-        if ($sslMode === PDO::CRATE_ATTR_SSL_MODE_ENABLED) {
+        if ($sslMode === PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION) {
             $options['verify'] = false;
         }
 
-        $ca         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA);
+        $ca         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PATH);
         $caPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PASSWORD);
 
         if ($ca) {
@@ -202,7 +202,7 @@ final class ServerPool implements ServerInterface
             }
         }
 
-        $cert         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT);
+        $cert         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PATH);
         $certPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PASSWORD);
 
         if ($cert) {
@@ -213,7 +213,7 @@ final class ServerPool implements ServerInterface
             }
         }
 
-        $key         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY);
+        $key         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PATH);
         $keyPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PASSWORD);
 
         if ($key) {

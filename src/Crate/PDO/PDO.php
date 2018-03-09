@@ -40,16 +40,16 @@ class PDO extends BasePDO implements PDOInterface
     public const CRATE_ATTR_HTTP_BASIC_AUTH = 1000;
     public const CRATE_ATTR_DEFAULT_SCHEMA  = 1001;
 
-    public const CRATE_ATTR_SSL_MODE          = 1008;
-    public const CRATE_ATTR_SSL_MODE_DISABLED = 1;
-    public const CRATE_ATTR_SSL_MODE_ENABLED  = 2;
-    public const CRATE_ATTR_SSL_MODE_REQUIRED = 3;
+    public const CRATE_ATTR_SSL_MODE                                       = 1008;
+    public const CRATE_ATTR_SSL_MODE_DISABLED                              = 1;
+    public const CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION = 2;
+    public const CRATE_ATTR_SSL_MODE_REQUIRED                              = 3;
 
-    public const CRATE_ATTR_SSL_KEY           = 1002;
+    public const CRATE_ATTR_SSL_KEY_PATH      = 1002;
     public const CRATE_ATTR_SSL_KEY_PASSWORD  = 1003;
-    public const CRATE_ATTR_SSL_CERT          = 1004;
+    public const CRATE_ATTR_SSL_CERT_PATH     = 1004;
     public const CRATE_ATTR_SSL_CERT_PASSWORD = 1005;
-    public const CRATE_ATTR_SSL_CA            = 1006;
+    public const CRATE_ATTR_SSL_CA_PATH       = 1006;
     public const CRATE_ATTR_SSL_CA_PASSWORD   = 1007;
 
     public const PARAM_FLOAT     = 6;
@@ -98,7 +98,7 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function __construct($dsn, $username = null, $passwd = null, $options = [])
     {
-        foreach (ArrayUtils::toArray($options) as $attribute => $value) {
+        foreach ((array)$options as $attribute => $value) {
             $this->setAttribute($attribute, $value);
         }
 
@@ -309,7 +309,7 @@ class PDO extends BasePDO implements PDOInterface
                 $this->attributes['sslMode'] = $value;
                 break;
 
-            case self::CRATE_ATTR_SSL_CA:
+            case self::CRATE_ATTR_SSL_CA_PATH:
                 $this->attributes['sslCa'] = $value;
                 break;
 
@@ -317,7 +317,7 @@ class PDO extends BasePDO implements PDOInterface
                 $this->attributes['sslCaPassword'] = $value;
                 break;
 
-            case self::CRATE_ATTR_SSL_CERT:
+            case self::CRATE_ATTR_SSL_CERT_PATH:
                 $this->attributes['sslCert'] = $value;
                 break;
 
@@ -325,7 +325,7 @@ class PDO extends BasePDO implements PDOInterface
                 $this->attributes['sslCertPassword'] = $value;
                 break;
 
-            case self::CRATE_ATTR_SSL_KEY:
+            case self::CRATE_ATTR_SSL_KEY_PATH:
                 $this->attributes['sslKey'] = $value;
                 break;
 
@@ -385,19 +385,19 @@ class PDO extends BasePDO implements PDOInterface
             case self::CRATE_ATTR_SSL_MODE:
                 return $this->attributes['sslMode'];
 
-            case self::CRATE_ATTR_SSL_CA:
+            case self::CRATE_ATTR_SSL_CA_PATH:
                 return $this->attributes['sslCa'] ?? null;
 
             case self::CRATE_ATTR_SSL_CA_PASSWORD:
                 return $this->attributes['sslCaPassword'] ?? null;
 
-            case self::CRATE_ATTR_SSL_CERT:
+            case self::CRATE_ATTR_SSL_CERT_PATH:
                 return $this->attributes['sslCert'] ?? null;
 
             case self::CRATE_ATTR_SSL_CERT_PASSWORD:
                 return $this->attributes['sslCertPassword'] ?? null;
 
-            case self::CRATE_ATTR_SSL_KEY:
+            case self::CRATE_ATTR_SSL_KEY_PATH:
                 return $this->attributes['sslKey'] ?? null;
 
             case self::CRATE_ATTR_SSL_KEY_PASSWORD:

@@ -22,7 +22,9 @@
 
 namespace CrateTest\PDO;
 
+use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\PDO;
+use Crate\PDO\PDOInterface;
 use Crate\PDO\PDOStatement;
 use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
@@ -44,7 +46,7 @@ use ReflectionProperty;
  */
 class PDOStatementTest extends TestCase
 {
-    const SQL = 'SELECT * FROM table_name';
+    private const SQL = 'SELECT * FROM table_name';
 
     /**
      * @var PDO|PHPUnit_Framework_MockObject_MockObject
@@ -68,10 +70,9 @@ class PDOStatementTest extends TestCase
 
     protected function setUp()
     {
-        $this->pdo = $this->createMock('Crate\PDO\PDOInterface');
+        $this->pdo = $this->createMock(PDOInterface::class);
 
-
-        $callback = function() {
+        $callback = function () {
 
             $args = func_get_args();
 
@@ -105,8 +106,8 @@ class PDOStatementTest extends TestCase
      */
     public function testInstantiation()
     {
-        $this->assertInstanceOf('Crate\PDO\PDOStatement', $this->statement);
-        $this->assertInstanceOf('PDOStatement', $this->statement);
+        $this->assertInstanceOf(PDOStatement::class, $this->statement);
+        $this->assertInstanceOf(\PDOStatement::class, $this->statement);
     }
 
     /**
@@ -167,7 +168,7 @@ class PDOStatementTest extends TestCase
         $this->callbackCallParams  = [$this->statement, static::SQL, [0 => $expected]];
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
         $this->statement->bindParam(0, $initial);
     }
 
@@ -184,7 +185,7 @@ class PDOStatementTest extends TestCase
 
         $this->statement->bindColumn($column, $value, $type, $maxlen, $driverData);
 
-        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+        $reflection = new ReflectionClass(PDOStatement::class);
 
         $property = $reflection->getProperty('columnBinding');
         $property->setAccessible(true);
@@ -205,7 +206,7 @@ class PDOStatementTest extends TestCase
             [PDO::PARAM_INT, '1', 1],
             [PDO::PARAM_NULL, '1', null],
             [PDO::PARAM_BOOL, '1', true],
-            [PDO::PARAM_STR, '1', '1']
+            [PDO::PARAM_STR, '1', '1'],
         ];
     }
 
@@ -221,7 +222,7 @@ class PDOStatementTest extends TestCase
     {
         $this->statement->bindValue(1, $value, $type);
 
-        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+        $reflection = new ReflectionClass(PDOStatement::class);
 
         $property = $reflection->getProperty('parameters');
         $property->setAccessible(true);
@@ -246,7 +247,7 @@ class PDOStatementTest extends TestCase
      */
     public function testFetchWithEmptyResult()
     {
-        $collection = $this->createMock('Crate\Stdlib\CollectionInterface');
+        $collection = $this->createMock(CollectionInterface::class);
         $collection
             ->expects($this->once())
             ->method('valid')
@@ -295,7 +296,7 @@ class PDOStatementTest extends TestCase
             [PDO::FETCH_NAMED, ['id' => 1, 'name' => 'foo', 'active' => false]],
             [PDO::FETCH_ASSOC, ['id' => 1, 'name' => 'foo', 'active' => false]],
             [PDO::FETCH_BOTH, [0 => 1, 1 => 'foo', 2 => false, 'id' => 1, 'name' => 'foo', 'active' => false]],
-            [PDO::FETCH_NUM, [0 => 1, 1 => 'foo', 2 => false]]
+            [PDO::FETCH_NUM, [0 => 1, 1 => 'foo', 2 => false]],
         ];
     }
 
@@ -320,7 +321,7 @@ class PDOStatementTest extends TestCase
      */
     public function testFetchWithUnsupportedFetchStyle()
     {
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
 
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
@@ -417,7 +418,7 @@ class PDOStatementTest extends TestCase
      */
     public function testFetchAllWithInvalidFetchStyle()
     {
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
         $this->statement->fetchAll(PDO::FETCH_INTO);
@@ -439,7 +440,7 @@ class PDOStatementTest extends TestCase
                         2        => false,
                         'id'     => 1,
                         'name'   => 'foo',
-                        'active' => false
+                        'active' => false,
                     ],
                     [
                         0        => 2,
@@ -447,9 +448,9 @@ class PDOStatementTest extends TestCase
                         2        => true,
                         'id'     => 2,
                         'name'   => 'bar',
-                        'active' => true
-                    ]
-                ]
+                        'active' => true,
+                    ],
+                ],
             ],
             [
                 PDO::FETCH_BOTH,
@@ -460,7 +461,7 @@ class PDOStatementTest extends TestCase
                         2        => false,
                         'id'     => 1,
                         'name'   => 'foo',
-                        'active' => false
+                        'active' => false,
                     ],
                     [
                         0        => 2,
@@ -468,9 +469,9 @@ class PDOStatementTest extends TestCase
                         2        => true,
                         'id'     => 2,
                         'name'   => 'bar',
-                        'active' => true
-                    ]
-                ]
+                        'active' => true,
+                    ],
+                ],
             ],
             [
                 PDO::FETCH_ASSOC,
@@ -478,14 +479,14 @@ class PDOStatementTest extends TestCase
                     [
                         'id'     => 1,
                         'name'   => 'foo',
-                        'active' => false
+                        'active' => false,
                     ],
                     [
                         'id'     => 2,
                         'name'   => 'bar',
-                        'active' => true
-                    ]
-                ]
+                        'active' => true,
+                    ],
+                ],
             ],
             [
                 PDO::FETCH_NAMED,
@@ -493,36 +494,36 @@ class PDOStatementTest extends TestCase
                     [
                         'id'     => 1,
                         'name'   => 'foo',
-                        'active' => false
+                        'active' => false,
                     ],
                     [
                         'id'     => 2,
                         'name'   => 'bar',
-                        'active' => true
-                    ]
-                ]
+                        'active' => true,
+                    ],
+                ],
             ],
             [
                 PDO::FETCH_NUM,
                 [
                     [
-                        0        => 1,
-                        1        => 'foo',
-                        2        => false,
+                        0 => 1,
+                        1 => 'foo',
+                        2 => false,
                     ],
                     [
-                        0        => 2,
-                        1        => 'bar',
-                        2        => true,
-                    ]
-                ]
+                        0 => 2,
+                        1 => 'bar',
+                        2 => true,
+                    ],
+                ],
             ],
             [
                 PDO::FETCH_COLUMN,
                 [
                     1,
-                    2
-                ]
+                    2,
+                ],
             ],
 
         ];
@@ -545,7 +546,6 @@ class PDOStatementTest extends TestCase
             ->with(PDO::ATTR_DEFAULT_FETCH_MODE)
             ->will($this->returnValue(PDO::FETCH_BOTH));
 
-
         $result = $this->statement->fetchAll($fetchStyle);
 
         $this->assertEquals($expected, $result);
@@ -565,16 +565,15 @@ class PDOStatementTest extends TestCase
     /**
      * @covers ::fetchAll
      */
-    public function testFetchAllBothSameColumnTwice() 
+    public function testFetchAllBothSameColumnTwice()
     {
-        $columns = ['id', 'id', 'name'];
+        $columns                   = ['id', 'id', 'name'];
         $this->callbackReturnValue = new Collection([[1, 1, 'foo']], $columns, 0, 1);
-        $result = $this->statement->fetchAll(PDO::FETCH_BOTH);
+        $result                    = $this->statement->fetchAll(PDO::FETCH_BOTH);
 
         $expected = [[0 => 1, 1 => 1, 2 => 'foo', 'id' => 1, 'id' => 1, 'name' => 'foo']];
         $this->assertEquals($expected, $result);
     }
-
 
     /**
      * @covers ::fetchAll
@@ -583,7 +582,7 @@ class PDOStatementTest extends TestCase
     {
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $result = $this->statement->fetchAll(PDO::FETCH_FUNC, function($id, $name, $active) {
+        $result = $this->statement->fetchAll(PDO::FETCH_FUNC, function ($id, $name, $active) {
             return $id;
         });
 
@@ -617,7 +616,7 @@ class PDOStatementTest extends TestCase
      */
     public function testFetchObject()
     {
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
         $this->statement->fetchObject();
     }
 
@@ -628,7 +627,7 @@ class PDOStatementTest extends TestCase
     {
         $this->assertNull($this->statement->errorCode());
 
-        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+        $reflection = new ReflectionClass(PDOStatement::class);
 
         $property = $reflection->getProperty('errorCode');
         $property->setAccessible(true);
@@ -644,7 +643,7 @@ class PDOStatementTest extends TestCase
     {
         return [
             [42000, CrateConst::ERR_INVALID_SQL, 'le error message'],
-            ['Not available', 1337, 'le error message']
+            ['Not available', 1337, 'le error message'],
         ];
     }
 
@@ -660,7 +659,7 @@ class PDOStatementTest extends TestCase
     {
         $this->assertNull($this->statement->errorInfo());
 
-        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+        $reflection = new ReflectionClass(PDOStatement::class);
 
         $errorCodeProp = $reflection->getProperty('errorCode');
         $errorCodeProp->setAccessible(true);
@@ -678,7 +677,7 @@ class PDOStatementTest extends TestCase
      */
     public function testGetAttribute()
     {
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
         $this->statement->getAttribute(null, null);
     }
 
@@ -687,7 +686,7 @@ class PDOStatementTest extends TestCase
      */
     public function testSetAttribute()
     {
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
         $this->statement->setAttribute(null, null);
     }
 
@@ -719,7 +718,7 @@ class PDOStatementTest extends TestCase
      */
     public function testGetColumnMeta()
     {
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
         $this->statement->getColumnMeta(null);
     }
 
@@ -756,7 +755,7 @@ class PDOStatementTest extends TestCase
     {
         $this->statement->setFetchMode(PDO::FETCH_COLUMN, 1);
 
-        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+        $reflection = new ReflectionClass(PDOStatement::class);
 
         $property = $reflection->getProperty('options');
         $property->setAccessible(true);;
@@ -774,7 +773,7 @@ class PDOStatementTest extends TestCase
             [PDO::FETCH_NUM],
             [PDO::FETCH_BOTH],
             [PDO::FETCH_BOUND],
-            [PDO::FETCH_NAMED]
+            [PDO::FETCH_NAMED],
         ];
     }
 
@@ -788,7 +787,7 @@ class PDOStatementTest extends TestCase
     {
         $this->statement->setFetchMode($fetchStyle);
 
-        $reflection = new ReflectionClass('Crate\PDO\PDOStatement');
+        $reflection = new ReflectionClass(PDOStatement::class);
 
         $property = $reflection->getProperty('options');
         $property->setAccessible(true);
@@ -803,7 +802,7 @@ class PDOStatementTest extends TestCase
      */
     public function testSetFetchModeWithInvalidFetchStyle()
     {
-        $this->expectException('Crate\PDO\Exception\UnsupportedException');
+        $this->expectException(UnsupportedException::class);
         $this->statement->setFetchMode(PDO::FETCH_INTO);
     }
 
@@ -878,7 +877,7 @@ class PDOStatementTest extends TestCase
      */
     public function testTypedValue()
     {
-        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'typedValue');
+        $method = new ReflectionMethod(PDOStatement::class, 'typedValue');
         $method->setAccessible(true);
 
         $this->assertEquals(1.23, $method->invoke($this->statement, 1.23, PDO::PARAM_FLOAT));
@@ -894,7 +893,7 @@ class PDOStatementTest extends TestCase
         $this->assertEquals("127.0.0.1", $method->invoke($this->statement, "127.0.0.1", PDO::PARAM_IP));
 
         $this->assertEquals([1, 2], $method->invoke($this->statement, [1, 2], PDO::PARAM_ARRAY));
-        $this->assertEquals(["foo" =>  "bar"], $method->invoke($this->statement, ["foo" =>  "bar"], PDO::PARAM_ARRAY));
+        $this->assertEquals(["foo" => "bar"], $method->invoke($this->statement, ["foo" => "bar"], PDO::PARAM_ARRAY));
 
         $this->assertEquals(12345, $method->invoke($this->statement, 12345, PDO::PARAM_TIMESTAMP));
         $this->assertEquals(12345, $method->invoke($this->statement, "12345", PDO::PARAM_TIMESTAMP));
@@ -907,7 +906,7 @@ class PDOStatementTest extends TestCase
      */
     public function testTypedValueInvalid()
     {
-        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'typedValue');
+        $method = new ReflectionMethod(PDOStatement::class, 'typedValue');
         $method->setAccessible(true);
 
         $this->expectException('Crate\PDO\Exception\PDOException');
@@ -919,27 +918,27 @@ class PDOStatementTest extends TestCase
      */
     public function testReplaceNamedParametersWithPositionals()
     {
-        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'replaceNamedParametersWithPositionals');
+        $method = new ReflectionMethod(PDOStatement::class, 'replaceNamedParametersWithPositionals');
         $method->setAccessible(true);
-        $property = new ReflectionProperty('Crate\PDO\PDOStatement', 'namedToPositionalMap');
+        $property = new ReflectionProperty(PDOStatement::class, 'namedToPositionalMap');
         $property->setAccessible(true);
 
-        $sql = "select * from test_table where name = :name and hoschi = 'sld''fn:sdfsf' and id = :id";
+        $sql           = "select * from test_table where name = :name and hoschi = 'sld''fn:sdfsf' and id = :id";
         $sql_converted = $method->invoke($this->statement, $sql);
         $this->assertEquals("select * from test_table where name = ? and hoschi = 'sld''fn:sdfsf' and id = ?", $sql_converted);
         $nameToPositionalMap = $property->getValue($this->statement);
         $this->assertEquals("name", $nameToPositionalMap[1]);
         $this->assertEquals("id", $nameToPositionalMap[2]);
     }
-    
+
     public function testReplaceNamedParametersWithPositionalsMultiple()
     {
-        $method = new ReflectionMethod('Crate\PDO\PDOStatement', 'replaceNamedParametersWithPositionals');
+        $method = new ReflectionMethod(PDOStatement::class, 'replaceNamedParametersWithPositionals');
         $method->setAccessible(true);
-        $property = new ReflectionProperty('Crate\PDO\PDOStatement', 'namedToPositionalMap');
+        $property = new ReflectionProperty(PDOStatement::class, 'namedToPositionalMap');
         $property->setAccessible(true);
 
-        $sql = "update test_table set name = concat(name, :name) where id = :id and name != :name";
+        $sql           = "update test_table set name = concat(name, :name) where id = :id and name != :name";
         $sql_converted = $method->invoke($this->statement, $sql);
         $this->assertEquals("update test_table set name = concat(name, ?) where id = ? and name != ?", $sql_converted);
         $nameToPositionalMap = $property->getValue($this->statement);
@@ -947,6 +946,6 @@ class PDOStatementTest extends TestCase
         $this->assertEquals("id", $nameToPositionalMap[2]);
         $this->assertEquals("name", $nameToPositionalMap[3]);
     }
-    
+
 }
 
