@@ -152,8 +152,8 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function setServer(ServerInterface $server): void
     {
-       $this->server = $server;
-       $this->server->configure($this);
+        $this->server = $server;
+        $this->server->configure($this);
     }
 
     /**

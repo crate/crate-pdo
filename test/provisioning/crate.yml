@@ -133,7 +133,7 @@ ssl.psql.enabled: true
 #ssl.ingestion.mqtt.enabled: true
 
 # The full path to the node keystore file
-ssl.keystore_filepath: /vagrant/provisioning/keystore
+ssl.keystore_filepath: /vagrant/test/provisioning/keystore
 
 # The password used to decrypt the keystore_file.jks
 ssl.keystore_password: crate.io
@@ -145,7 +145,7 @@ ssl.keystore_key_password: crate.io
 # Optional configuration for truststore
 
 # The full path to the node truststore file
-ssl.truststore_filepath: /vagrant/provisioning/truststore
+ssl.truststore_filepath: /vagrant/test/provisioning/truststore
 
 # The password used to decrypt the truststore_file.jks
 ssl.truststore_password: crate.io
