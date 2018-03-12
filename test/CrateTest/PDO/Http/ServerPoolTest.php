@@ -57,8 +57,14 @@ final class ServerPoolTest extends TestCase
 
     protected function setUp()
     {
-        $this->pdo        = new PDO('crate:localhost:4200');
-        $this->serverPool = new ServerPool($this->pdo, ['localhost:4200', 'localhost:4200']);
+        $this->pdo = new PDO('crate:localhost:4200');
+
+        $this->serverPool = new ServerPool(['localhost:4200', 'localhost:4200']);
+        $this->serverPool->configure($this->pdo);
+
+        $prop = (new \ReflectionClass($this->pdo))->getProperty('serverPool');
+        $prop->setAccessible(true);
+        $prop->setValue($this->pdo, $this->serverPool);
 
         $this->client = $this->createMock(ClientInterface::class);
 

@@ -98,14 +98,15 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function __construct($dsn, $username = null, $passwd = null, $options = [])
     {
-        foreach ((array)$options as $attribute => $value) {
-            $this->setAttribute($attribute, $value);
-        }
-
         $dsnParts = self::parseDSN($dsn);
         $servers  = self::serversFromDsnParts($dsnParts);
 
-        $this->serverPool = new ServerPool($this, $servers);
+        $this->serverPool = new ServerPool($servers);
+        $this->serverPool->configure($this);
+
+        foreach ((array)$options as $attribute => $value) {
+            $this->setAttribute($attribute, $value);
+        }
 
         if (!empty($username)) {
             $this->setAttribute(self::CRATE_ATTR_HTTP_BASIC_AUTH, [$username, $passwd]);
@@ -292,7 +293,7 @@ class PDO extends BasePDO implements PDOInterface
                 break;
 
             case self::CRATE_ATTR_HTTP_BASIC_AUTH:
-                if (!is_array($value)) {
+                if (!is_array($value) && $value !== null) {
                     throw new InvalidArgumentException(
                         'Value probided to CRATE_ATTR_HTTP_BASIC_AUTH must be null or an array'
                     );
@@ -336,6 +337,9 @@ class PDO extends BasePDO implements PDOInterface
             default:
                 throw new Exception\PDOException('Unsupported driver attribute');
         }
+
+        // A setting changed so we need to reconfigure the server pool
+        $this->serverPool->configure($this);
     }
 
     /**
