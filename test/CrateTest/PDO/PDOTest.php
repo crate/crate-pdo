@@ -28,6 +28,7 @@ use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\PDO;
 use Crate\PDO\PDOStatement;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -46,23 +47,18 @@ class PDOTest extends TestCase
     protected $pdo;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject
+     * @var ServerInterface|MockObject
      */
-    protected $client;
+    protected $server;
 
     protected function setUp()
     {
-        $this->client = $this->getMockBuilder(ServerInterface::class)
+        $this->server = $this->getMockBuilder(ServerInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->pdo = new PDO('crate:localhost:1234', null, null, []);
-
-        $reflection = new ReflectionClass(PDO::class);
-
-        $property = $reflection->getProperty('serverPool');
-        $property->setAccessible(true);
-        $property->setValue($this->pdo, $this->client);
+        $this->pdo->setServer($this->server);
     }
 
     /**
