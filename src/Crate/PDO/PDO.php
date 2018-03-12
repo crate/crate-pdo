@@ -26,6 +26,7 @@ namespace Crate\PDO;
 
 use Crate\PDO\Exception\InvalidArgumentException;
 use Crate\PDO\Exception\PDOException;
+use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\Http\ServerPool;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
@@ -76,7 +77,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * @var Http\ServerInterface
      */
-    private $serverPool;
+    private $server;
 
     /**
      * @var PDOStatement|null
@@ -101,8 +102,7 @@ class PDO extends BasePDO implements PDOInterface
         $dsnParts = self::parseDSN($dsn);
         $servers  = self::serversFromDsnParts($dsnParts);
 
-        $this->serverPool = new ServerPool($servers);
-        $this->serverPool->configure($this);
+        $this->setServer(new ServerPool($servers));
 
         foreach ((array)$options as $attribute => $value) {
             $this->setAttribute($attribute, $value);
@@ -124,7 +124,7 @@ class PDO extends BasePDO implements PDOInterface
 
             try {
 
-                return $this->serverPool->execute($sql, $parameters);
+                return $this->server->execute($sql, $parameters);
 
             } catch (Exception\RuntimeException $e) {
 
@@ -143,6 +143,17 @@ class PDO extends BasePDO implements PDOInterface
                 ];
             }
         };
+    }
+
+    /**
+     * Change the server implementation
+     *
+     * @param ServerInterface $server
+     */
+    public function setServer(ServerInterface $server): void
+    {
+       $this->server = $server;
+       $this->server->configure($this);
     }
 
     /**
@@ -339,7 +350,7 @@ class PDO extends BasePDO implements PDOInterface
         }
 
         // A setting changed so we need to reconfigure the server pool
-        $this->serverPool->configure($this);
+        $this->server->configure($this);
     }
 
     /**
@@ -360,10 +371,10 @@ class PDO extends BasePDO implements PDOInterface
                 return self::VERSION;
 
             case self::ATTR_SERVER_VERSION:
-                return $this->serverPool->getServerVersion();
+                return $this->server->getServerVersion();
 
             case self::ATTR_SERVER_INFO:
-                return $this->serverPool->getServerInfo();
+                return $this->server->getServerInfo();
 
             case self::ATTR_TIMEOUT:
                 return $this->attributes['timeout'];
@@ -453,7 +464,7 @@ class PDO extends BasePDO implements PDOInterface
 
     public function getServerVersion()
     {
-        return $this->serverPool->getServerVersion();
+        return $this->server->getServerVersion();
     }
 
     public function getServerInfo()

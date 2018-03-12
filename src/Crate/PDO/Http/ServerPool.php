@@ -30,10 +30,16 @@ use Crate\PDO\PDOInterface;
 use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
 use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\RequestOptions;
 
+/**
+ * Class ServerPool
+ *
+ * Very basic round robin implementation
+ */
 final class ServerPool implements ServerInterface
 {
     private const DEFAULT_SERVER = 'localhost:4200';
@@ -61,9 +67,10 @@ final class ServerPool implements ServerInterface
     /**
      * Client constructor.
      *
-     * @param array $servers
+     * @param array                $servers
+     * @param ClientInterface|null $client
      */
-    public function __construct(array $servers)
+    public function __construct(array $servers, ClientInterface $client = null)
     {
         if (\count($servers) === 0) {
             $servers = [self::DEFAULT_SERVER];
@@ -76,7 +83,7 @@ final class ServerPool implements ServerInterface
             $this->availableServers[] = $server;
         }
 
-        $this->httpClient = new Client();
+        $this->httpClient = $client ?: new Client();
     }
 
     /**
