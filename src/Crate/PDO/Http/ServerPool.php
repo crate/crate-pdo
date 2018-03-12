@@ -26,6 +26,7 @@ namespace Crate\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\PDO;
+use Crate\PDO\PDOInterface;
 use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
 use GuzzleHttp\Client;
@@ -38,10 +39,19 @@ final class ServerPool implements ServerInterface
     private const DEFAULT_SERVER = 'localhost:4200';
 
     /**
+     * @var string
+     */
+    private $protocol = 'http';
+
+    /**
+     * @var array
+     */
+    private $httpOptions = [];
+
+    /**
      * @var string[]
      */
-    private $availableServers  = [];
-    private $lastVisitedServer = 0;
+    private $availableServers = [];
 
     /**
      * @var Client
@@ -49,17 +59,11 @@ final class ServerPool implements ServerInterface
     private $httpClient;
 
     /**
-     * @var PDO
-     */
-    private $pdo;
-
-    /**
      * Client constructor.
      *
-     * @param PDO   $pdo
      * @param array $servers
      */
-    public function __construct(PDO $pdo, array $servers)
+    public function __construct(array $servers)
     {
         if (\count($servers) === 0) {
             $servers = [self::DEFAULT_SERVER];
@@ -72,7 +76,6 @@ final class ServerPool implements ServerInterface
             $this->availableServers[] = $server;
         }
 
-        $this->pdo        = $pdo;
         $this->httpClient = new Client();
     }
 
@@ -92,7 +95,13 @@ final class ServerPool implements ServerInterface
             // Move the selected server to the end of the stack
             $this->availableServers[] = array_shift($this->availableServers);
 
-            $options = $this->getHttpOptions($server, $query, $parameters);
+            $options = array_merge($this->httpOptions, [
+                'base_uri' => sprintf('%s://%s', $this->protocol, $server),
+                'json'     => [
+                    'stmt' => $query,
+                    'args' => $parameters,
+                ],
+            ]);
 
             try {
                 $response     = $this->httpClient->request('POST', '/_sql', $options);
@@ -158,32 +167,22 @@ final class ServerPool implements ServerInterface
     }
 
     /**
-     * Determines the options to pass to guzzle for each request
+     * Reconfigure the the server pool based on the attributes in PDO
      *
-     * @param string $server
-     * @param string $query
-     * @param array  $parameters
-     *
-     * @return array
+     * @param PDOInterface $pdo
      */
-    private function getHttpOptions(string $server, string $query, array $parameters): array
+    public function configure(PDOInterface $pdo): void
     {
-        $sslMode = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_MODE);
+        $sslMode = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_MODE);
 
         $protocol = $sslMode === PDO::CRATE_ATTR_SSL_MODE_DISABLED ? 'http' : 'https';
 
         $options = [
-            'base_uri'                      => sprintf('%s://%s', $protocol, $server),
-            RequestOptions::TIMEOUT         => $this->pdo->getAttribute(PDO::ATTR_TIMEOUT),
-            RequestOptions::CONNECT_TIMEOUT => $this->pdo->getAttribute(PDO::ATTR_TIMEOUT),
-            RequestOptions::AUTH            => $this->pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
-            RequestOptions::JSON            => [
-                'stmt' => $query,
-                'args' => $parameters,
-            ],
-
-            RequestOptions::HEADERS => [
-                'Default-Schema' => $this->pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA),
+            RequestOptions::TIMEOUT         => $pdo->getAttribute(PDO::ATTR_TIMEOUT),
+            RequestOptions::CONNECT_TIMEOUT => $pdo->getAttribute(PDO::ATTR_TIMEOUT),
+            RequestOptions::AUTH            => $pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
+            RequestOptions::HEADERS         => [
+                'Default-Schema' => $pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA),
             ],
         ];
 
@@ -191,8 +190,8 @@ final class ServerPool implements ServerInterface
             $options['verify'] = false;
         }
 
-        $ca         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PATH);
-        $caPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PASSWORD);
+        $ca         = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PATH);
+        $caPassword = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PASSWORD);
 
         if ($ca) {
             if ($caPassword) {
@@ -202,8 +201,8 @@ final class ServerPool implements ServerInterface
             }
         }
 
-        $cert         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PATH);
-        $certPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PASSWORD);
+        $cert         = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PATH);
+        $certPassword = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PASSWORD);
 
         if ($cert) {
             if ($certPassword) {
@@ -213,8 +212,8 @@ final class ServerPool implements ServerInterface
             }
         }
 
-        $key         = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PATH);
-        $keyPassword = $this->pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PASSWORD);
+        $key         = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PATH);
+        $keyPassword = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PASSWORD);
 
         if ($key) {
             if ($keyPassword) {
@@ -224,6 +223,7 @@ final class ServerPool implements ServerInterface
             }
         }
 
-        return $options;
+        $this->protocol    = $protocol;
+        $this->httpOptions = $options;
     }
 }

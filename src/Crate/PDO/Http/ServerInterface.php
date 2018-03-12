@@ -24,16 +24,28 @@ declare(strict_types=1);
 
 namespace Crate\PDO\Http;
 
+use Crate\PDO\PDOInterface;
 use Crate\Stdlib\CollectionInterface;
 
 interface ServerInterface
 {
     /**
+     * Update the server pool configuration
+     *
+     * This is called on the initial creation of the server pool and when an attribute get updates
+     *
+     * @param PDOInterface $PDO
+     *
+     * @return void
+     */
+    public function configure(PDOInterface $PDO): void;
+
+    /**
      * Execute the PDOStatement and return the response from server
      * wrapped inside a Collection
      *
-     * @param string       $queryString
-     * @param array        $parameters
+     * @param string $queryString
+     * @param array  $parameters
      *
      * @return CollectionInterface
      */
