@@ -86,7 +86,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     private $request;
 
-    private $namedToPositionalMap = array();
+    private $namedToPositionalMap = [];
 
     /**
      * @param PDOInterface $pdo
@@ -109,7 +109,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
         $pattern = '/:((?:[\w|\d|_](?=([^\'\\\]*(\\\.|\'([^\'\\\]*\\\.)*[^\'\\\]*\'))*[^\']*$))*)/';
 
-        $idx = 1;
+        $idx      = 1;
         $callback = function ($matches) use (&$idx) {
             $value = $matches[1];
             if (empty($value)) {
@@ -117,6 +117,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             }
             $this->namedToPositionalMap[$idx] = $value;
             $idx++;
+
             return '?';
         };
 
@@ -177,7 +178,6 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     private function updateBoundColumns(array $row)
     {
         foreach ($this->columnBinding as $column => &$metadata) {
-
             $index = $this->collection->getColumnIndex($column);
             if ($index === null) {
                 // todo: I would like to throw an exception and tell someone they screwed up
@@ -186,10 +186,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             }
 
             // Update by reference
-            $value = $this->typedValue($row[$index], $metadata['type']);
+            $value           = $this->typedValue($row[$index], $metadata['type']);
             $metadata['ref'] = $value;
         }
-
     }
 
     /**
@@ -198,7 +197,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     public function execute($input_parameters = null)
     {
         $input_parameters_array = ArrayUtils::toArray($input_parameters);
-        $zero_based = array_key_exists(0, $input_parameters_array);
+        $zero_based             = array_key_exists(0, $input_parameters_array);
         foreach ($input_parameters_array as $parameter => $value) {
             if (is_int($parameter) && $zero_based) {
                 $parameter++;
@@ -219,6 +218,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
 
         $this->collection = $result;
+
         return true;
     }
 
@@ -247,8 +247,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
         $fetch_style = $fetch_style ?: $this->getFetchStyle();
 
-        switch ($fetch_style)
-        {
+        switch ($fetch_style) {
             case PDO::FETCH_NAMED:
             case PDO::FETCH_ASSOC:
                 return array_combine($this->collection->getColumns(false), $row);
@@ -258,6 +257,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
             case PDO::FETCH_BOUND:
                 $this->updateBoundColumns($row);
+
                 return true;
 
             case PDO::FETCH_NUM:
@@ -285,7 +285,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             if ($parameter == 0) {
                 throw new Exception\UnsupportedException("0-based parameter binding not supported, use 1-based");
             }
-            $this->parameters[$parameter-1] = &$variable;
+            $this->parameters[$parameter - 1] = &$variable;
         } else {
             $namedParameterKey = substr($parameter, 0, 1) === ':' ? substr($parameter, 1) : $parameter;
             if (in_array($namedParameterKey, $this->namedToPositionalMap, true)) {
@@ -313,7 +313,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             'ref'        => &$param,
             'type'       => $type,
             'maxlen'     => $maxlen,
-            'driverdata' => $driverdata
+            'driverdata' => $driverdata,
         ];
     }
 
@@ -390,14 +390,14 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
         $fetch_style = $fetch_style ?: $this->getFetchStyle();
 
-        switch ($fetch_style)
-        {
+        switch ($fetch_style) {
             case PDO::FETCH_NUM:
                 return $this->collection->getRows();
 
             case PDO::FETCH_NAMED:
             case PDO::FETCH_ASSOC:
                 $columns = $this->collection->getColumns(false);
+
                 return $this->collection->map(function (array $row) use ($columns) {
                     return array_combine($columns, $row);
                 });
@@ -472,8 +472,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             return null;
         }
 
-        switch ($this->errorCode)
-        {
+        switch ($this->errorCode) {
             case CrateConst::ERR_INVALID_SQL:
                 $ansiErrorCode = 42000;
                 break;
@@ -486,7 +485,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         return [
             $ansiErrorCode,
             $this->errorCode,
-            $this->errorMessage
+            $this->errorMessage,
         ];
     }
 
@@ -534,8 +533,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $args     = func_get_args();
         $argCount = count($args);
 
-        switch ($mode)
-        {
+        switch ($mode) {
             case PDO::FETCH_COLUMN:
                 if ($argCount != 2) {
                     throw new Exception\InvalidArgumentException('fetch mode requires the colno argument');
@@ -581,6 +579,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
 
         $this->collection->next();
+
         return $this->collection->valid();
     }
 
@@ -589,8 +588,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function closeCursor()
     {
-        $this->errorCode = 0;
+        $this->errorCode  = 0;
         $this->collection = null;
+
         return true;
     }
 
@@ -612,35 +612,35 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
     private function typedValue($value, $data_type)
     {
-        switch ($data_type)
-        {
+        switch ($data_type) {
             case PDO::PARAM_FLOAT:
             case PDO::PARAM_DOUBLE:
-                return (float) $value;
+                return (float)$value;
 
             case PDO::PARAM_INT:
             case PDO::PARAM_LONG:
-                return (int) $value;
+                return (int)$value;
 
             case PDO::PARAM_NULL:
                 return null;
 
             case PDO::PARAM_BOOL:
-                return (bool) $value;
+                return (bool)$value;
 
             case PDO::PARAM_STR:
             case PDO::PARAM_IP:
-                return (string) $value;
+                return (string)$value;
 
             case PDO::PARAM_OBJECT:
             case PDO::PARAM_ARRAY:
-                return (array) $value;
+                return (array)$value;
 
             case PDO::PARAM_TIMESTAMP:
                 if (is_numeric($value)) {
-                    return (int) $value;
+                    return (int)$value;
                 }
-                return (string) $value;
+
+                return (string)$value;
 
             default:
                 throw new Exception\InvalidArgumentException(sprintf('Parameter type %s not supported', $data_type));
@@ -649,8 +649,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
     /**
      * Generate object from array
-     * @param array        $columns
-     * @param array        $row
+     *
+     * @param array $columns
+     * @param array $row
      */
     private function getObjectResult(array $columns, array $row)
     {
