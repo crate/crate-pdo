@@ -95,7 +95,6 @@ final class ServerPool implements ServerInterface
         $numServers = count($this->availableServers) - 1;
 
         for ($i = 0; $i <= $numServers; $i++) {
-
             // always get the first available server
             $server = $this->availableServers[0];
 
@@ -112,7 +111,7 @@ final class ServerPool implements ServerInterface
 
             try {
                 $response     = $this->httpClient->request('POST', '/_sql', $options);
-                $responseBody = json_decode((string) $response->getBody(), true);
+                $responseBody = json_decode((string)$response->getBody(), true);
 
                 return new Collection(
                     $responseBody['rows'],
@@ -120,14 +119,10 @@ final class ServerPool implements ServerInterface
                     $responseBody['duration'],
                     $responseBody['rowcount']
                 );
-
             } catch (ConnectException $exception) {
-
                 // Catch it before the BadResponseException but do nothing.
                 continue;
-
             } catch (BadResponseException $exception) {
-
                 $body = (string)$exception->getResponse()->getBody();
                 $json = json_decode($body, true);
 
