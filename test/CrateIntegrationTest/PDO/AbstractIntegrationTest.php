@@ -35,7 +35,7 @@ abstract class AbstractIntegrationTest extends TestCase
     protected function setUp()
     {
         $this->pdo = new PDO('crate:localhost:4200', null, null, [
-            PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_DISABLED,
+            PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
             PDO::ATTR_TIMEOUT        => 1,
         ]);
 
