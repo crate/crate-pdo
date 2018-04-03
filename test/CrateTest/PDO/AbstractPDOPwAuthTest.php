@@ -6,7 +6,7 @@ namespace CrateTest\PDO;
 use Crate\PDO\PDO;
 use PHPUnit\Framework\TestCase;
 
-abstract class AbstractPDOTest extends TestCase
+abstract class AbstractPDOPwAuthTest extends TestCase
 {
     /**
      * @var PDO
