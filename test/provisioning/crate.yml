@@ -91,19 +91,14 @@ auth.host_based.enabled: true
 #   Protocol, meaning that with this configuration, connecting from non-local
 #   hosts via HTTP would not be possible!
 auth:
- host_based:
-   config:
-#     0:
-#       user: crate
-#       address: _local_
-#       method: trust
+  host_based:
+      config:
+        1:
+          user: crate
+          method: trust
 
-     1:
-       user: crate
-       method: trust
-
-     99:
-       method: password
+        99:
+          method: password
 
 # When trust based authentication is used, the server just takes the username
 # provided by the client as is without further validation. The HTTP
