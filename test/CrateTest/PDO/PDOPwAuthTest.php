@@ -12,7 +12,7 @@ use Crate\PDO\PDO;
  *
  * @group unit
  */
-class PDOPwAuthTest extends AbstractPDOTest
+class PDOPwAuthTest extends AbstractPDOPwAuthTest
 {
     public function testAuthentication()
     {
