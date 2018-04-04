@@ -2,7 +2,10 @@
 =======================
 
 Unreleased
-=================
+==========
+
+2018/04/04 1.0.0
+================
 
 - Added support for SSL via `PDO::CRATE_ATTR_SSL_MODE`
 
