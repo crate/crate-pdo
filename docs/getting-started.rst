@@ -1,76 +1,68 @@
+.. _getting-started:
+
 ===============
 Getting Started
 ===============
 
-This page shows you how to get started with the :ref:`CrateDB PHP PDO client
-library <index>`.
+Learn how to install and get started with the :ref:`CrateDB PDO driver
+<index>`.
+
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
+
+.. _prerequisites:
 
 Prerequisites
 =============
 
-You need to be using PHP and `Composer`_.
+Your project must be using `Composer`_.
+
+Set Up as a Dependency
+======================
+
+The driver is available as `a package`_.
+
+Add the driver package to you project `composer.json`_ file, like this:
+
+.. code-block:: json
+
+    {
+      "require": {
+        "crate/crate-pdo":"~1.0.0"
+      }
+    }
+
+.. _install:
 
 Install
 =======
 
-Install the library by adding it manually to your ``composer.json``:
+Once the package has been configured as a dependency, you can install it, like
+so::
 
-.. code-block:: json
+    sh$ composer install
 
-   {
-     "require": {
-       "crate/crate-pdo":"~0.7.0"
-     }
-   }
-
-Or add it directly via Composer:
-
-.. code-block:: sh
-
-   sh$ composer require crate/crate-pdo:~0.7.0
-
-Then run ``composer install`` or ``composer update``.
-
-Inside your PHP script you will need to require the autoload file:
+Afterwards, if you are not already doing so, you must require the Composer
+`autoload.php`_ file. You can do this by adding a line like this to your PHP
+application:
 
 .. code-block:: php
 
-   <?php
-   require 'vendor/autoload.php';
-   ...
+    require __DIR__ . '/vendor/autoload.php';
 
-For more information how to use Composer, please refer to the
-`Composer documentation`_.
+.. SEEALSO::
 
-Connect to CrateDB
-==================
+   For more help with Composer, consult the `Composer documentation`_.
 
-To connect to your cluster, CrateDB follows standard PDO syntax to form a data
-source name string (`dsn <https://en.wikipedia.org/wiki/Data_source_name>`_)
-and then connect to it.
+Next Steps
+==========
 
-.. code-block:: php
+Learn how to :ref:`connect to CrateDB <connect>`.
 
-   require_once __DIR__.'/vendor/autoload.php';
-   use Crate\PDO\PDO as PDO;
-
-   $dsn = 'crate:<HOSTNAME_OR_IP>:<PORT>';
-   $user = "crate";
-   $password = null;
-   $options = null;
-   $connection = new PDO($dsn, $user, $password, $options);
-
-Learning More
-=============
-
-Crate.io maintains a `sample PHP application`_ that uses this library, which
-may be a good starting point as you learn to use it for the first time. And be
-sure to check out out the `application documentation`_.
-
-Browse the rest of the PDO client :ref:`reference documentation <index>` for
-more information.
-
-.. _application documentation: https://github.com/crate/crate-sample-apps/blob/master/php/documentation.md
+.. _a package: https://packagist.org/packages/crate/crate-pdo
+.. _autoload.php: https://getcomposer.org/doc/01-basic-usage.md#autoloading
 .. _Composer documentation: https://getcomposer.org
 .. _Composer: https://getcomposer.org/
-.. _sample PHP application: https://github.com/crate/crate-sample-apps/tree/master/php
+.. _composer.json: https://getcomposer.org/doc/01-basic-usage.md#composer-json-project-setup

@@ -1,14 +1,27 @@
 .. _index:
 
-======================
-CrateDB PHP PDO Client
-======================
+==================
+CrateDB PDO Driver
+==================
 
-The CrateDB PDO adapter is a `CrateDB`_ specific database driver implementation
-of the `PDO`_ API.
+A `PDO`_ driver for `CrateDB`_.
 
-This adapter allows you to use the standardized PDO API you're already familiar
-with when developing PHP applications with a CrateDB database.
+The *PHP Data Objects* (PDO) is a standard PHP extension that defines a common
+interface for accessing databases in PHP.
+
+.. NOTE::
+
+   This is a basic CrateDB driver reference.
+
+   Check out the `sample application`_ (and the corresponding `documentation`_)
+   for a practical demonstration of this driver in use.
+
+   For general help using PDO, please consult the `PDO documentation`_.
+
+.. SEEALSO::
+
+   The CrateDB PHP PDO driver is an open source project and is `hosted on
+   GitHub`_.
 
 .. rubric:: Table of Contents
 
@@ -16,7 +29,13 @@ with when developing PHP applications with a CrateDB database.
    :maxdepth: 2
 
    getting-started
-   usage
+   connect
+   types
+   compatibility
 
-.. _PDO: http://www.php.net/manual/en/intro.pdo.php
 .. _CrateDB: https://crate.io/products/cratedb/
+.. _documentation: https://github.com/crate/crate-sample-apps/blob/master/php/documentation.md
+.. _hosted on GitHub: https://github.com/crate/crate-pdo
+.. _PDO documentation: http://www.php.net/manual/en/intro.pdo.php
+.. _PDO: http://www.php.net/manual/en/intro.pdo.php
+.. _sample application: https://github.com/crate/crate-sample-apps/tree/master/php
