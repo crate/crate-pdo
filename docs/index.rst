@@ -30,7 +30,7 @@ interface for accessing databases in PHP.
 
    getting-started
    connect
-   types
+   data-types
    compatibility
 
 .. _CrateDB: https://crate.io/products/cratedb/

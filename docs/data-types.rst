@@ -1,8 +1,8 @@
-.. _types:
+.. _data-types:
 
-=====
-Types
-=====
+==========
+Data Types
+==========
 
 .. rubric:: Table of Contents
 
