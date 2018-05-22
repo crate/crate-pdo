@@ -30,8 +30,7 @@ interface for accessing databases in PHP.
 
    getting-started
    connect
-   data-types
-   compatibility
+   appendices/index
 
 .. _CrateDB: https://crate.io/products/cratedb/
 .. _documentation: https://github.com/crate/crate-sample-apps/blob/master/php/documentation.md
