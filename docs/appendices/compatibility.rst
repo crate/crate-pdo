@@ -4,10 +4,20 @@
 Compatibility
 =============
 
+.. rubric:: Table of Contents
+
+.. contents::
+   :local:
+
+.. _versions:
+
+Version Notes
+=============
+
 .. _cratedb-versions:
 
-CrateDB Versions
-================
+CrateDB
+-------
 
 Consult the following table for CrateDB version compatibility notes:
 
