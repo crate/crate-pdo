@@ -39,7 +39,7 @@ first and second CrateDB nodes, respectively.
 In fact, you can specify as many nodes as you like. Each corresponding host
 string must be separated from the previous one using a ``,`` character.
 
-.. NOTE::
+.. TIP::
 
    The list of nodes is shuffled when the connection is first created.
 
@@ -95,8 +95,6 @@ You can get a PDO connection like this:
 
    See the :ref:`compatibility notes <cratedb-versions>` for more information.
 
-.. TIP::
-
    If you have not configured a custom `database user`_, you probably want to
    authenticate as the CrateDB superuser, which is ``crate``. The superuser
    does not have a password, so you should omit the ``password`` argument.
@@ -147,12 +145,12 @@ The CrateDB driver provides number of ``PDO`` attribute class constants.
 ``PDO::CRATE_ATTR_DEFAULT_SCHEMA`` (string)
     The default schema for the PDO connection.
 
-.. TIP::
+    .. TIP::
 
-   The default CrateDB schema is ``doc``, and if you do not specify a schema,
-   this is what will be used.
+       The default CrateDB schema is ``doc``, and if you do not specify a
+       schema, this is what will be used.
 
-   However, you can query any schema you like by specifying it in the query.
+       However, you can query any schema you like by specifying it in the query.
 
 ``PDO::CRATE_ATTR_SSL_MODE`` (int) named attribute
    The connection SSL mode.
@@ -229,7 +227,7 @@ Next Steps
 Use the standard the `PDO documentation`_ documentation for the rest of your
 setup process.
 
-.. TIP::
+.. SEEALSO::
 
    Check out the `sample application`_ (and the corresponding `documentation`_)
    for a practical demonstration of this driver in use.
