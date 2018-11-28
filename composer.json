@@ -1,6 +1,14 @@
 {
     "name": "crate/crate-pdo",
-    "description": "A PDO adapter for interacting with the Crate.io DBMS",
+    "description": "PDO adapter for CrateDB",
+    "authors": [
+        {
+            "name": "Crate.io",
+            "email": "office@crate.io",
+            "homepage": "https://crate.io",
+            "role": "maintainer"
+        }
+    ],
     "license": "Apache-2.0",
     "homepage": "https://github.com/crate/crate-pdo",
     "keywords": ["database", "pdo", "crate"],
