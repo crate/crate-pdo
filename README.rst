@@ -48,8 +48,7 @@ Help
 Looking for more help?
 
 - Read `the project documentation`_
-- Check `StackOverflow`_ for common problems
-- Chat with us on `Slack`_
+- Chat with us via our `support channel`_
 - Get `paid support`_
 
 .. _Composer: https://getcomposer.org/
@@ -61,6 +60,5 @@ Looking for more help?
 .. _installation documentation: https://crate.io/docs/reference/pdo/installation.html
 .. _paid support: https://crate.io/pricing/
 .. _PDO: http://www.php.net/manual/en/intro.pdo.php
-.. _Slack: https://crate.io/docs/support/slackin/
-.. _StackOverflow: https://stackoverflow.com/tags/crate
+.. _support channel: https://crate.io/support/
 .. _the project documentation: https://crate.io/docs/reference/pdo/
