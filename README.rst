@@ -47,7 +47,7 @@ Help
 
 Looking for more help?
 
-- Read `the project docs`_
+- Read the `project docs`_
 - Check out our `support channels`_
 
 .. _Composer: https://getcomposer.org/
@@ -59,4 +59,4 @@ Looking for more help?
 .. _installation documentation: https://crate.io/docs/reference/pdo/installation.html
 .. _PDO: http://www.php.net/manual/en/intro.pdo.php
 .. _support channels: https://crate.io/support/
-.. _the project docs: https://crate.io/docs/reference/pdo/
+.. _project docs: https://crate.io/docs/reference/pdo/
