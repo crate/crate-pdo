@@ -47,9 +47,8 @@ Help
 
 Looking for more help?
 
-- Read `the project documentation`_
-- Chat with us via our `support channel`_
-- Get `paid support`_
+- Read `the project docs`_
+- Check out our `support channels`_
 
 .. _Composer: https://getcomposer.org/
 .. _contribution docs: CONTRIBUTING.rst
@@ -58,7 +57,6 @@ Looking for more help?
 .. _CrateDB: https://github.com/crate/crate
 .. _developer docs: DEVELOP.rst
 .. _installation documentation: https://crate.io/docs/reference/pdo/installation.html
-.. _paid support: https://crate.io/pricing/
 .. _PDO: http://www.php.net/manual/en/intro.pdo.php
-.. _support channel: https://crate.io/support/
-.. _the project documentation: https://crate.io/docs/reference/pdo/
+.. _support channels: https://crate.io/support/
+.. _the project docs: https://crate.io/docs/reference/pdo/
