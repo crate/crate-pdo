@@ -630,7 +630,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 return null;
 
             case PDO::PARAM_BOOL:
-                return (bool)$value;
+                return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 
             case PDO::PARAM_STR:
             case PDO::PARAM_IP:
