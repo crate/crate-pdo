@@ -612,6 +612,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
     private function typedValue($value, $data_type)
     {
+        if (null === $value) {
+            // Do not typecast null values
+            return null;
+        }
+
         switch ($data_type) {
             case PDO::PARAM_FLOAT:
             case PDO::PARAM_DOUBLE:
