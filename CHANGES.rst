@@ -4,6 +4,9 @@
 Unreleased
 ==========
 
+- Fixed `cast` exception when binding a NULL value to a parameter which is not
+  of type ``PDO::PARAM_NULL``.
+
 2018/04/04 1.0.0
 ================
 

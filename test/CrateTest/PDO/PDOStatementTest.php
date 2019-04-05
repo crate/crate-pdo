@@ -207,6 +207,9 @@ class PDOStatementTest extends TestCase
             [PDO::PARAM_NULL, '1', null],
             [PDO::PARAM_BOOL, '1', true],
             [PDO::PARAM_STR, '1', '1'],
+            [PDO::PARAM_INT, null, null],
+            [PDO::PARAM_TIMESTAMP, null, null],
+            [PDO::PARAM_BOOL, null, null],
         ];
     }
 
