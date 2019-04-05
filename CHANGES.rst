@@ -4,6 +4,8 @@
 Unreleased
 ==========
 
+- Fixed boolean parsing when binding a ``PDO::PARAM_BOOL`` parameter value.
+
 - Fixed `cast` exception when binding a NULL value to a parameter which is not
   of type ``PDO::PARAM_NULL``.
 
