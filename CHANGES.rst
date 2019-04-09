@@ -4,6 +4,9 @@
 Unreleased
 ==========
 
+2019/04/09 1.0.1
+================
+
 - Fixed boolean parsing when binding a ``PDO::PARAM_BOOL`` parameter value.
 
 - Fixed `cast` exception when binding a NULL value to a parameter which is not
