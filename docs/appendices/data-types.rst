@@ -11,10 +11,10 @@ Data Types
 
 .. _type-map:
 
-Type Mapping
+Type mapping
 ============
 
-Returned Values
+Returned values
 ---------------
 
 When returning values, this driver maps CrateDB types to native PHP types:
@@ -38,7 +38,7 @@ CrateDB Type  PHP Type
 `array`__     `array`__
 ============= ===========
 
-Query Values
+Query values
 ------------
 
 When using values in a query, you must bind them to a ``PDO`` `parameter class

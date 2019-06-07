@@ -11,7 +11,7 @@ Connect to CrateDB
 
 .. _data-source-name:
 
-Data Source Names
+Data source names
 =================
 
 PDO makes use of `Data Source Name`_ (DSN) strings.
@@ -71,7 +71,7 @@ So, to wrap up, here's a more complex list of example DSN strings:
 
 .. _get-connection:
 
-Get a Connection
+Get a connection
 ================
 
 You can get a PDO connection like this:
@@ -99,7 +99,7 @@ You can get a PDO connection like this:
    authenticate as the CrateDB superuser, which is ``crate``. The superuser
    does not have a password, so you should omit the ``password`` argument.
 
-Advanced Settings
+Advanced settings
 =================
 
 Once you have a connection, you can configure settings with the
@@ -137,7 +137,7 @@ Timeout
 
   **Default:** ``0`` (indefinitely)
 
-Driver Specific Constants
+Driver specific constants
 -------------------------
 
 The CrateDB driver provides number of ``PDO`` attribute class constants.
@@ -185,7 +185,7 @@ The CrateDB driver provides number of ``PDO`` attribute class constants.
 
     Consult the `CrateDB reference`_ for more help with setting up SSL.
 
-Fetch Modes
+Fetch modes
 -----------
 
 CrateDB PDO supports a subset of the PDO `fetch modes`_, depending on the fetch
@@ -221,7 +221,7 @@ method used.
 |                            | ``PDO::FETCH_OBJ``    |
 +----------------------------+-----------------------+
 
-Next Steps
+Next steps
 ==========
 
 Use the standard the `PDO documentation`_ documentation for the rest of your

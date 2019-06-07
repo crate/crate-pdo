@@ -19,7 +19,7 @@ Prerequisites
 
 Your project must be using `Composer`_.
 
-Set Up as a Dependency
+Set up as a dependency
 ======================
 
 The driver is available as `a package`_.
@@ -56,7 +56,7 @@ application:
 
    For more help with Composer, consult the `Composer documentation`_.
 
-Next Steps
+Next steps
 ==========
 
 Learn how to :ref:`connect to CrateDB <connect>`.
