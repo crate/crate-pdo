@@ -4,7 +4,6 @@ sudo: required
 
 php:
   - 7.2
-  - nightly
 
 matrix:
   allow_failures:
