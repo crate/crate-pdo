@@ -1,10 +1,10 @@
 .. _data-types:
 
 ==========
-Data Types
+Data types
 ==========
 
-.. rubric:: Table of Contents
+.. rubric:: Table of contents
 
 .. contents::
    :local:

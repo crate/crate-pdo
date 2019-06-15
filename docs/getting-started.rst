@@ -1,13 +1,13 @@
 .. _getting-started:
 
 ===============
-Getting Started
+Getting started
 ===============
 
 Learn how to install and get started with the :ref:`CrateDB PDO driver
 <index>`.
 
-.. rubric:: Table of Contents
+.. rubric:: Table of contents
 
 .. contents::
    :local:
