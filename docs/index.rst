@@ -1,7 +1,7 @@
 .. _index:
 
 ==================
-CrateDB PDO Driver
+CrateDB PDO driver
 ==================
 
 A `PDO`_ driver for `CrateDB`_.
@@ -23,7 +23,7 @@ interface for accessing databases in PHP.
    The CrateDB PHP PDO driver is an open source project and is `hosted on
    GitHub`_.
 
-.. rubric:: Table of Contents
+.. rubric:: Table of contents
 
 .. toctree::
    :maxdepth: 2
