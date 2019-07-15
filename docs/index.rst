@@ -1,7 +1,7 @@
 .. _index:
 
 ==================
-CrateDB PDO driver
+CrateDB PDO Driver
 ==================
 
 A `PDO`_ driver for `CrateDB`_.
