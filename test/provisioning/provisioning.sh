@@ -10,7 +10,7 @@ apt-key add DEB-GPG-KEY-crate
 . /etc/os-release
 echo "deb https://cdn.crate.io/downloads/deb/stable/ $UBUNTU_CODENAME main" > /etc/apt/sources.list.d/crate-stable-$UBUNTU_CODENAME.list
 apt-get update
-apt-get install -y openjdk-11-jre-headless crate php7.2-cli php7.2-xml php7.2-mbstring php7.2-xdebug
+apt-get install -y openjdk-11-jre-headless crate php7.3-cli php7.3-xml php7.3-mbstring php7.3-xdebug
 service crate stop
 rm /etc/crate/crate.yml
 ln -s /vagrant/test/provisioning/crate.yml /etc/crate/crate.yml
