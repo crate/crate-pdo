@@ -36,7 +36,7 @@ abstract class AbstractIntegrationTest extends TestCase
     {
         $this->pdo = new PDO('crate:localhost:4200', null, null, [
             PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
-            PDO::ATTR_TIMEOUT        => 1,
+            PDO::ATTR_TIMEOUT        => 5,
         ]);
 
         $query = 'CREATE TABLE test_table (id INTEGER PRIMARY KEY, name STRING,';
