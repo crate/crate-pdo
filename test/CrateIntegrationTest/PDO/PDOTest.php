@@ -44,7 +44,7 @@ class PDOTest extends AbstractIntegrationTest
 
         $this->assertEquals(42000, $ansiSQLError);
         $this->assertEquals(CrateConst::ERR_INVALID_SQL, $driverError);
-        $this->assertContains('mismatched input \'bogus\'', $driverMessage);
+        $this->assertStringContainsString('mismatched input \'bogus\'', $driverMessage);
     }
 
     public function testDelete()

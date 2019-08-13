@@ -7,6 +7,7 @@ namespace CrateTest\Stdlib;
 
 use ArrayIterator;
 use Crate\Stdlib\ArrayUtils;
+use Crate\Stdlib\Exception\InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -44,11 +45,11 @@ class ArrayUtilsTest extends TestCase
     }
 
     /**
-     * @expectedException \Crate\Stdlib\Exception\InvalidArgumentException
      * @covers ::toArray
      */
     public function testToArrayWithInvalidValue()
     {
+        $this->expectException(InvalidArgumentException::class);
         ArrayUtils::toArray('foo');
     }
 }
