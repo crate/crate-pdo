@@ -39,7 +39,7 @@ class CollectionTest extends TestCase
     /**
      * @covers ::__construct
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->collection = new Collection($this->rows, $this->columns, 0, count($this->rows));
     }

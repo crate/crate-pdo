@@ -32,7 +32,7 @@ abstract class AbstractIntegrationTest extends TestCase
      */
     protected $pdo;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pdo = new PDO('crate:localhost:4200', null, null, [
             PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
@@ -46,7 +46,7 @@ abstract class AbstractIntegrationTest extends TestCase
         $this->pdo->query($query);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->pdo->query('DROP TABLE test_table');
     }

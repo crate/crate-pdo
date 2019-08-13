@@ -68,7 +68,7 @@ class PDOStatementTest extends TestCase
      */
     protected $callbackCallParams;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pdo = $this->createMock(PDOInterface::class);
 

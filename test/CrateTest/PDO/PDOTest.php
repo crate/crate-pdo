@@ -51,7 +51,7 @@ class PDOTest extends TestCase
      */
     protected $server;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->server = $this->getMockBuilder(ServerInterface::class)
             ->disableOriginalConstructor()

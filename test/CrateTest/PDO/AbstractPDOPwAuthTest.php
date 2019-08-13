@@ -32,7 +32,7 @@ abstract class AbstractPDOPwAuthTest extends TestCase
      */
     protected $pdo;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->pdo = new PDO('crate:localhost:4200', 'crate', 'crate');
         $this->pdo->setAttribute(PDO::CRATE_ATTR_SSL_MODE, PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION);
@@ -45,7 +45,7 @@ abstract class AbstractPDOPwAuthTest extends TestCase
         $this->pdo->query($priv);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $del = "DROP USER IF EXISTS test_user";
         $this->pdo->query($del);

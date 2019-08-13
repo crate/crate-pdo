@@ -55,7 +55,7 @@ final class ServerPoolTest extends TestCase
      */
     private $serverPool;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->client = $this->createMock(ClientInterface::class);
 
