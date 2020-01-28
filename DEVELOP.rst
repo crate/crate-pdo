@@ -85,12 +85,10 @@ For example:
 Because this project has not yet had a major release, as of yet, there are no
 major releases before `0` to include in this list.
 
-Sometimes you might find that there are multiple older releases that need to be
-archived.
+To make changes to the RTD configuration (e.g., to activate or deactivate a
+release version), please contact the `@crate/docs`_ team.
 
-You can archive releases by selecting *Edit*, unselecting the *Active*
-checkbox, and then saving.
-
+.. _@crate/docs: https://github.com/orgs/crate/teams/docs
 .. _Composer: https://getcomposer.org
 .. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _VirtualBox: https://www.virtualbox.org/
