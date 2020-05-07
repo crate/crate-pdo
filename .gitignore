@@ -1,3 +1,4 @@
+_build/
 .buildpath
 .DS_Store
 .idea
@@ -13,3 +14,4 @@ env/
 out/
 report
 vendor/
+venv/
