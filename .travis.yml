@@ -1,34 +1,64 @@
-language: php
-dist: trusty
-sudo: required
+notifications:
+  email: false
 
-php:
-  - 7.2
-  - 7.3
+code: &code
+  stage: "Code"
+  language: php
+  dist: trusty
+  sudo: required
+  services:
+   - docker
+  before_script:
+   - docker run --name crate -d -v $PWD/test/provisioning/crate.yml:/crate/config/crate.yml -v $PWD/test/provisioning/keystore:/vagrant/test/provisioning/keystore -p 127.0.0.1:4200:4200 crate:latest
+   - composer self-update
+   - composer install --prefer-source
+  script:
+   - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
+   - ./vendor/bin/phpcs --standard=PSR2 ./src/
+  after_script:
+   - php vendor/bin/coveralls -v
+   - wget https://scrutinizer-ci.com/ocular.phar
+   - php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
+  after_failure:
+   - docker logs crate
+
+docs: &docs
+  stage: "Documentation"
+  language: generic
+  script:
+    - cd docs && make check
 
 matrix:
   allow_failures:
-    - nightly
+    - php: nightly
+  include:
 
-services:
-  - docker
+    - <<: *code
+      name: "PHP nightly"
+      php:
+        - nightly
 
-before_script:
-  - docker run --name crate -d -v $PWD/test/provisioning/crate.yml:/crate/config/crate.yml -v $PWD/test/provisioning/keystore:/vagrant/test/provisioning/keystore -p 127.0.0.1:4200:4200 crate:latest
-  - composer self-update
-  - composer install --prefer-source
+    - <<: *code
+      name: "PHP 7.3"
+      php:
+        - 7.3
 
-script:
-  - ./vendor/bin/phpunit --coverage-clover ./build/logs/clover.xml
-  - ./vendor/bin/phpcs --standard=PSR2 ./src/
+    - <<: *code
+      name: "PHP 7.2"
+      php:
+        - 7.2
 
-after_script:
-  - php vendor/bin/coveralls -v
-  - wget https://scrutinizer-ci.com/ocular.phar
-  - php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml
-
-after_failure:
-  - docker logs crate
-
-notifications:
-  email: false
+    - <<: *docs
+      name: "Python 3.7"
+      dist: xenial
+      addons:
+        apt:
+          sources:
+            - deadsnakes
+          packages:
+            - python3.7-dev
+            - python3.7-venv
+    - <<: *docs
+      name: "Python 3.7"
+      os: osx
+      osx_image: xcode10.2

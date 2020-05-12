@@ -1,11 +1,15 @@
 _build/
+.build
 .buildpath
 .DS_Store
+.env
 .idea
 .installed.cfg
 .project
 .settings
+.utils
 .vagrant
+*.lint
 bin/
 build/
 composer.lock
