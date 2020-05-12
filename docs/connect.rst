@@ -63,7 +63,7 @@ Here, replace ``<SCHEMA>`` with the name of the schema you want to select.
 
    However, you can query any schema you like by specifying it in the query.
 
-So, to wrap up, here's a more complex list of example DSN strings:
+To wrap up, here's a more complex list of example DSN strings:
 
 - ``crate:localhost:4200/my_schema``
 - ``crate:crate-1.vm.example.com:4200,crate-2.vm.example.com:4200``
