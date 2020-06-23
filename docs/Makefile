@@ -18,8 +18,6 @@
 # pursuant to the terms of the relevant commercial agreement.
 
 
-# Wrapper for the Crate Docs Utils
-
 # `TOP_DIR` is the top-level directory of the repository
 export TOP_DIR  := ..
 
@@ -30,46 +28,51 @@ export DOCS_DIR := docs
 # Do not edit anything below this line
 ###############################################################################
 
-UTILS_JSON := utils.json
-UTILS_REPO := https://github.com/crate/crate-docs-utils.git
-UTILS_DIR  := .utils
-UTILS_MAKE := $(MAKE) -f $(UTILS_DIR)/src/rules.mk
+BUILD_JSON    := build.json
+BUILD_REPO    := https://github.com/crate/crate-docs-build.git
+CLONE_DIR     := .clone
+SRC_DIR       := $(CLONE_DIR)/src
+SELF_SRC      := $(TOP_DIR)/src
+SELF_MAKEFILE := $(SELF_SRC)/rules.mk
+SRC_MAKE      := $(MAKE) -f $(SRC_DIR)/rules.mk
 
 # Parse the JSON file
-UTILS_VERSION = $(shell cat $(UTILS_JSON) | \
+BUILD_VERSION = $(shell cat $(BUILD_JSON) | \
     python -c 'import json, sys; print(json.load(sys.stdin)["message"])')
 
-ifeq ($(UTILS_VERSION),)
-$(error No version specified in $(UTILS_JSON))
+ifeq ($(BUILD_VERSION),)
+$(error No version specified in $(BUILD_JSON))
 endif
 
 # Default rule
 .PHONY: help
-help: $(UTILS_DIR)
-	@ $(UTILS_MAKE) $@
+help: $(SRC_DIR)
+	@ $(SRC_MAKE) $@
 
-ifneq ($(wildcard $(TOP_DIR)/src/rules.mk),)
-# The utils project detects itself and fakes an install of its own code so that
-# it can test itself
-$(UTILS_DIR):
+ifneq ($(wildcard $(SELF_MAKEFILE)),)
+# The project detects itself and fakes an install of its own core build rules
+# so that it can test itself
+$(CLONE_DIR):
 	mkdir -p $@
-	cp -R $(TOP_DIR)/src $@
+
+$(SRC_DIR): $(CLONE_DIR)
+	cp -R $(SELF_SRC) $@
 else
-# All other projects install a versioned copy of the utils
-$(UTILS_DIR):
+# All other projects install a versioned copy of the core build rules
+$(SRC_DIR):
 	git clone --depth=1 -c advice.detachedHead=false \
-	    --branch=$(UTILS_VERSION) $(UTILS_REPO) $(UTILS_DIR)
+	    --branch=$(BUILD_VERSION) $(BUILD_REPO) $(CLONE_DIR)
 endif
 
 # Don't pass through this target
 .PHONY: Makefile
 Makefile:
 
-# By default, pass targets through to the utils rules
+# By default, pass targets through to the core build rules
 .PHONY:
-%: $(UTILS_DIR)
-	@ $(UTILS_MAKE) $@
+%: $(SRC_DIR)
+	@ $(SRC_MAKE) $@
 
 .PHONY: reset
 reset:
-	rm -rf $(UTILS_DIR)
+	rm -rf $(CLONE_DIR)

@@ -81,7 +81,7 @@ For help, run:
 
     $ make
 
-    Crate Docs Utils
+    Crate Docs Build
 
     Run `make <TARGET>`, where <TARGET> is one of:
 
@@ -102,7 +102,7 @@ You must install `fswatch`_ to use the ``dev`` target.
 Continuous integration and deployment
 -------------------------------------
 
-|utils| |travis| |rtd|
+|build| |travis| |rtd|
 
 Travis CI is `configured`_ to run ``make check`` from the ``docs`` directory.
 Please do not merge pull requests until the tests pass.
@@ -134,10 +134,10 @@ Because this project has not yet had a major release, as of yet, there are no
 major releases before `0` to include in this list.
 
 To make changes to the RTD configuration (e.g., to activate or deactivate a
-release version), please contact the `@crate/docs`_ team.
+release version), please contact the `@crate/tech-writing`_ team.
 
 
-.. _@crate/docs: https://github.com/orgs/crate/teams/docs
+.. _@crate/tech-writing: https://github.com/orgs/crate/teams/tech-writing
 .. _Composer: https://getcomposer.org
 .. _configured: https://github.com/crate/crate-pdo/blob/master/.travis.yml
 .. _fswatch: https://github.com/emcrisostomo/fswatch
@@ -150,9 +150,9 @@ release version), please contact the `@crate/docs`_ team.
 .. _VirtualBox: https://www.virtualbox.org/
 
 
-.. |utils| image:: https://img.shields.io/endpoint.svg?color=blue&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcrate%2Fcrate-pdo%2Fmaster%2Fdocs%2Futils.json
-    :alt: Utils version
-    :target: https://github.com/crate/crate-pdo/blob/master/docs/utils.json
+.. |build| image:: https://img.shields.io/endpoint.svg?color=blue&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcrate%2Fcrate-pdo%2Fmaster%2Fdocs%2Fbuild.json
+    :alt: Build version
+    :target: https://github.com/crate/crate-pdo/blob/master/docs/build.json
 
 .. |travis| image:: https://img.shields.io/travis/crate/crate-pdo.svg?style=flat
     :alt: Travis CI status
