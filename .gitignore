@@ -1,6 +1,8 @@
 _build/
 .build
 .buildpath
+.clone
+.crate-docs-build
 .DS_Store
 .env
 .idea
@@ -8,7 +10,6 @@ _build/
 .project
 .settings
 .utils
-.clone
 .vagrant
 *.lint
 bin/
