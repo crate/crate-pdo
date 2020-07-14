@@ -18,19 +18,16 @@
 # pursuant to the terms of the relevant commercial agreement.
 
 
-# `TOP_DIR` is the top-level directory of the repository
-export TOP_DIR  := ..
-
-# `DOCS_DIR` is the path to `docs` from `TOP_DIR`
-export DOCS_DIR := docs
-
-
 # Do not edit anything below this line
 ###############################################################################
 
+.EXPORT_ALL_VARIABLES:
+
+DOCS_DIR      := docs
+TOP_DIR       := ..
 BUILD_JSON    := build.json
 BUILD_REPO    := https://github.com/crate/crate-docs-build.git
-CLONE_DIR     := .clone
+CLONE_DIR     := .crate-docs-build
 SRC_DIR       := $(CLONE_DIR)/src
 SELF_SRC      := $(TOP_DIR)/src
 SELF_MAKEFILE := $(SELF_SRC)/rules.mk
@@ -46,7 +43,7 @@ endif
 
 # Default rule
 .PHONY: help
-help: $(SRC_DIR)
+help: $(CLONE_DIR)
 	@ $(SRC_MAKE) $@
 
 ifneq ($(wildcard $(SELF_MAKEFILE)),)
@@ -54,12 +51,10 @@ ifneq ($(wildcard $(SELF_MAKEFILE)),)
 # so that it can test itself
 $(CLONE_DIR):
 	mkdir -p $@
-
-$(SRC_DIR): $(CLONE_DIR)
-	cp -R $(SELF_SRC) $@
+	cp -R $(SELF_SRC) $(SRC_DIR)
 else
 # All other projects install a versioned copy of the core build rules
-$(SRC_DIR):
+$(CLONE_DIR):
 	git clone --depth=1 -c advice.detachedHead=false \
 	    --branch=$(BUILD_VERSION) $(BUILD_REPO) $(CLONE_DIR)
 endif
@@ -70,7 +65,7 @@ Makefile:
 
 # By default, pass targets through to the core build rules
 .PHONY:
-%: $(SRC_DIR)
+%: $(CLONE_DIR)
 	@ $(SRC_MAKE) $@
 
 .PHONY: reset
