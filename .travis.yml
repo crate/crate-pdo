@@ -9,7 +9,14 @@ code: &code
   services:
    - docker
   before_script:
-   - docker run --name crate -d -v $PWD/test/provisioning/crate.yml:/crate/config/crate.yml -v $PWD/test/provisioning/keystore:/vagrant/test/provisioning/keystore -p 127.0.0.1:4200:4200 crate:latest
+   - >
+     docker run
+     --name crate -d
+     -v $PWD/test/provisioning/crate.yml:/crate/config/crate.yml
+     -v $PWD/test/provisioning/keystore:/vagrant/test/provisioning/keystore
+     -v $PWD/test/provisioning/truststore:/vagrant/test/provisioning/truststore
+     -p 127.0.0.1:4200:4200
+     crate:latest
    - composer self-update
    - composer install --prefer-source
   script:
