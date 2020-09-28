@@ -4,6 +4,9 @@
 Unreleased
 ==========
 
+2020/09/28 1.1.0
+================
+
 - Bumped required guzzle http client dependency to ``~7.0``
 
 2019/04/09 1.0.1

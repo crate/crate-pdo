@@ -33,7 +33,7 @@ use PDO as BasePDO;
 
 class PDO extends BasePDO implements PDOInterface
 {
-    public const VERSION     = '1.0.1';
+    public const VERSION     = '1.1.0';
     public const DRIVER_NAME = 'crate';
 
     public const DSN_REGEX = '/^(?:crate:)(?:((?:[\w\.-]+:\d+\,?)+))\/?([\w]+)?$/';
