@@ -33,7 +33,7 @@ docs: &docs
   stage: "Documentation"
   language: generic
   script:
-    - cd docs && make check
+    - cd docs && make qa && make check
 
 matrix:
   allow_failures:
