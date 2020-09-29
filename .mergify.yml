@@ -1,0 +1,13 @@
+---
+pull_request_rules:
+  - actions:
+      merge:
+        method: rebase
+        rebase_fallback: null
+        strict: true
+    conditions:
+      - label=ready-to-merge
+      - '#approved-reviews-by>=1'
+      - status-success~=continuous-integration/travis-ci
+      - status-success~=docs/readthedocs.org
+    name: default
