@@ -29,12 +29,6 @@ code: &code
   after_failure:
    - docker logs crate
 
-docs: &docs
-  stage: "Documentation"
-  language: generic
-  script:
-    - cd docs && make qa && make check
-
 matrix:
   allow_failures:
     - php: nightly
@@ -54,18 +48,3 @@ matrix:
       name: "PHP 7.2"
       php:
         - 7.2
-
-    - <<: *docs
-      name: "Python 3.7"
-      dist: xenial
-      addons:
-        apt:
-          sources:
-            - deadsnakes
-          packages:
-            - python3.7-dev
-            - python3.7-venv
-    - <<: *docs
-      name: "Python 3.7"
-      os: osx
-      osx_image: xcode10.2
