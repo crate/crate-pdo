@@ -8,6 +8,6 @@ pull_request_rules:
     conditions:
       - label=ready-to-merge
       - '#approved-reviews-by>=1'
-      - status-success~=continuous-integration/travis-ci
+      - status-success~=Build docs
       - status-success~=docs/readthedocs.org
     name: default
