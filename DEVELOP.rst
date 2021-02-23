@@ -1,6 +1,11 @@
-===============
+###############
 Developer Guide
-===============
+###############
+
+
+*************
+Using Vagrant
+*************
 
 
 Prerequisites
@@ -16,12 +21,12 @@ Installation
 
 Clone the project::
 
-    $ git clone git@github.com:crate/crate-pdo.git
+    git clone git@github.com:crate/crate-pdo.git
+    cd crate-pdo
 
 Start up the Vagrant machine::
 
-    $ cd crate-pdo
-    $ vagrant up
+    vagrant up
 
 When run for the first time, it will also run the needed provisioning.
 
@@ -34,40 +39,85 @@ Installing Dependencies
 
 Get Composer_ and install the dependencies::
 
-    $ vagrant ssh
-    $ cd /vagrant
-    $ curl -sS https://getcomposer.org/installer | php
-    $ ./composer.phar install
+    vagrant ssh
+    cd /vagrant
+    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+    composer install
 
-If the environment is outdated, you upgrade like so::
+If the environment is outdated, you can upgrade it::
 
-    $ ./composer.phar update
+    composer update
 
 
 Running the Tests
 =================
 
-You can run the tests like so::
+You can run the tests like::
 
-    $ vagrant ssh
-    $ cd /vagrant
-    $ ./vendor/bin/phpunit --coverage-html ./report
+    vagrant ssh
+    cd /vagrant
 
-To run a single test you can use the `--filter` option::
+    # Run test suite
+    composer run test
 
-    $ ./vendor/bin/phpunit --filter "testFetchColumn"
+    # Run code style checks
+    composer run style
+
+    # Output coverage report as HTML
+    composer run -- test --coverage-html ./report
+
+    # Run specific tests
+    composer run -- test --filter "testFetchColumn"
 
 
-Documentation
-=============
 
-The documentation is written using `Sphinx`_ and `ReStructuredText`_.
+************
+Using Docker
+************
 
 
+Installation
+============
+
+Install prerequisites::
+
+    brew install php@7.2 composer
+    pecl install xdebug
+
+Get the sources::
+
+    git clone git@github.com:crate/crate-pdo.git
+
+Setup environment::
+
+    composer install
+
+
+Running the Tests
+=================
+
+::
+
+    # Run CrateDB
+    docker run -it --rm \
+        --mount type=bind,source=$PWD/test/provisioning/crate.yml,target=/crate/config/crate.yml \
+        --mount type=bind,source=$PWD/test/provisioning/keystore,target=/vagrant/test/provisioning/keystore \
+        --mount type=bind,source=$PWD/test/provisioning/truststore,target=/vagrant/test/provisioning/truststore \
+        --publish 4200:4200 --publish 5432:5432 crate/crate:nightly
+
+    # Run test suite
+    composer run test
+
+    # Run code style checks
+    composer run style
+
+
+****************************
 Working on the documentation
-----------------------------
+****************************
 
-Python 3.7 is required.
+- The documentation is written using `Sphinx`_ and `ReStructuredText`_.
+- Python>=3.7 is required.
 
 Change into the ``docs`` directory:
 
@@ -98,12 +148,9 @@ You must install `fswatch`_ to use the ``dev`` target.
 
 
 Continuous integration and deployment
--------------------------------------
+=====================================
 
-|build| |travis| |rtd|
-
-Travis CI is `configured`_ to run ``make check`` from the ``docs`` directory.
-Please do not merge pull requests until the tests pass.
+CI is configured to run ``make check`` from the ``docs`` directory.
 
 `Read the Docs`_ (RTD) automatically deploys the documentation whenever a
 configured branch is updated.
@@ -113,7 +160,7 @@ release version), please contact the `@crate/docs`_ team.
 
 
 Archiving Docs Versions
------------------------
+=======================
 
 Check the `versions hosted on ReadTheDocs`_.
 
@@ -137,7 +184,6 @@ release version), please contact the `@crate/tech-writing`_ team.
 
 .. _@crate/tech-writing: https://github.com/orgs/crate/teams/tech-writing
 .. _Composer: https://getcomposer.org
-.. _configured: https://github.com/crate/crate-pdo/blob/master/.travis.yml
 .. _fswatch: https://github.com/emcrisostomo/fswatch
 .. _IDE guide: https://gist.github.com/mikethebeer/d8feda1bcc6b6ef6ea59
 .. _Read the Docs: http://readthedocs.org
@@ -146,16 +192,3 @@ release version), please contact the `@crate/tech-writing`_ team.
 .. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _versions hosted on ReadTheDocs: https://readthedocs.org/projects/crate-pdo/versions/
 .. _VirtualBox: https://www.virtualbox.org/
-
-
-.. |build| image:: https://img.shields.io/endpoint.svg?color=blue&url=https%3A%2F%2Fraw.githubusercontent.com%2Fcrate%2Fcrate-pdo%2Fmaster%2Fdocs%2Fbuild.json
-    :alt: Build version
-    :target: https://github.com/crate/crate-pdo/blob/master/docs/build.json
-
-.. |travis| image:: https://img.shields.io/travis/crate/crate-pdo.svg?style=flat
-    :alt: Travis CI status
-    :target: https://travis-ci.org/crate/crate-pdo
-
-.. |rtd| image:: https://readthedocs.org/projects/crate-pdo/badge/?version=latest
-    :alt: Read The Docs status
-    :target: https://readthedocs.org/projects/crate-pdo

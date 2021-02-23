@@ -78,11 +78,11 @@ __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#n
 __ https://secure.php.net/manual/en/language.types.float.php
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#numeric-types
 __ https://secure.php.net/manual/en/language.types.float.php
-__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#string
+__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#character-types
 __ https://secure.php.net/manual/en/language.types.string.php
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#ip
 __ https://secure.php.net/manual/en/language.types.string.php
-__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#timestamp
+__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#date-time-types
 __ https://secure.php.net/manual/en/language.types.integer.php
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#geo-point
 __ https://secure.php.net/manual/en/language.types.array.php
@@ -100,9 +100,9 @@ __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#n
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#numeric-types
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#numeric-types
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#numeric-types
-__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#string
+__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#character-types
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#ip
-__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#timestamp
+__ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#date-time-types
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#geo-point
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#geo-shape
 __ https://crate.io/docs/crate/reference/en/latest/general/ddl/data-types.html#object
