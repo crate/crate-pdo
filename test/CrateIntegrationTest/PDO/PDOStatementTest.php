@@ -23,6 +23,7 @@
 namespace CrateIntegrationTest\PDO;
 
 use Crate\PDO\PDO;
+use Crate\Stdlib\CrateConst;
 
 /**
  * Class PDOStatementTest
@@ -332,15 +333,67 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals(["foo" => "bar"], $resultSet[0]['object_type']);
     }
 
-    public function testNullParamBinding()
+    public function testInsertNull()
     {
-        $name = NULL;
-        $statement = $this->pdo->prepare('INSERT INTO test_table (name) VALUES (?)');
-        $statement->bindParam(1, $name);
+        $statement = $this->pdo->prepare('INSERT INTO test_table (id, name) VALUES (6, NULL)');
         $statement->execute();
 
+        $this->pdo->exec('REFRESH TABLE test_table');
+
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
         $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
-        $this->assertEquals($name, $resultSet[0]['name']);
+
+        $this->assertEquals(6, $resultSet[0]['id']);
+        $this->assertEquals(NULL, $resultSet[0]['name']);
+
+    }
+
+    public function testInvalidInsert()
+    {
+        $statement = $this->pdo->prepare("INSERT INTO test_table (name) VALUES ('hello')");
+        $statement->execute();
+
+        $this->assertEquals(4000, $statement->errorCode());
+
+        list ($ansiSQLError, $driverError, $driverMessage) = $statement->errorInfo();
+
+        $this->assertEquals(42000, $ansiSQLError);
+        $this->assertEquals(CrateConst::ERR_INVALID_SQL, $driverError);
+        $this->assertStringContainsString('SQLParseException[Column `id` is required but is missing from the insert statement]', $driverMessage);
+    }
+
+    public function testNullParamBinding()
+    {
+        $statement = $this->pdo->prepare('INSERT INTO test_table (id, name) VALUES (6, ?)');
+        $statement->bindValue(1, NULL, PDO::PARAM_STR);
+        $statement->execute();
+
+        $this->pdo->exec('REFRESH TABLE test_table');
+
+        $statement = $this->pdo->prepare('SELECT * FROM test_table');
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
+
+        $this->assertEquals(6, $resultSet[0]['id']);
+        $this->assertEquals(NULL, $resultSet[0]['name']);
+
+    }
+
+    public function testInvalidInsertWithNullParamBinding()
+    {
+
+        $value = NULL;
+
+        $statement = $this->pdo->prepare('INSERT INTO test_table (name) VALUES (?)');
+        $statement->bindParam(1, $value);
+        $statement->execute();
+
+        $this->assertEquals(4000, $statement->errorCode());
+
+        list ($ansiSQLError, $driverError, $driverMessage) = $statement->errorInfo();
+
+        $this->assertEquals(42000, $ansiSQLError);
+        $this->assertEquals(CrateConst::ERR_INVALID_SQL, $driverError);
+        $this->assertStringContainsString('SQLParseException[Column `id` is required but is missing from the insert statement]', $driverMessage);
 
     }
 
