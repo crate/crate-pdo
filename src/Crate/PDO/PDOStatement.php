@@ -177,6 +177,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     private function updateBoundColumns(array $row)
     {
+
+        if (!$this->isSuccessful()) {
+            return;
+        }
+
         foreach ($this->columnBinding as $column => &$metadata) {
             $index = $this->collection->getColumnIndex($column);
             if ($index === null) {
@@ -235,7 +240,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             return false;
         }
 
-        if (!$this->collection->valid()) {
+        if ($this->collection === null || !$this->collection->valid()) {
             return false;
         }
 
@@ -276,7 +281,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function bindParam(
         $parameter,
-        & $variable,
+        &$variable,
         $data_type = PDO::PARAM_STR,
         $length = null,
         $driver_options = null
@@ -378,7 +383,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function fetchAll($fetch_style = null, $fetch_argument = null, $ctor_args = [])
+    public function fetchAll($fetch_style = null, $fetch_argument = null, $ctor_args = null)
     {
         if (!$this->hasExecuted()) {
             $this->execute();
@@ -563,6 +568,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             default:
                 throw new Exception\UnsupportedException('Invalid fetch mode specified');
         }
+
+        return true;
     }
 
     /**
@@ -607,7 +614,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function getIterator()
     {
-        return new ArrayIterator($this->fetchAll());
+        $results = $this->fetchAll();
+        if ($results === false) {
+            throw new Exception\RuntimeException('Failure when fetching data');
+        }
+        return new ArrayIterator($results);
     }
 
     private function typedValue($value, $data_type)

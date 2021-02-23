@@ -1,0 +1,78 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  tests:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ 'ubuntu-18.04' ] #, macos-latest, windows-latest ]
+        php-version: [ '7.2', '7.3', '7.4' ]
+
+    name: PHP ${{ matrix.php-version }} on OS ${{ matrix.os }}
+    steps:
+
+      - name: Acquire sources
+        uses: actions/checkout@v2
+
+      # With GHA's "services", you cannot map volumes to your codebase BEFORE checking out the codebase.
+      # So, let's use `docker-compose` to bring in services AFTER checking out the code.
+      # https://github.community/t/services-and-volumes/16313
+      - name: Run CrateDB
+        run: docker-compose --file test/provisioning/docker-compose.yml up --detach
+
+      # https://github.com/marketplace/actions/setup-php-action
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          # Select PHPUnit version suitable for PHP 7.2.
+          tools: composer, phpunit:^8.5
+
+      # Cache Composer Dependencies
+      # https://github.com/marketplace/actions/setup-php-action#cache-composer-dependencies
+      - name: Get composer cache directory
+        id: composer-cache-dir
+        run: echo "::set-output name=dir::$(composer config cache-dir)"
+      - name: Apply dependency caching
+        id: composer-cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache-dir.outputs.dir }}
+          key: os=${{ matrix.os }}-composer-${{ hashFiles('**/composer.lock') }}
+
+      - name: Install package
+        run: composer install
+
+      - name: Run code style checks
+        run: composer run style
+
+      - name: Run tests
+        run: composer run test
+
+      # https://github.com/php-coveralls/php-coveralls#github-actions
+      - name: Upload coverage results to Coveralls
+        if: always() && matrix.php-version == '7.4'
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          composer global require php-coveralls/php-coveralls
+          php-coveralls --coverage_clover=build/logs/clover.xml -v
+
+      - name: Upload coverage results to Scrutinizer CI
+        if: always() && matrix.php-version == '7.4'
+        run: |
+          composer global require scrutinizer/ocular
+          ocular code-coverage:upload --format=php-clover build/logs/clover.xml
+
+      # https://docs.github.com/en/actions/reference/context-and-expression-syntax-for-github-actions#failure
+      # https://github.community/t/how-do-i-get-the-logs-for-a-service/16422
+      - name: The job has failed
+        if: failure()
+        run: docker-compose --file test/provisioning/docker-compose.yml logs

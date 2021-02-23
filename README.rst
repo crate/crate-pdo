@@ -2,17 +2,33 @@
 CrateDB PDO Adapter
 ===================
 
-.. image:: https://travis-ci.org/crate/crate-pdo.svg?branch=master
-    :target: https://travis-ci.org/crate/crate-pdo
+.. image:: https://github.com/crate/crate-pdo/workflows/Tests/badge.svg
+    :target: https://github.com/crate/crate-pdo/actions?workflow=Tests
     :alt: Build status
 
-.. image:: https://scrutinizer-ci.com/g/crate/crate-pdo/badges/coverage.png?b=master
-    :target: https://scrutinizer-ci.com/g/crate/crate-pdo
+.. image:: https://github.com/crate/crate-pdo/workflows/Docs/badge.svg
+    :target: https://github.com/crate/crate-pdo/actions?workflow=Docs
+    :alt: Build status (documentation)
+
+.. image:: https://coveralls.io/repos/github/crate/crate-pdo/badge.svg?branch=main
+    :target: https://coveralls.io/github/crate/crate-pdo
     :alt: Coverage
 
-.. image:: https://scrutinizer-ci.com/g/crate/crate-pdo/badges/quality-score.png?b=master
+.. image:: https://scrutinizer-ci.com/g/crate/crate-pdo/badges/quality-score.png?b=main
     :target: https://scrutinizer-ci.com/g/crate/crate-pdo
     :alt: Quality
+
+.. image:: https://poser.pugx.org/crate/crate-pdo/v/stable
+    :target: https://packagist.org/packages/crate/crate-pdo
+    :alt: Latest stable version
+
+.. image:: https://poser.pugx.org/crate/crate-pdo/downloads
+    :target: https://packagist.org/packages/crate/crate-pdo
+    :alt: Total downloads
+
+.. image:: https://poser.pugx.org/crate/crate-pdo/license
+    :target: https://packagist.org/packages/crate/crate-pdo
+    :alt: License
 
 |
 
@@ -30,7 +46,9 @@ You need to be using PHP and Composer_.
 Installation
 ============
 
-The CrateDB PDO adapter is available as a Composer package.
+The CrateDB PDO adapter is available as a Composer package. Install it like::
+
+    composer add crate/crate-pdo
 
 See the `installation documentation`_ for more info.
 

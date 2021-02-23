@@ -1,0 +1,30 @@
+# Purpose:
+# Start CrateDB with custom parameters and wait for the service being available,
+# even when invoked through `docker-compose up --detach`.
+
+version: '3'
+
+services:
+
+  cratedb:
+    image: crate/crate:nightly
+    command: ["crate", "-Cstats.enabled=true"]
+    ports:
+      - 4200:4200
+    volumes:
+      - ./crate.yml:/crate/config/crate.yml
+      - ./keystore:/vagrant/test/provisioning/keystore
+      - ./truststore:/vagrant/test/provisioning/truststore
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--insecure", "https://localhost:4200"]
+      start_period: 3s
+      interval: 0.5s
+      retries: 30
+      timeout: 30s
+
+  # https://marcopeg.com/2019/docker-compose-healthcheck/
+  start_dependencies:
+    image: dadarek/wait-for-dependencies
+    depends_on:
+      cratedb:
+        condition: service_healthy

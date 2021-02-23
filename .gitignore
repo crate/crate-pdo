@@ -11,11 +11,10 @@ _build/
 .settings
 .utils
 .vagrant
+.phpunit.result.cache
 *.lint
 bin/
 build/
-composer.lock
-composer.phar
 env/
 out/
 report
