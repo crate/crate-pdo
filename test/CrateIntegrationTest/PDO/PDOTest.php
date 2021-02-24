@@ -70,6 +70,6 @@ class PDOTest extends AbstractIntegrationTest
     public function testGetServerVersion()
     {
         $result = $this->pdo->getServerVersion();
-        $this->assertRegExp("/[0-9]+\.[0-9]+\.[0-9]+/", $result);
+        $this->assertMatchesRegularExpression("/[0-9]+\.[0-9]+\.[0-9]+/", $result);
     }
 }

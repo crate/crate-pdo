@@ -202,7 +202,10 @@ final class ServerPoolTest extends TestCase
             ->with('POST', '/_sql', $expectedWithDefaults)
             ->willReturn(new Response(200, [], $body));
 
-        $this->serverPool->execute('query', []);
+        $result = $this->serverPool->execute('query', []);
+
+        $this->assertEquals(new Collection([], [], 0, 0), $result);
+
     }
 
     public function testExecuteWithNoRespondingServers()
@@ -213,6 +216,8 @@ final class ServerPoolTest extends TestCase
             ->willThrowException(new ConnectException('helloWorld', new Request('post', 'localhost')));
 
         $this->expectException(ConnectException::class);
+        $this->expectExceptionMessage("No more servers available, exception from last server: helloWorld");
+
         $this->serverPool->execute('helloWorld', []);
     }
 
@@ -221,21 +226,22 @@ final class ServerPoolTest extends TestCase
         $body = json_encode(['rows' => [], 'cols' => [], 'duration' => 0, 'rowcount' => 0]);
 
         $this->client
-            ->expects($this->at(0))
+            ->expects($this->exactly(2))
             ->method('request')
-            ->willThrowException(new ConnectException('helloWorld', new Request('post', 'localhost')));
+            ->will(self::onConsecutiveCalls(
+                self::throwException(new ConnectException('helloWorld', new Request('post', 'localhost'))),
+                new Response(200, [], $body)
+            ));
 
-        $this->client
-            ->expects($this->at(1))
-            ->method('request')
-            ->willReturn(new Response(200, [], $body));
+        $result = $this->serverPool->execute('helloWorld', []);
 
-        $this->assertInstanceOf(Collection::class, $this->serverPool->execute('helloWorld', []));
+        $this->assertInstanceOf(Collection::class, $result);
+        $this->assertEquals(new Collection([], [], 0, 0), $result);
     }
 
     public function testWithBadRequest()
     {
-        $body = json_encode(['error' => ['code' => 1337, 'message' => 'invalid sql, u fool.']]);
+        $body = json_encode(['error' => ['code' => 1337, 'message' => 'Invalid SQL statement']]);
 
         $request  = new Request('post', 'localhost');
         $response = new Response(400, [], $body);
@@ -246,6 +252,8 @@ final class ServerPoolTest extends TestCase
             ->willThrowException(new BadResponseException('error', $request, $response));
 
         $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage("Invalid SQL statement");
+
         $this->serverPool->execute('helloWorld', []);
     }
 }
