@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <phpunit
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
     bootstrap="./vendor/autoload.php"
     colors="true"
     convertErrorsToExceptions="true"
@@ -10,17 +12,17 @@
     processIsolation="false"
     backupGlobals="false"
 >
-    <testsuites>
-        <testsuite name="CratePDO unit tests">
-            <directory>./test/CrateTest</directory>
-        </testsuite>
-        <testsuite name="CratePDO integration tests">
-            <directory>./test/CrateIntegrationTest/PDO</directory>
-        </testsuite>
-    </testsuites>
-    <filter>
-        <whitelist addUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./src</directory>
-        </whitelist>
-    </filter>
+  <coverage includeUncoveredFiles="true">
+    <include>
+      <directory suffix=".php">./src</directory>
+    </include>
+  </coverage>
+  <testsuites>
+    <testsuite name="CrateDB PDO unit tests">
+      <directory>./test/CrateTest</directory>
+    </testsuite>
+    <testsuite name="CrateDB PDO integration tests">
+      <directory>./test/CrateIntegrationTest/PDO</directory>
+    </testsuite>
+  </testsuites>
 </phpunit>
