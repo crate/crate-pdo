@@ -88,7 +88,7 @@ Get the sources::
 
     git clone git@github.com:crate/crate-pdo.git
 
-Setup environment::
+Setup project dependencies::
 
     composer install
 
@@ -109,7 +109,11 @@ Running the Tests
     composer run test
 
     # Run code style checks
-    composer run style
+    composer run check-style
+
+    # Some code style quirks can be automatically fixed
+    composer run fix-style
+
 
 
 ****************************

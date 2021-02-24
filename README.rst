@@ -22,9 +22,9 @@ CrateDB PDO Adapter
     :target: https://packagist.org/packages/crate/crate-pdo
     :alt: Latest stable version
 
-.. image:: https://poser.pugx.org/crate/crate-pdo/downloads
     :target: https://packagist.org/packages/crate/crate-pdo
-    :alt: Total downloads
+.. image:: https://poser.pugx.org/crate/crate-pdo/d/monthly
+    :alt: Monthly downloads
 
 .. image:: https://poser.pugx.org/crate/crate-pdo/license
     :target: https://packagist.org/packages/crate/crate-pdo
@@ -48,7 +48,7 @@ Installation
 
 The CrateDB PDO adapter is available as a Composer package. Install it like::
 
-    composer add crate/crate-pdo
+    composer require crate/crate-pdo
 
 See the `installation documentation`_ for more info.
 
