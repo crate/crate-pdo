@@ -81,7 +81,15 @@ Installation
 
 Install prerequisites::
 
-    brew install php@7.2 composer
+    # Install different PHP releases.
+    brew install php@7.3 php@7.4 php@8.0 composer
+
+    # Select PHP version.
+    brew-php-switcher 7.3
+    brew-php-switcher 7.4
+    brew-php-switcher 8.0
+
+    # Install xdebug extension for tracking code coverage.
     pecl install xdebug
 
 Get the sources::

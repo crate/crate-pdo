@@ -28,6 +28,7 @@ use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\PDO;
 use Crate\PDO\PDOStatement;
+use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -307,5 +308,38 @@ class PDOTest extends TestCase
     {
         $this->expectException(UnsupportedException::class);
         $this->pdo->lastInsertId();
+    }
+
+    /**
+     * PHP8 has a new PDO query interface.
+     * Not all things have been implemented yet.
+     *
+     * @requires PHP >= 8
+     *
+     * @dataProvider fetchModeStyleProvider
+     * @param $fetchMode
+     */
+    public function testNewPhp8PdoInterfaceQueryWithFetchMode($fetchMode)
+    {
+        $this->expectException(UnsupportedException::class);
+        $this->expectExceptionMessage('PDO::query $fetchMode not implemented yet');
+
+        $this->pdo->query("SELECT 1;", $fetchMode, 'foobar');
+    }
+
+    /**
+     * Provide test function with a list of parameters.
+     *
+     * @return Generator
+     */
+    public function fetchModeStyleProvider()
+    {
+        return [
+            [PDO::FETCH_ASSOC],
+            [PDO::FETCH_NUM],
+            [PDO::FETCH_BOTH],
+            [PDO::FETCH_BOUND],
+            [PDO::FETCH_NAMED],
+        ];
     }
 }

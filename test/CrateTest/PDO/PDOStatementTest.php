@@ -413,6 +413,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      */
     public function testFetchAllWithFailedExecution()
     {
@@ -423,6 +424,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      */
     public function testFetchAllWithInvalidFetchStyle()
     {
@@ -540,6 +542,7 @@ class PDOStatementTest extends TestCase
     /**
      * @dataProvider fetchAllStyleProvider
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      *
      * @param string $fetchStyle
      * @param array  $expected
@@ -561,6 +564,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      */
     public function testFetchAllWithFetchStyleFuncAndInvalidCallback()
     {
@@ -572,6 +576,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      */
     public function testFetchAllBothSameColumnTwice()
     {
@@ -585,6 +590,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      */
     public function testFetchAllWithFetchStyleFunc()
     {
@@ -599,6 +605,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      */
     public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndexType()
     {
@@ -610,6 +617,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchAll
+     * @covers ::doFetchAll
      */
     public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndex()
     {
@@ -732,6 +740,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::setFetchMode
+     * @covers ::doSetFetchMode
      */
     public function testSetFetchModeWithColumnAndMissingColNo()
     {
@@ -745,6 +754,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::setFetchMode
+     * @covers ::doSetFetchMode
      */
     public function testSetFetchModeWithColumnAndInvalidColNo()
     {
@@ -758,6 +768,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::setFetchMode
+     * @covers ::doSetFetchMode
      */
     public function testSetFetchModeWithColumn()
     {
@@ -787,6 +798,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::setFetchMode
+     * @covers ::doSetFetchMode
      * @dataProvider fetchModeStyleProvider
      *
      * @param int $fetchStyle
@@ -807,6 +819,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::setFetchMode
+     * @covers ::doSetFetchMode
      */
     public function testSetFetchModeWithInvalidFetchStyle()
     {
@@ -816,6 +829,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::setFetchMode
+     * @covers ::doSetFetchMode
      * @dataProvider fetchModeStyleProvider
      *
      * @param int $fetchStyle

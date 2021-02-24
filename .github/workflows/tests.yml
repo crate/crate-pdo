@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [ 'ubuntu-18.04' ] #, macos-latest, windows-latest ]
-        php-version: [ '7.2', '7.3', '7.4' ]
+        php-version: [ '7.3', '7.4', '8.0' ]
 
     name: PHP ${{ matrix.php-version }} on OS ${{ matrix.os }}
     steps:
@@ -32,8 +32,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          # Select PHPUnit version suitable for PHP 7.2.
-          tools: composer, phpunit:^8.5
+          tools: composer, phpunit:^9.5
 
       # Cache Composer Dependencies
       # https://github.com/marketplace/actions/setup-php-action#cache-composer-dependencies
@@ -58,7 +57,7 @@ jobs:
 
       # https://github.com/php-coveralls/php-coveralls#github-actions
       - name: Upload coverage results to Coveralls
-        if: always() && matrix.php-version == '7.4'
+        if: always() && (matrix.php-version == '7.4' || matrix.php-version == '8.0')
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -66,7 +65,7 @@ jobs:
           php-coveralls --coverage_clover=build/logs/clover.xml -v
 
       - name: Upload coverage results to Scrutinizer CI
-        if: always() && matrix.php-version == '7.4'
+        if: always() && (matrix.php-version == '7.4' || matrix.php-version == '8.0')
         run: |
           echo "Git HEAD ref:"
           git log --pretty=%P -n1 HEAD
