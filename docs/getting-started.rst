@@ -26,7 +26,7 @@ The driver is available as a package at `crate/crate-pdo`_.
 
 Add the driver package to your project's `composer.json`_::
 
-    composer add crate/crate-pdo
+    composer require crate/crate-pdo
 
 
 .. _install:

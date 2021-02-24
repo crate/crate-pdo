@@ -51,7 +51,7 @@ jobs:
         run: composer install
 
       - name: Run code style checks
-        run: composer run style
+        run: composer run check-style
 
       - name: Run tests
         run: composer run test
