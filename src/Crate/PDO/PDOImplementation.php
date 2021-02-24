@@ -40,15 +40,8 @@ namespace Crate\PDO;
 
 use const PHP_VERSION_ID;
 
-/**
- * Interface PDOInterface
- *
- * Used for unit testing the PDOStatement
- *
- * @internal
- */
 if (PHP_VERSION_ID >= 80000) {
-    class_alias('\Crate\PDO\PDOInterfacePhp8', '\Crate\PDO\PDOInterface');
+    class_alias('\Crate\PDO\PDOImplementationPhp8', '\Crate\PDO\PDOImplementation');
 } else {
-    class_alias('\Crate\PDO\PDOInterfacePhp7', '\Crate\PDO\PDOInterface');
+    class_alias('\Crate\PDO\PDOImplementationPhp7', '\Crate\PDO\PDOImplementation');
 }

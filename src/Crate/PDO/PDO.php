@@ -33,6 +33,8 @@ use PDO as BasePDO;
 
 class PDO extends BasePDO implements PDOInterface
 {
+    use PDOImplementation;
+
     public const VERSION     = '1.1.0';
     public const DRIVER_NAME = 'crate';
 
@@ -247,7 +249,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function query($statement)
+    public function doQuery($statement)
     {
         $statement = $this->prepare($statement);
         $result    = $statement->execute();

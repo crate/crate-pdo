@@ -34,6 +34,8 @@ use PDOStatement as BasePDOStatement;
 
 class PDOStatement extends BasePDOStatement implements IteratorAggregate
 {
+    use PDOStatementImplementation;
+
     /**
      * @var array
      */
@@ -383,7 +385,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function fetchAll($fetch_style = null, $fetch_argument = null, $ctor_args = null)
+    public function doFetchAll($fetch_style = null, $fetch_argument = null, $ctor_args = null)
     {
         if (!$this->hasExecuted()) {
             $this->execute();
@@ -533,7 +535,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function setFetchMode($mode, $params = null)
+    public function doSetFetchMode($mode, $params = null)
     {
         $args     = func_get_args();
         $argCount = count($args);
@@ -612,7 +614,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@Inheritdoc}
      */
-    public function getIterator()
+    public function getIterator(): \Iterator
     {
         $results = $this->fetchAll();
         if ($results === false) {

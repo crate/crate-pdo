@@ -20,35 +20,35 @@
  * software solely pursuant to the terms of the relevant commercial agreement.
  */
 
-/*
- * PDO compatibility for PHP 8.x.
- *
- * Reason:
- *  - https://github.com/php/php-src/pull/6220
- *
- * Implementation derived and inspired from:
- *  - https://github.com/doctrine/dbal/pull/4347
- *  - https://www.drupal.org/project/drupal/issues/3109885
- *  - https://www.drupal.org/project/drupal/issues/3156881
- *  - https://www.drupal.org/node/3170913
- *
- */
-
 declare(strict_types=1);
 
 namespace Crate\PDO;
 
-use const PHP_VERSION_ID;
+use Crate\PDO\Exception\UnsupportedException;
 
 /**
- * Interface PDOInterface
- *
- * Used for unit testing the PDOStatement
- *
  * @internal
  */
-if (PHP_VERSION_ID >= 80000) {
-    class_alias('\Crate\PDO\PDOInterfacePhp8', '\Crate\PDO\PDOInterface');
-} else {
-    class_alias('\Crate\PDO\PDOInterfacePhp7', '\Crate\PDO\PDOInterface');
+trait PDOImplementationPhp8
+{
+    /**
+     * @param string|null $query
+     * @param int|null $fetchMode
+     * @param mixed ...$fetchModeArgs
+     * @return PDOStatement
+     */
+    public function query(?string $query = null, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement
+    {
+        if ($fetchMode !== null) {
+            throw new UnsupportedException('PDO::query $fetchMode not implemented yet');
+        }
+        // FIXME: return $this->doQuery($query, $fetchMode, ...$fetchModeArgs);
+        return $this->doQuery($query);
+    }
+
+    /**
+     * @param $statement
+     * @return PDOStatement
+     */
+    abstract public function doQuery($statement);
 }

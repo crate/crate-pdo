@@ -4,6 +4,8 @@
 Unreleased
 ==========
 
+- Added compatibility for PHP8, deprecated PHP7.2
+
 - Bumped required guzzle http client dependency to ``^7.2``
 
 2020/09/28 1.1.0
