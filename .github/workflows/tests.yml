@@ -68,6 +68,8 @@ jobs:
       - name: Upload coverage results to Scrutinizer CI
         if: always() && matrix.php-version == '7.4'
         run: |
+          echo "Git HEAD ref:"
+          git log --pretty=%P -n1 HEAD
           composer global require scrutinizer/ocular
           ocular code-coverage:upload --format=php-clover build/logs/clover.xml
 
