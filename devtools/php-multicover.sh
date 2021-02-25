@@ -36,9 +36,11 @@
 #   composer remove --dev nimut/phpunit-merger
 #
 
-# Define shortcuts to executables.
-php7=/usr/local/Cellar/php@7.4/7.4.15/bin/php
-php8=/usr/local/Cellar/php/8.0.2/bin/php
+# Define shortcuts to PHP variants.
+php7=/usr/bin/php7.4
+php8=/usr/bin/php8.0
+
+# Define shortcuts to vendor scripts.
 phpunit="$(pwd)/vendor/bin/phpunit"
 phpunit_merger="$(pwd)/vendor/bin/phpunit-merger"
 
