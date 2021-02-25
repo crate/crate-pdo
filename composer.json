@@ -35,6 +35,8 @@
     },
     "scripts": {
         "test": "XDEBUG_MODE=coverage phpunit --coverage-clover build/logs/clover.xml",
+        "coverage-html": "XDEBUG_MODE=coverage phpunit --coverage-html build/logs/html",
+        "multicover": "./devtools/php-multicover.sh",
         "check-style": "phpcs",
         "fix-style": "phpcbf"
     }

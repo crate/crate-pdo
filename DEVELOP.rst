@@ -81,15 +81,15 @@ Installation
 
 Install prerequisites::
 
-    # Install different PHP releases.
-    brew install php@7.3 php@7.4 php@8.0 composer
+    # Install different PHP releases and Composer.
+    brew install php@7.3 php@7.4 php@8.0 brew-php-switcher composer
 
     # Select PHP version.
     brew-php-switcher 7.3
     brew-php-switcher 7.4
     brew-php-switcher 8.0
 
-    # Install xdebug extension for tracking code coverage.
+    # Install `xdebug` extension into each environment for tracking code coverage.
     pecl install xdebug
 
 Get the sources::
@@ -113,8 +113,18 @@ Running the Tests
         --mount type=bind,source=$PWD/test/provisioning/truststore,target=/vagrant/test/provisioning/truststore \
         --publish 4200:4200 --publish 5432:5432 crate/crate:nightly
 
-    # Run test suite
+    # Run test suite on current/default version of PHP
     composer run test
+
+    # Run tests on both PHP7 and PHP8 to get the full picture of coverage
+    composer run multicover
+    open build/multicover/html/index.html
+
+
+Invoke code style checks
+========================
+
+::
 
     # Run code style checks
     composer run check-style
