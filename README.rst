@@ -10,8 +10,8 @@ CrateDB PDO Adapter
     :target: https://github.com/crate/crate-pdo/actions?workflow=Docs
     :alt: Build status (documentation)
 
-.. image:: https://coveralls.io/repos/github/crate/crate-pdo/badge.svg?branch=main
-    :target: https://coveralls.io/github/crate/crate-pdo
+.. image:: https://codecov.io/gh/crate/crate-pdo/branch/main/graph/badge.svg
+    :target: https://app.codecov.io/gh/crate/crate-pdo
     :alt: Coverage
 
 .. image:: https://scrutinizer-ci.com/g/crate/crate-pdo/badges/quality-score.png?b=main

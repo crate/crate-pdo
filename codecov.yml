@@ -1,0 +1,8 @@
+# https://docs.codecov.io/docs/common-recipe-list
+
+coverage:
+  status:
+    project:
+      default:
+        target: 85%    # the required coverage value
+        threshold: 3%  # the leniency in hitting the target
