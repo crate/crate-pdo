@@ -55,14 +55,13 @@ jobs:
       - name: Run tests
         run: composer run test
 
-      # https://github.com/php-coveralls/php-coveralls#github-actions
-      - name: Upload coverage results to Coveralls
+      # https://github.com/codecov/codecov-action
+      - name: Upload coverage results to Codecov
+        uses: codecov/codecov-action@v1
         if: always() && (matrix.php-version == '7.4' || matrix.php-version == '8.0')
-        env:
-          COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          composer global require php-coveralls/php-coveralls
-          php-coveralls --coverage_clover=build/logs/clover.xml -v
+        with:
+          files: ./build/logs/clover.xml
+          fail_ci_if_error: true
 
       - name: Upload coverage results to Scrutinizer CI
         if: always() && (matrix.php-version == '7.4' || matrix.php-version == '8.0')
