@@ -357,6 +357,7 @@ class PDOStatementTest extends TestCase
 
     /**
      * @covers ::fetchColumn
+     * @covers \Crate\PDO\Exception\InvalidArgumentException
      */
     public function testFetchColumnWithInvalidColumnNumberType()
     {
@@ -565,6 +566,7 @@ class PDOStatementTest extends TestCase
     /**
      * @covers ::fetchAll
      * @covers ::doFetchAll
+     * @covers \Crate\PDO\Exception\InvalidArgumentException
      */
     public function testFetchAllWithFetchStyleFuncAndInvalidCallback()
     {
@@ -606,6 +608,7 @@ class PDOStatementTest extends TestCase
     /**
      * @covers ::fetchAll
      * @covers ::doFetchAll
+     * @covers \Crate\PDO\Exception\InvalidArgumentException
      */
     public function testFetchAllWithFetchStyleColumnAndInvalidColumnIndexType()
     {
@@ -741,6 +744,7 @@ class PDOStatementTest extends TestCase
     /**
      * @covers ::setFetchMode
      * @covers ::doSetFetchMode
+     * @covers \Crate\PDO\Exception\InvalidArgumentException
      */
     public function testSetFetchModeWithColumnAndMissingColNo()
     {
@@ -755,6 +759,7 @@ class PDOStatementTest extends TestCase
     /**
      * @covers ::setFetchMode
      * @covers ::doSetFetchMode
+     * @covers \Crate\PDO\Exception\InvalidArgumentException
      */
     public function testSetFetchModeWithColumnAndInvalidColNo()
     {
@@ -830,6 +835,8 @@ class PDOStatementTest extends TestCase
     /**
      * @covers ::setFetchMode
      * @covers ::doSetFetchMode
+     * @covers \Crate\PDO\Exception\InvalidArgumentException
+     *
      * @dataProvider fetchModeStyleProvider
      *
      * @param int $fetchStyle

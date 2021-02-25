@@ -315,6 +315,7 @@ class PDOTest extends TestCase
      * Not all things have been implemented yet.
      *
      * @requires PHP >= 8
+     * @covers ::query
      *
      * @dataProvider fetchModeStyleProvider
      * @param $fetchMode
