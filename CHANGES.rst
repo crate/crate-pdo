@@ -4,7 +4,9 @@
 Unreleased
 ==========
 
-- Added compatibility for PHP8, deprecated PHP7.2
+- Added support for PHP 8.0
+
+- Removed support for PHP 7.2, it has reached end of life
 
 - Bumped required guzzle http client dependency to ``^7.2``
 
