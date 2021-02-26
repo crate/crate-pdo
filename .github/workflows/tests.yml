@@ -21,7 +21,7 @@ jobs:
       - name: Acquire sources
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 2
 
       # With GHA's "services", you cannot map volumes to your codebase BEFORE checking out the codebase.
       # So, let's use `docker-compose` to bring in services AFTER checking out the code.
