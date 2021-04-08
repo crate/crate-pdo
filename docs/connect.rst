@@ -239,12 +239,12 @@ setup process.
 .. _database user: https://crate.io/docs/crate/reference/en/latest/admin/user-management.html
 .. _documentation: https://github.com/crate/crate-sample-apps/blob/master/php/documentation.md
 .. _DSN: https://en.wikipedia.org/wiki/Data_source_name
-.. _fetch modes: https://secure.php.net/manual/en/pdostatement.fetch.php
+.. _fetch modes: https://www.php.net/manual/en/pdostatement.fetch.php
 .. _HTTP connection: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html
 .. _HTTP endpoint: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html
 .. _PDO API Documentation: http://www.php.net/pdo
-.. _PDO documentation: http://www.php.net/manual/en/intro.pdo.php
-.. _PDO::setAttribute: http://php.net/manual/en/pdo.setattribute.php
+.. _PDO documentation: https://www.php.net/manual/en/intro.pdo.php
+.. _PDO::setAttribute: https://www.php.net/manual/en/pdo.setattribute.php
 .. _round-robin DNS: https://en.wikipedia.org/wiki/Round-robin_DNS
 .. _sample application: https://github.com/crate/crate-sample-apps/tree/master/php
-.. _setAttribute: https://secure.php.net/manual/en/pdo.setattribute.php
+.. _setAttribute: https://www.php.net/manual/en/pdo.setattribute.php

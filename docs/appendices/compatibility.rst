@@ -36,12 +36,4 @@ Consult the following table for CrateDB version compatibility notes:
 |                |                 | The default CrateDB user is ``crate`` and |
 |                |                 | no password is set.                       |
 |                |                 |                                           |
-|                |                 | The `enterprise edition`_ of CrateDB      |
-|                |                 | allows you to `create your own users`_.   |
-|                |                 |                                           |
-|                |                 | Prior versions of CrateDB do not support  |
-|                |                 | this feature.                             |
 +----------------+-----------------+-------------------------------------------+
-
-.. _create your own users: https://crate.io/docs/crate/reference/en/latest/admin/user-management.html
-.. _enterprise edition: https://crate.io/products/cratedb-enterprise/
