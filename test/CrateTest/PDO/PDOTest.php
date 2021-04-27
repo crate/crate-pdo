@@ -147,9 +147,9 @@ class PDOTest extends TestCase
      */
     public function testGetAndSetStatementClass()
     {
-        $this->assertEquals(PDOStatement::class, $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
+        $this->assertEquals([PDOStatement::class], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
         $this->pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, 'Doctrine\DBAL\Driver\PDO\Statement');
-        $this->assertEquals('Doctrine\DBAL\Driver\PDO\Statement', $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
+        $this->assertEquals(['Doctrine\DBAL\Driver\PDO\Statement'], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
     }
 
     /**
