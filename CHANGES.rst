@@ -1,8 +1,12 @@
- CHANGES for crate-pdo
+=======================
+Changelog for crate-pdo
 =======================
 
 Unreleased
 ==========
+
+2021/04/27 2.0.0
+================
 
 - Added support for PHP 8.0
 
