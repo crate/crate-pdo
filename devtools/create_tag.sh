@@ -56,8 +56,13 @@ then
 fi
 
 # get version from PDO class
-VERSION=$(grep "VERSION =" src/Crate/PDO/PDO.php | tr -d ';' | cut -d' ' -f8 | tr -d "'")
+VERSION=$(cat src/Crate/PDO/PDO.php | grep 'public const VERSION' | sed -E 's/.*VERSION.*= (.+)/\1/' | tr -d ';' | cut -d' ' -f8 | tr -d "'")
 print_green "Version: $VERSION"
+
+if [[ -z $VERSION ]]; then
+  print_red "ERROR: Unable to parse PDO.VERSION from code"
+  exit 1
+fi
 
 # check if tag to create has already been created
 EXISTS=$(git tag | grep $VERSION)
@@ -78,18 +83,8 @@ then
     exit 1
 fi
 
-# check if VERSION is in docs/installation.rst
-INST_DEP=`grep "crate/crate-pdo:~$VERSION" docs/installation.rst`
-if [ -z "$INST_DEP"]
-then
-    print_red "Version $VERSION not updated in docs/installation.rst"
-    echo "Aborting."
-    exit 1
-fi
-
 # create and push tag
 print_green "Creating tag $VERSION ..."
 git tag -a "$VERSION" -m "Crate PDO $VERSION"
 git push --tags
 print_green "Done"
-
