@@ -13,7 +13,7 @@
     "homepage": "https://github.com/crate/crate-pdo",
     "keywords": ["database", "pdo", "cratedb"],
     "require": {
-        "php":     "^7.3|^8.0|^8.1",
+        "php":     "^7.3|^8.0",
         "ext-pdo": "*",
         "guzzlehttp/guzzle": "^7.2"
     },

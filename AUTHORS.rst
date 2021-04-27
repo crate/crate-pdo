@@ -11,5 +11,6 @@ Code Contributors
 =================
 
 Paweł Krzaczkowski (@krzaczek) <pawel@freshmind.pl>
+Alexander Schranz (@alexander-schranz) <alexander@sulu.io>
 
 Note: (@user) means a github user name.

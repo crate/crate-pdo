@@ -5,6 +5,11 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2021/04/28 2.1.0
+================
+
+- Add possibility to set the statement class using ``ATTR_STATEMENT_CLASS``
+
 2021/04/27 2.0.0
 ================
 
