@@ -36,20 +36,7 @@ jobs:
           php-version: ${{ matrix.php-version }}
           tools: composer, phpunit:^9.5
 
-      # Cache Composer Dependencies
-      # https://github.com/marketplace/actions/setup-php-action#cache-composer-dependencies
-      - name: Get composer cache directory
-        id: composer-cache-dir
-        run: echo "::set-output name=dir::$(composer config cache-dir)"
-      - name: Apply dependency caching
-        id: composer-cache
-        uses: actions/cache@v2
-        with:
-          path: ${{ steps.composer-cache-dir.outputs.dir }}
-          key: os=${{ matrix.os }}-composer-${{ hashFiles('**/composer.lock') }}
-
-      - name: Install package
-        run: composer install
+      - uses: ramsey/composer-install@v1
 
       - name: Run code style checks
         run: composer run check-style
