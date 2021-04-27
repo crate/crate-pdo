@@ -298,6 +298,10 @@ class PDO extends BasePDO implements PDOInterface
                 $this->attributes['errorMode'] = $value;
                 break;
 
+            case self::ATTR_STATEMENT_CLASS:
+                $this->attributes['statementClass'] = $value;
+                break;
+
             case self::ATTR_TIMEOUT:
                 $this->attributes['timeout'] = (int)$value;
                 break;
