@@ -5,6 +5,12 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2021/04/28 2.1.2
+================
+
+- PHP8: Fix signatures of ``PDOStatementImplementationPhp8`` for compatibility
+  with ``Doctrine\DBAL\Driver\PDOStatementImplementations``
+
 2021/04/28 2.1.1
 ================
 
