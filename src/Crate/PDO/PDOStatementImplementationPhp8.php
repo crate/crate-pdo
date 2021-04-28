@@ -37,7 +37,7 @@ trait PDOStatementImplementationPhp8
      *
      * @return bool
      */
-    public function setFetchMode(int $mode, ...$args): bool
+    public function setFetchMode(int $mode, ...$args)
     {
         return $this->doSetFetchMode($mode, ...$args);
     }
@@ -50,7 +50,7 @@ trait PDOStatementImplementationPhp8
      *
      * @return mixed[]
      */
-    public function fetchAll(int $mode = null, ...$args): mixed
+    public function fetchAll(int $mode = null, ...$args)
     {
         return $this->doFetchAll($mode, ...$args);
     }
