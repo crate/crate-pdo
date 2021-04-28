@@ -200,7 +200,9 @@ class PDO extends BasePDO implements PDOInterface
             return true;
         }
 
-        return new PDOStatement($this, $this->request, $statement, $options);
+        $className = $this->attributes['statementClass'];
+
+        return new $className($this, $this->request, $statement, $options);
     }
 
     /**
