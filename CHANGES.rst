@@ -5,6 +5,12 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2021/04/28 2.1.1
+================
+
+- Evaluate ``statementClass`` attribute in order to override
+  ``PDO::ATTR_STATEMENT_CLASS``
+
 2021/04/28 2.1.0
 ================
 
