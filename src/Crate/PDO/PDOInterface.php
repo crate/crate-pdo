@@ -49,8 +49,8 @@ use const PHP_VERSION_ID;
  */
 // @codeCoverageIgnoreStart
 if (PHP_VERSION_ID >= 80000) {
-    class_alias('\Crate\PDO\PDOInterfacePhp8', '\Crate\PDO\PDOInterface');
+    interface PDOInterface extends PDOInterfacePhp8 {}
 } else {
-    class_alias('\Crate\PDO\PDOInterfacePhp7', '\Crate\PDO\PDOInterface');
+    interface PDOInterface extends PDOInterfacePhp7 {}
 }
 // @codeCoverageIgnoreEnd
