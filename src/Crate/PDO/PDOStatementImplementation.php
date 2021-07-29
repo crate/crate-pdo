@@ -41,7 +41,12 @@ namespace Crate\PDO;
 use const PHP_VERSION_ID;
 
 if (PHP_VERSION_ID >= 80000) {
-    class_alias('\Crate\PDO\PDOStatementImplementationPhp8', '\Crate\PDO\PDOStatementImplementation');
+    trait PDOStatementImplementation {
+        use PDOStatementImplementationPhp8;
+    }
 } else {
-    class_alias('\Crate\PDO\PDOStatementImplementationPhp7', '\Crate\PDO\PDOStatementImplementation');
+    trait PDOStatementImplementation {
+        use PDOStatementImplementationPhp7;
+    }
 }
+

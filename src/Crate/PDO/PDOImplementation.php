@@ -42,8 +42,13 @@ use const PHP_VERSION_ID;
 
 // @codeCoverageIgnoreStart
 if (PHP_VERSION_ID >= 80000) {
-    class_alias('\Crate\PDO\PDOImplementationPhp8', '\Crate\PDO\PDOImplementation');
+    trait PDOImplementation {
+        use PDOImplementationPhp8;
+    }
 } else {
-    class_alias('\Crate\PDO\PDOImplementationPhp7', '\Crate\PDO\PDOImplementation');
+    trait PDOImplementation {
+        use PDOImplementationPhp7;
+    }
 }
+
 // @codeCoverageIgnoreEnd
