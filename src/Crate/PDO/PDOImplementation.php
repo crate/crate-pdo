@@ -47,6 +47,7 @@ if (PHP_VERSION_ID >= 80000) {
         use PDOImplementationPhp8;
     }
 } else {
+    // phpcs:disable
     trait PDOImplementation
     {
         use PDOImplementationPhp7;
