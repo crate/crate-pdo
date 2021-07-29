@@ -53,6 +53,7 @@ if (PHP_VERSION_ID >= 80000) {
     {
     }
 } else {
+    // phpcs:disable
     interface PDOInterface extends PDOInterfacePhp7
     {
     }
