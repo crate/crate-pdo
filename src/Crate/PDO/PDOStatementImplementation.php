@@ -41,12 +41,13 @@ namespace Crate\PDO;
 use const PHP_VERSION_ID;
 
 if (PHP_VERSION_ID >= 80000) {
-    trait PDOStatementImplementation {
+    trait PDOStatementImplementation
+    {
         use PDOStatementImplementationPhp8;
     }
 } else {
-    trait PDOStatementImplementation {
+    trait PDOStatementImplementation
+    {
         use PDOStatementImplementationPhp7;
     }
 }
-

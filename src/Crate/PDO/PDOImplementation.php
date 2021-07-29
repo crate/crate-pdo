@@ -42,11 +42,13 @@ use const PHP_VERSION_ID;
 
 // @codeCoverageIgnoreStart
 if (PHP_VERSION_ID >= 80000) {
-    trait PDOImplementation {
+    trait PDOImplementation
+    {
         use PDOImplementationPhp8;
     }
 } else {
-    trait PDOImplementation {
+    trait PDOImplementation
+    {
         use PDOImplementationPhp7;
     }
 }

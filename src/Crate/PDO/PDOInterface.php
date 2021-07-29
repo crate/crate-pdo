@@ -49,8 +49,12 @@ use const PHP_VERSION_ID;
  */
 // @codeCoverageIgnoreStart
 if (PHP_VERSION_ID >= 80000) {
-    interface PDOInterface extends PDOInterfacePhp8 {}
+    interface PDOInterface extends PDOInterfacePhp8
+    {
+    }
 } else {
-    interface PDOInterface extends PDOInterfacePhp7 {}
+    interface PDOInterface extends PDOInterfacePhp7
+    {
+    }
 }
 // @codeCoverageIgnoreEnd
