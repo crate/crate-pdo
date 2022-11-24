@@ -21,7 +21,7 @@ jobs:
     strategy:
       matrix:
         os: [ 'ubuntu-latest' ] #, macos-latest, windows-latest ]
-        php-version: [ '7.3', '7.4', '8.0', '8.1' ]
+        php-version: [ '7.3', '7.4', '8.0', '8.1', '8.2' ]
 
     name: PHP ${{ matrix.php-version }} on OS ${{ matrix.os }}
     steps:
@@ -55,13 +55,13 @@ jobs:
       # https://github.com/codecov/codecov-action
       - name: Upload coverage results to Codecov
         uses: codecov/codecov-action@v3
-        if: always() && (matrix.php-version == '7.4' || matrix.php-version == '8.0' || matrix.php-version == '8.1')
+        if: always() && (matrix.php-version == '7.4' || startsWith(matrix.php-version, '8.'))
         with:
           files: ./build/logs/clover.xml
           fail_ci_if_error: true
 
       - name: Upload coverage results to Scrutinizer CI
-        if: always() && (matrix.php-version == '7.4' || matrix.php-version == '8.0' || matrix.php-version == '8.1')
+        if: always() && (matrix.php-version == '7.4' || startsWith(matrix.php-version, '8.'))
         run: |
           echo "Git HEAD ref:"
           git log --pretty=%P -n1 HEAD
