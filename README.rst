@@ -22,7 +22,7 @@ CrateDB PDO Adapter
     :target: https://packagist.org/packages/crate/crate-pdo
     :alt: Latest stable version
 
-.. image:: https://img.shields.io/badge/PHP-7.3%2C%207.4%2C%208.0-green.svg
+.. image:: https://img.shields.io/badge/PHP-7.3%2C%207.4%2C%208.0%2C%208.1-green.svg
     :target: https://packagist.org/packages/crate/crate-pdo
     :alt: Supported PHP versions
 
