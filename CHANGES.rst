@@ -5,10 +5,14 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2022/11/29 2.1.4
+================
+
 - Added support for PHP 8.1 and PHP 8.2
 
 2021/07/29 2.1.3
 ================
+
 - Make it possible to use Composer authoritative classmap. Thanks, @JulianMar!
 
 2021/04/28 2.1.2
