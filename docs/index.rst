@@ -35,6 +35,6 @@ interface for accessing databases in PHP.
 .. _CrateDB: https://crate.io/products/cratedb/
 .. _documentation: https://github.com/crate/crate-sample-apps/blob/master/php/documentation.md
 .. _hosted on GitHub: https://github.com/crate/crate-pdo
-.. _PDO documentation: http://www.php.net/manual/en/intro.pdo.php
-.. _PDO: http://www.php.net/manual/en/intro.pdo.php
+.. _PDO documentation: https://www.php.net/manual/en/intro.pdo.php
+.. _PDO: https://www.php.net/manual/en/intro.pdo.php
 .. _sample application: https://github.com/crate/crate-sample-apps/tree/master/php
