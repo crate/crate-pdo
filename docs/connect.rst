@@ -229,15 +229,15 @@ setup process.
 
 .. SEEALSO::
 
-   Check out the `sample application`_ (and the corresponding `documentation`_)
-   for a practical demonstration of this driver in use.
+   Check out the `sample application`_ (and the corresponding `sample
+   application documentation`_) for a practical demonstration of this driver in
+   use.
 
 .. _Composer documentation: https://getcomposer.org
 .. _Composer: https://getcomposer.org/
 .. _CrateDB reference: https://crate.io/docs/crate/reference/en/latest/admin/ssl.html
 .. _data source name: https://en.wikipedia.org/wiki/Data_source_name
 .. _database user: https://crate.io/docs/crate/reference/en/latest/admin/user-management.html
-.. _documentation: https://github.com/crate/crate-sample-apps/blob/master/php/documentation.md
 .. _DSN: https://en.wikipedia.org/wiki/Data_source_name
 .. _fetch modes: https://www.php.net/manual/en/pdostatement.fetch.php
 .. _HTTP connection: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html
@@ -246,5 +246,6 @@ setup process.
 .. _PDO documentation: https://www.php.net/manual/en/intro.pdo.php
 .. _PDO::setAttribute: https://www.php.net/manual/en/pdo.setattribute.php
 .. _round-robin DNS: https://en.wikipedia.org/wiki/Round-robin_DNS
-.. _sample application: https://github.com/crate/crate-sample-apps/tree/master/php
+.. _sample application: https://github.com/crate/crate-sample-apps/tree/main/php-slim
+.. _sample application documentation: https://github.com/crate/crate-sample-apps/blob/main/php-slim/documentation.md
 .. _setAttribute: https://www.php.net/manual/en/pdo.setattribute.php
