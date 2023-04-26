@@ -27,6 +27,8 @@ namespace Crate\PDO\Http;
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\PDO;
 use Crate\PDO\PDOInterface;
+use Crate\Stdlib\BulkResponse;
+use Crate\Stdlib\BulkResponseInterface;
 use Crate\Stdlib\Collection;
 use Crate\Stdlib\CollectionInterface;
 use GuzzleHttp\Client;
@@ -67,7 +69,7 @@ final class ServerPool implements ServerInterface
     /**
      * Client constructor.
      *
-     * @param array                $servers
+     * @param array $servers
      * @param ClientInterface|null $client
      */
     public function __construct(array $servers, ClientInterface $client = null)
@@ -90,8 +92,27 @@ final class ServerPool implements ServerInterface
      * {@Inheritdoc}
      * @throws \GuzzleHttp\Exception\ConnectException
      */
-    public function execute(string $query, array $parameters): CollectionInterface
+    public function execute(string $query, array $parameters): ?CollectionInterface
     {
+        return $this->executeGeneric($query, $parameters, false);
+    }
+
+    /**
+     * {@Inheritdoc}
+     * @throws \GuzzleHttp\Exception\ConnectException
+     */
+    public function executeBulk(string $query, array $parameters): ?BulkResponseInterface
+    {
+        return $this->executeGeneric($query, $parameters, true);
+    }
+
+    /**
+     * {@Inheritdoc}
+     * @throws \GuzzleHttp\Exception\ConnectException
+     */
+    private function executeGeneric(string $query, array $parameters, bool $bulk_mode = false)
+    {
+        $exception = null;
         $numServers = count($this->availableServers) - 1;
 
         for ($i = 0; $i <= $numServers; $i++) {
@@ -101,24 +122,8 @@ final class ServerPool implements ServerInterface
             // Move the selected server to the end of the stack
             $this->availableServers[] = array_shift($this->availableServers);
 
-            $options = array_merge($this->httpOptions, [
-                'base_uri' => sprintf('%s://%s', $this->protocol, $server),
-                'json'     => [
-                    'stmt' => $query,
-                    'args' => $parameters,
-                ],
-            ]);
-
             try {
-                $response     = $this->httpClient->request('POST', '/_sql', $options);
-                $responseBody = json_decode((string)$response->getBody(), true);
-
-                return new Collection(
-                    $responseBody['rows'],
-                    $responseBody['cols'],
-                    $responseBody['duration'],
-                    $responseBody['rowcount']
-                );
+                return $this->sendRequest($server, $query, $parameters, $bulk_mode);
             } catch (ConnectException $exception) {
                 // Catch it before the BadResponseException but do nothing.
                 continue;
@@ -130,18 +135,53 @@ final class ServerPool implements ServerInterface
                     throw new RuntimeException(sprintf('Server returned non-JSON response: %s', $body), 0, $exception);
                 }
 
-                $errorCode    = $json['error']['code'];
+                $errorCode = $json['error']['code'];
                 $errorMessage = $json['error']['message'];
 
                 throw new RuntimeException($errorMessage, $errorCode, $exception);
             }
         }
 
-        throw new ConnectException(
-            sprintf('No more servers available, exception from last server: %s', $exception->getMessage()),
-            $exception->getRequest(),
-            $exception
-        );
+        if ($exception !== null) {
+            throw new ConnectException(
+                sprintf('No more servers available, exception from last server: %s', $exception->getMessage()),
+                $exception->getRequest(),
+                $exception
+            );
+        }
+    }
+
+    private function sendRequest(string $server, string $query, array $parameters, bool $bulk_mode = false)
+    {
+        $args_name = 'args';
+        if ($bulk_mode) {
+            $args_name = 'bulk_args';
+        }
+        $options = array_merge($this->httpOptions, [
+            'base_uri' => sprintf('%s://%s', $this->protocol, $server),
+            'json'     => [
+                'stmt' => $query,
+                $args_name => $parameters,
+            ],
+        ]);
+
+        $response     = $this->httpClient->request('POST', '/_sql', $options);
+        $responseBody = json_decode((string)$response->getBody(), true);
+
+        if ($bulk_mode) {
+            return new BulkResponse(
+                $responseBody['results'],
+                $responseBody['cols'],
+                $responseBody['duration']
+            );
+        } else {
+            return new Collection(
+                $responseBody['rows'],
+                $responseBody['cols'],
+                $responseBody['duration'],
+                $responseBody['rowcount']
+            );
+        }
     }
 
     /**

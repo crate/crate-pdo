@@ -74,6 +74,7 @@ class PDO extends BasePDO implements PDOInterface
         'timeout'          => 0.0,
         'auth'             => [],
         'defaultSchema'    => 'doc',
+        'bulkMode'         => false,
     ];
 
     /**
@@ -125,7 +126,11 @@ class PDO extends BasePDO implements PDOInterface
             $this->lastStatement = $statement;
 
             try {
-                return $this->server->execute($sql, $parameters);
+                if ($statement->isBulkMode()) {
+                    return $this->server->executeBulk($sql, $parameters);
+                } else {
+                    return $this->server->execute($sql, $parameters);
+                }
             } catch (Exception\RuntimeException $e) {
                 if ($this->getAttribute(self::ATTR_ERRMODE) === self::ERRMODE_EXCEPTION) {
                     throw new Exception\PDOException($e->getMessage(), $e->getCode());

@@ -5,6 +5,11 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+- Added support for `CrateDB bulk operations`_, for improved efficiency on
+  DML operations.
+
+.. _CrateDB bulk operations: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
+
 2022/11/29 2.1.4
 ================
 

@@ -27,6 +27,7 @@ namespace CrateTest\PDO\Http;
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\Http\ServerPool;
 use Crate\PDO\PDO;
+use Crate\Stdlib\BulkResponse;
 use Crate\Stdlib\Collection;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
@@ -205,6 +206,43 @@ final class ServerPoolTest extends TestCase
         $result = $this->serverPool->execute('query', []);
 
         $this->assertEquals(new Collection([], [], 0, 0), $result);
+
+    }
+
+    /**
+     * Verify Guzzle client behavior when using CrateDB bulk operations.
+     * https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
+     *
+     */
+    public function testGuzzleClientOptionTestBulkMode()
+    {
+        $expectedWithDefaults = [
+            RequestOptions::TIMEOUT         => 0.0,
+            RequestOptions::CONNECT_TIMEOUT => 0.0,
+            RequestOptions::JSON            => [
+                'stmt' => 'query',
+                'bulk_args' => [["foo", "bar"]],
+            ],
+
+            RequestOptions::HEADERS => [
+                'Default-Schema' => 'doc',
+            ],
+
+            RequestOptions::AUTH => null,
+            'base_uri'           => 'http://localhost:4200',
+        ];
+
+        $body = json_encode(['results' => [["foo", "bar"]], 'cols' => [], 'duration' => 0]);
+
+        $this->client
+            ->expects($this->once())
+            ->method('request')
+            ->with('POST', '/_sql', $expectedWithDefaults)
+            ->willReturn(new Response(200, [], $body));
+
+        $result = $this->serverPool->executeBulk('query', [["foo", "bar"]]);
+
+        $this->assertEquals(new BulkResponse([["foo", "bar"]], [], 0), $result);
 
     }
 

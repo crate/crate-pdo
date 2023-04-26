@@ -31,6 +31,7 @@ use Crate\PDO\PDOStatement;
 use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 /**
  * Tests for {@see \Crate\PDO\PDO}
@@ -354,4 +355,25 @@ class PDOTest extends TestCase
             [PDO::FETCH_NAMED],
         ];
     }
+
+    /**
+     * Verify support for CrateDB bulk operations.
+     * https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
+     *
+     * @covers ::query
+     */
+    public function testBulkMode()
+    {
+        $statement = $this->pdo->prepare("INSERT INTO foobar;", array("bulkMode" => true));
+
+        // Enable accessing the private `options` property of the `PDOStatement` instance.
+        $class = new ReflectionClass($statement);
+        $options_p = $class->getProperty("options");
+        $options_p->setAccessible(true);
+        $options = $options_p->getValue($statement);
+
+        // Verify bulk mode has been enabled.
+        $this->assertEquals(true, $options["bulkMode"]);
+    }
+
 }
