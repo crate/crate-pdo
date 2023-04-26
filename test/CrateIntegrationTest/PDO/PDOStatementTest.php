@@ -23,6 +23,7 @@
 namespace CrateIntegrationTest\PDO;
 
 use Crate\PDO\PDO;
+use Crate\Stdlib\BulkResponse;
 use Crate\Stdlib\CrateConst;
 
 /**
@@ -346,6 +347,32 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->assertEquals(6, $resultSet[0]['id']);
         $this->assertEquals(NULL, $resultSet[0]['name']);
 
+    }
+
+    /**
+     * Verify support for CrateDB bulk-operations endpoint.
+     * https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
+     */
+    public function testInsertBulk()
+    {
+        // Insert records in bulk mode.
+        $parameters = [[5, 'foo', 1], [6, 'bar', 2], [7, 'foo', 3], [8, 'bar', 4]];
+        $statement = $this->pdo->prepare('INSERT INTO test_table (id, name, int_type) VALUES (?, ?, ?)', array("bulkMode" => true));
+        $outcome = $statement->execute($parameters);
+
+        // Check outcome, response and result count, it is a `BulkResponse` instance here.
+        // The `rowCount()` should be the total number of records.
+        $this->assertTrue($outcome);
+        $response = $statement->fetchAll(PDO::FETCH_NUM);
+        $this->assertEquals([["rowcount" => 1], ["rowcount" => 1], ["rowcount" => 1], ["rowcount" => 1]], $response);
+        $this->assertEquals(4, $statement->rowCount());
+
+        // Verify records have been inserted correctly.
+        $this->pdo->exec("REFRESH TABLE test_table");
+        $statement = $this->pdo->prepare("SELECT id, name, int_type FROM test_table ORDER BY id");
+        $results = $statement->fetchAll(PDO::FETCH_NUM);
+        $this->assertEquals([5, 'foo', 1], $results[0]);
+        $this->assertEquals([8, 'bar', 4], $results[3]);
     }
 
     public function testInvalidInsert()

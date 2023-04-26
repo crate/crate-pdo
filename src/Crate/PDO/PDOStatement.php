@@ -60,6 +60,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      * @var array
      */
     private $options = [
+        'bulkMode'           => false,
         'fetchMode'          => null,
         'fetchColumn'        => 0,
         'fetchClass'         => 'array',
@@ -201,21 +202,17 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function execute($input_parameters = null)
+    public function execute($input_parameters = null): bool
     {
-        $input_parameters_array = ArrayUtils::toArray($input_parameters);
-        $zero_based             = array_key_exists(0, $input_parameters_array);
-        foreach ($input_parameters_array as $parameter => $value) {
-            if (is_int($parameter) && $zero_based) {
-                $parameter++;
-            }
-            $this->bindValue($parameter, $value);
+        $params = ArrayUtils::toArray($input_parameters);
+
+        // In bulk mode, propagate input parameters 1:1.
+        // In regular mode, translate input parameters to `bindValue` calls.
+        if ($this->options["bulkMode"] !== true) {
+            $params = $this->bindValues($params);
         }
 
-        // parameter binding might be unordered, so sort it before execute
-        ksort($this->parameters);
-
-        $result = $this->request->__invoke($this, $this->sql, array_values($this->parameters));
+        $result = $this->request->__invoke($this, $this->sql, $params);
 
         if (is_array($result)) {
             $this->errorCode    = $result['code'];
@@ -227,6 +224,24 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $this->collection = $result;
 
         return true;
+    }
+
+    /**
+     * Bind `execute`'s $input_parameters values to statement handle.
+     */
+    private function bindValues(array $params_in): array
+    {
+        $zero_based = array_key_exists(0, $params_in);
+        foreach ($params_in as $parameter => $value) {
+            if (is_int($parameter) && $zero_based) {
+                $parameter++;
+            }
+            $this->bindValue($parameter, $value);
+        }
+
+        // parameter binding might be unordered, so sort it before execute
+        ksort($this->parameters);
+        return array_values($this->parameters);
     }
 
     /**
@@ -679,5 +694,10 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
 
         return $obj;
+    }
+
+    public function isBulkMode()
+    {
+        return $this->options["bulkMode"];
     }
 }

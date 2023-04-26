@@ -48,6 +48,14 @@ If the environment is outdated, you can upgrade it::
 
     composer update
 
+If you see messages like ``Warning: No code coverage driver available`` when running
+the tests, you will need to install the ``xdebug`` extension::
+
+    pecl install xdebug
+
+It may happen that you will have to re-install it, for example after your PHP
+version has been upgraded by your package manager.
+
 
 Running the Tests
 =================
@@ -60,14 +68,24 @@ You can run the tests like::
     # Run test suite
     composer run test
 
-    # Run code style checks
-    composer run style
-
     # Output coverage report as HTML
     composer run -- test --coverage-html ./report
+    open report/index.html
 
     # Run specific tests
     composer run -- test --filter "testFetchColumn"
+
+
+Invoke code style checks
+========================
+
+::
+
+    # Run code style checks
+    composer run check-style
+
+    # Some code style quirks can be automatically fixed
+    composer run fix-style
 
 
 
@@ -119,19 +137,6 @@ Running the Tests
     # Run tests on both PHP7 and PHP8 to get the full picture of coverage
     composer run multicover
     open build/multicover/html/index.html
-
-
-Invoke code style checks
-========================
-
-::
-
-    # Run code style checks
-    composer run check-style
-
-    # Some code style quirks can be automatically fixed
-    composer run fix-style
-
 
 
 ****************************

@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace Crate\PDO\Http;
 
 use Crate\PDO\PDOInterface;
+use Crate\Stdlib\BulkResponseInterface;
 use Crate\Stdlib\CollectionInterface;
 
 interface ServerInterface
@@ -49,7 +50,22 @@ interface ServerInterface
      *
      * @return CollectionInterface
      */
-    public function execute(string $queryString, array $parameters): CollectionInterface;
+    public function execute(string $queryString, array $parameters): ?CollectionInterface;
+
+    /**
+     * Execute the PDOStatement in "bulk operations" and return the response from server
+     * wrapped inside a BulkResponseInterface.
+     *
+     * Bulk operations are only supported for `INSERT`, `UPDATE`, and `DELETE` statements.
+     *
+     * https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
+     *
+     * @param string $queryString
+     * @param array  $parameters
+     *
+     * @return BulkResponseInterface
+     */
+    public function executeBulk(string $queryString, array $parameters): ?BulkResponseInterface;
 
     /**
      * @return array
