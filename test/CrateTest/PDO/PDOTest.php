@@ -107,7 +107,11 @@ class PDOTest extends TestCase
      */
     public function testGetAttributeWithInvalidAttribute()
     {
-        $this->expectException(PDOException::class);
+        if (PHP_VERSION_ID >= 80000) {
+            $this->expectException(\TypeError::class);
+        } else {
+            $this->expectException(PDOException::class);
+        }
         $this->pdo->getAttribute('I DONT EXIST');
     }
 
@@ -116,7 +120,11 @@ class PDOTest extends TestCase
      */
     public function testSetAttributeWithInvalidAttribute()
     {
-        $this->expectException(PDOException::class);
+        if (PHP_VERSION_ID >= 80000) {
+            $this->expectException(\TypeError::class);
+        } else {
+            $this->expectException(PDOException::class);
+        }
         $this->pdo->setAttribute('I DONT EXIST', 'value');
     }
 

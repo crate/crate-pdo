@@ -16,6 +16,8 @@ Unreleased
   ``Crate\PDO\PDO`` without alias into the main namespace collides with
   PHP's native ``PDO`` class.
 
+- Maintenance: Added more type hints, mitigating lots of deprecation warnings.
+
 .. _CrateDB bulk operations: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
 
 2022/11/29 2.1.4

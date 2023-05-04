@@ -50,6 +50,7 @@ trait PDOStatementImplementationPhp8
      *
      * @return mixed[]
      */
+    #[\ReturnTypeWillChange]
     public function fetchAll(int $mode = null, ...$args)
     {
         return $this->doFetchAll($mode, ...$args);
