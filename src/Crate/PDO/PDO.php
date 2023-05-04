@@ -30,6 +30,7 @@ use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\Http\ServerPool;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
+use ReturnTypeWillChange;
 
 use const PHP_VERSION_ID;
 
@@ -206,7 +207,8 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function prepare($statement, $options = null)
+    #[ReturnTypeWillChange]
+    public function prepare(string $statement, array $options = [])
     {
         $options = ArrayUtils::toArray($options);
 
@@ -224,7 +226,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function beginTransaction()
+    public function beginTransaction(): bool
     {
         return true;
     }
@@ -232,7 +234,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function commit()
+    public function commit(): bool
     {
         return true;
     }
@@ -240,7 +242,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function rollBack()
+    public function rollBack(): bool
     {
         throw new Exception\UnsupportedException;
     }
@@ -248,7 +250,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function inTransaction()
+    public function inTransaction(): bool
     {
         return false;
     }
@@ -256,7 +258,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function exec($statement)
+    public function exec($statement): int
     {
         $statement = $this->prepare($statement);
         $result    = $statement->execute();
@@ -278,7 +280,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function lastInsertId($name = null)
+    public function lastInsertId(?string $name = null): string
     {
         throw new Exception\UnsupportedException;
     }
@@ -305,7 +307,7 @@ class PDO extends BasePDO implements PDOInterface
      * @throws \Crate\PDO\Exception\PDOException
      * @throws \Crate\PDO\Exception\InvalidArgumentException
      */
-    public function setAttribute($attribute, $value)
+    public function setAttribute(int $attribute, $value): bool
     {
         switch ($attribute) {
             case self::ATTR_DEFAULT_FETCH_MODE:
@@ -372,6 +374,7 @@ class PDO extends BasePDO implements PDOInterface
 
         // A setting changed so we need to reconfigure the server pool
         $this->server->configure($this);
+        return true;
     }
 
     /**
@@ -379,13 +382,12 @@ class PDO extends BasePDO implements PDOInterface
      *
      * @throws \Crate\PDO\Exception\PDOException
      */
-    public function getAttribute($attribute)
+    #[\ReturnTypeWillChange]
+    public function getAttribute(int $attribute)
     {
         switch ($attribute) {
-            case self::ATTR_PERSISTENT:
-                return false;
-
             case self::ATTR_PREFETCH:
+            case self::ATTR_PERSISTENT:
                 return false;
 
             case self::ATTR_CLIENT_VERSION:
@@ -452,7 +454,8 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function quote($string, $parameter_type = self::PARAM_STR)
+    #[ReturnTypeWillChange]
+    public function quote(string $string, int $parameter_type = self::PARAM_STR)
     {
         switch ($parameter_type) {
             case self::PARAM_INT:
@@ -478,17 +481,17 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public static function getAvailableDrivers()
+    public static function getAvailableDrivers(): array
     {
         return array_merge(parent::getAvailableDrivers(), [static::DRIVER_NAME]);
     }
 
-    public function getServerVersion()
+    public function getServerVersion(): string
     {
         return $this->server->getServerVersion();
     }
 
-    public function getServerInfo()
+    public function getServerInfo(): string
     {
         return $this->getServerVersion();
     }

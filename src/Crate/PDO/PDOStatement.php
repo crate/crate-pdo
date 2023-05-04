@@ -247,6 +247,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function fetch($fetch_style = null, $cursor_orientation = PDO::FETCH_ORI_NEXT, $cursor_offset = 0)
     {
         if (!$this->hasExecuted()) {
@@ -296,6 +297,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function bindParam(
         $parameter,
         &$variable,
@@ -327,6 +329,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function bindColumn($column, &$param, $type = null, $maxlen = null, $driverdata = null)
     {
         $type = $type ?: PDO::PARAM_STR;
@@ -342,16 +345,17 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function bindValue($parameter, $value, $data_type = PDO::PARAM_STR)
+    public function bindValue($parameter, $value, int $data_type = PDO::PARAM_STR): bool
     {
         $value = $this->typedValue($value, $data_type);
         $this->bindParam($parameter, $value, $data_type);
+        return true;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function rowCount()
+    public function rowCount(): int
     {
         if (!$this->hasExecuted()) {
             $this->execute();
@@ -367,7 +371,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function fetchColumn($column_number = 0)
+    #[\ReturnTypeWillChange]
+    public function fetchColumn(int $column_number = 0)
     {
         if (!is_int($column_number)) {
             throw new Exception\InvalidArgumentException('column_number must be a valid integer');
@@ -472,6 +477,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
+    #[\ReturnTypeWillChange]
     public function fetchObject($class_name = null, $ctor_args = null)
     {
         throw new Exception\UnsupportedException;
@@ -514,7 +520,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function setAttribute($attribute, $value)
+    public function setAttribute(int $attribute, $value): bool
     {
         throw new Exception\UnsupportedException('This driver doesn\'t support setting attributes');
     }
@@ -522,7 +528,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function getAttribute($attribute)
+    #[\ReturnTypeWillChange]
+    public function getAttribute(int $attribute)
     {
         throw new Exception\UnsupportedException('This driver doesn\'t support getting attributes');
     }
@@ -530,7 +537,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function columnCount()
+    public function columnCount(): int
     {
         if (!$this->hasExecuted()) {
             $this->execute();
@@ -542,7 +549,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function getColumnMeta($column)
+    #[\ReturnTypeWillChange]
+    public function getColumnMeta(int $column)
     {
         throw new Exception\UnsupportedException;
     }
@@ -592,7 +600,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function nextRowset()
+    public function nextRowset(): bool
     {
         if (!$this->hasExecuted()) {
             $this->execute();
@@ -610,7 +618,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function closeCursor()
+    public function closeCursor(): bool
     {
         $this->errorCode  = 0;
         $this->collection = null;
@@ -621,7 +629,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function debugDumpParams()
+    public function debugDumpParams(): ?bool
     {
         throw new Exception\UnsupportedException('Not supported, use var_dump($stmt) instead');
     }

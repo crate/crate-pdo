@@ -16,7 +16,7 @@ declare(strict_types=1);
 
 include("./vendor/autoload.php");
 
-error_reporting(E_ALL ^ E_DEPRECATED);
+error_reporting(E_ALL);
 
 // Connect to CrateDB.
 use Crate\PDO\PDOCrateDB;

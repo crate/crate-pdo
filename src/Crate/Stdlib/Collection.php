@@ -105,6 +105,7 @@ final class Collection implements CollectionInterface
     /**
      * {@Inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->rows);
@@ -113,7 +114,7 @@ final class Collection implements CollectionInterface
     /**
      * {@Inheritdoc}
      */
-    public function next()
+    public function next(): void
     {
         next($this->rows);
     }
@@ -121,6 +122,7 @@ final class Collection implements CollectionInterface
     /**
      * {@Inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->rows);
@@ -129,7 +131,7 @@ final class Collection implements CollectionInterface
     /**
      * {@Inheritdoc}
      */
-    public function valid()
+    public function valid(): bool
     {
         return $this->key() !== null;
     }
@@ -137,7 +139,7 @@ final class Collection implements CollectionInterface
     /**
      * {@Inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->rows);
     }
@@ -145,7 +147,7 @@ final class Collection implements CollectionInterface
     /**
      * {@Inheritdoc}
      */
-    public function count()
+    public function count(): int
     {
         return $this->rowCount;
     }

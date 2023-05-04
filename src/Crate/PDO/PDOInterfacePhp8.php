@@ -26,18 +26,18 @@ namespace Crate\PDO;
 
 interface PDOInterfacePhp8
 {
-    public function prepare($statement, $options = null);
-    public function beginTransaction();
-    public function commit();
-    public function rollback();
-    public function inTransaction();
+    public function prepare(string $statement, array $options = []);
+    public function beginTransaction(): bool;
+    public function commit(): bool;
+    public function rollback(): bool;
+    public function inTransaction(): bool;
     public function exec($statement);
     public function query(?string $query = null, ?int $fetchMode = null, mixed ...$fetchModeArgs);
-    public function lastInsertId($name = null);
+    public function lastInsertId(?string $name = null): string;
     public function errorCode();
     public function errorInfo();
-    public function setAttribute($attribute, $value);
-    public function getAttribute($attribute);
+    public function setAttribute(int $attribute, $value): bool;
+    public function getAttribute(int $attribute);
     public function getServerVersion();
     public function getServerInfo();
     public static function getAvailableDrivers();
