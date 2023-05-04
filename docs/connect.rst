@@ -78,13 +78,13 @@ You can get a PDO connection like this:
 
 .. code-block:: php
 
-   use Crate\PDO\PDO as PDO;
+   use Crate\PDO\PDOCrateDB;
 
    $dsn = '<DATA_SOURCE_NAME>';
    $user = 'crate';
    $password = null;
    $options = null;
-   $connection = new PDO($dsn, $user, $password, $options);
+   $connection = new PDOCrateDB($dsn, $user, $password, $options);
 
 .. NOTE::
 
