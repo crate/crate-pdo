@@ -18,6 +18,13 @@ Unreleased
 
 - Maintenance: Added more type hints, mitigating lots of deprecation warnings.
 
+Breaking changes
+----------------
+
+- Aligned ``PDO::errorCode()`` with specification, to return error code as
+  string type. See also https://www.php.net/manual/en/pdo.errorcode.php.
+  The signature is ``public PDO::errorCode(): ?string``.
+
 .. _CrateDB bulk operations: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
 
 2022/11/29 2.1.4

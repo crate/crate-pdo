@@ -38,11 +38,11 @@ class PDOTest extends AbstractIntegrationTest
         $statement = $this->pdo->prepare('bogus sql');
         $statement->execute();
 
-        $this->assertEquals(4000, $statement->errorCode());
+        $this->assertEquals('4000', $statement->errorCode());
 
         list ($ansiSQLError, $driverError, $driverMessage) = $statement->errorInfo();
 
-        $this->assertEquals(42000, $ansiSQLError);
+        $this->assertEquals('42000', $ansiSQLError);
         $this->assertEquals(CrateConst::ERR_INVALID_SQL, $driverError);
         $this->assertStringContainsString('mismatched input \'bogus\'', $driverMessage);
     }
