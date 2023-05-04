@@ -18,8 +18,9 @@ include("./vendor/autoload.php");
 error_reporting(E_ALL ^ E_DEPRECATED);
 
 // Connect to CrateDB.
-use Crate\PDO\PDO as CratePDO;
-$connection = new CratePDO("crate:localhost:4200", "crate");
+use Crate\PDO\PDOCrateDB;
+
+$connection = new PDOCrateDB("crate:localhost:4200", "crate");
 
 // Create database table.
 $connection->exec("DROP TABLE IF EXISTS test_table;");

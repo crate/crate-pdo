@@ -12,6 +12,9 @@ Unreleased
 
 - Documentation: Added two standalone example programs about inserts
 
+- Added ``Crate\PDO\PDOCrateDB`` as a better export symbol, because importing
+  ``Crate\PDO\PDO`` without alias into the main namespace collides with
+  PHP's native ``PDO`` class.
 
 .. _CrateDB bulk operations: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
 
