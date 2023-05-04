@@ -10,6 +10,9 @@ Unreleased
 
 - Added deprecation notice about PHP7.
 
+- Documentation: Added two standalone example programs about inserts
+
+
 .. _CrateDB bulk operations: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html#bulk-operations
 
 2022/11/29 2.1.4
