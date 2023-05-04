@@ -215,8 +215,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $result = $this->request->__invoke($this, $this->sql, $params);
 
         if (is_array($result)) {
-            $this->errorCode    = $result['code'];
-            $this->errorMessage = $result['message'];
+            $this->errorCode    = strval($result['code']);
+            $this->errorMessage = strval($result['message']);
 
             return false;
         }
@@ -486,23 +486,26 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function errorCode()
+    public function errorCode(): ?string
     {
         return $this->errorCode;
     }
 
     /**
      * {@inheritDoc}
+     *
+     * @return array|null
      */
+    #[\ReturnTypeWillChange]
     public function errorInfo()
     {
         if ($this->errorCode === null) {
-            return null;
+            return ["00000", null, null];
         }
 
         switch ($this->errorCode) {
             case CrateConst::ERR_INVALID_SQL:
-                $ansiErrorCode = 42000;
+                $ansiErrorCode = '42000';
                 break;
 
             default:
@@ -511,9 +514,9 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
 
         return [
-            $ansiErrorCode,
-            $this->errorCode,
-            $this->errorMessage,
+            strval($ansiErrorCode),
+            intval($this->errorCode),
+            strval($this->errorMessage),
         ];
     }
 
@@ -620,7 +623,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function closeCursor(): bool
     {
-        $this->errorCode  = 0;
+        $this->errorCode  = null;
         $this->collection = null;
 
         return true;

@@ -654,9 +654,9 @@ class PDOStatementTest extends TestCase
 
         $property = $reflection->getProperty('errorCode');
         $property->setAccessible(true);
-        $property->setValue($this->statement, 1337);
+        $property->setValue($this->statement, '1337');
 
-        $this->assertEquals(1337, $this->statement->errorCode());
+        $this->assertEquals('1337', $this->statement->errorCode());
     }
 
     /**
@@ -665,7 +665,7 @@ class PDOStatementTest extends TestCase
     public function errorInfoAnsiCodeProvider()
     {
         return [
-            [42000, CrateConst::ERR_INVALID_SQL, 'le error message'],
+            ['42000', CrateConst::ERR_INVALID_SQL, 'le error message'],
             ['Not available', 1337, 'le error message'],
         ];
     }
@@ -674,14 +674,25 @@ class PDOStatementTest extends TestCase
      * @covers ::errorInfo
      * @dataProvider errorInfoAnsiCodeProvider
      *
-     * @param mixed  $ansiCode
-     * @param int    $errorCode
+     * @param string $ansiCode
+     * @param int $errorCode
      * @param string $errorMessage
      */
-    public function testErrorInfo($ansiCode, $errorCode, $errorMessage)
+    public function testErrorInfoUndefined($ansiCode, $errorCode, $errorMessage)
     {
-        $this->assertNull($this->statement->errorInfo());
+        $this->assertEquals(["00000", null, null], $this->statement->errorInfo());
+    }
 
+    /**
+     * @covers ::errorInfo
+     * @dataProvider errorInfoAnsiCodeProvider
+     *
+     * @param string $ansiCode
+     * @param int $errorCode
+     * @param string $errorMessage
+     */
+    public function testErrorInfoDefined($ansiCode, $errorCode, $errorMessage)
+    {
         $reflection = new ReflectionClass(PDOStatement::class);
 
         $errorCodeProp = $reflection->getProperty('errorCode');

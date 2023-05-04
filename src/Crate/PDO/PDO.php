@@ -288,7 +288,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function errorCode()
+    public function errorCode(): ?string
     {
         return $this->lastStatement === null ? null : $this->lastStatement->errorCode();
     }
@@ -296,9 +296,9 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function errorInfo()
+    public function errorInfo(): array
     {
-        return $this->lastStatement === null ? null : $this->lastStatement->errorInfo();
+        return $this->lastStatement === null ? ["00000", null, null] : $this->lastStatement->errorInfo();
     }
 
     /**
