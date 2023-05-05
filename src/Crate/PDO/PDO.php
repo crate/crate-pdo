@@ -31,6 +31,8 @@ use Crate\PDO\Http\ServerPool;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
 
+use const PHP_VERSION_ID;
+
 class PDO extends BasePDO implements PDOInterface
 {
     use PDOImplementation;
@@ -102,6 +104,15 @@ class PDO extends BasePDO implements PDOInterface
      */
     public function __construct($dsn, $username = null, $passwd = null, $options = [])
     {
+
+        if (PHP_VERSION_ID < 80000) {
+            trigger_error(
+                "`crate/crate-pdo` will stop supporting PHP7 on one of the upcoming " .
+                "releases. Please upgrade to PHP8.",
+                E_USER_DEPRECATED
+            );
+        }
+
         $dsnParts = self::parseDSN($dsn);
         $servers  = self::serversFromDsnParts($dsnParts);
 

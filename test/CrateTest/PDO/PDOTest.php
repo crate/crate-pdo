@@ -376,4 +376,34 @@ class PDOTest extends TestCase
         $this->assertEquals(true, $options["bulkMode"]);
     }
 
+    public function testDeprecationPHP7()
+    {
+        /**
+         * Test whether an appropriate deprecation warning is raised on PHP7.
+         *
+         * https://nerdpress.org/2022/04/04/testing-deprecations-with-phpunit/
+         * https://codeseekah.com/2023/03/01/testing-warnings-in-phpunit-9/
+         * https://github.com/sebastianbergmann/phpunit/issues/5062
+         */
+
+        if (PHP_VERSION_ID >= 80000) {
+            $this->markTestSkipped('Test for PHP7 deprecation not applicable on PHP8');
+        }
+
+        $errored = null;
+        set_error_handler(function($errno, $errstr, ...$args) use (&$errored) {
+            $errored = [$errno, $errstr, $args];
+            restore_error_handler();
+        });
+
+        // Calling function which should emit a deprecation warning.
+        $pdo = new PDO('crate:localhost:1234', null, null, []);
+
+        $this->assertNotNull($errored, 'No warning has been triggered');
+        [$errno, $errstr, $args] = $errored;
+        $this->assertEquals(E_USER_DEPRECATED, $errno, 'E_USER_DEPRECATED has not been triggered');
+        $this->stringStartsWith('`crate/crate-pdo` will stop supporting PHP7', $errstr, 'PHP7 deprecation not issued');
+
+    }
+
 }
