@@ -26,14 +26,14 @@ namespace Crate\PDO;
 
 interface PDOInterfacePhp7
 {
-    public function prepare($statement, $options = null);
+    public function prepare(string $statement, array $options = []);
     public function beginTransaction();
     public function commit();
     public function rollback();
     public function inTransaction();
     public function exec($statement);
     public function doQuery($statement);
-    public function lastInsertId($name = null);
+    public function lastInsertId(?string $name = null): string;
     public function errorCode();
     public function errorInfo();
     public function setAttribute(int $attribute, $value): bool;

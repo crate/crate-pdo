@@ -345,8 +345,8 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      */
-    public function bindValue($parameter, $value, int $data_type = PDO::PARAM_STR): bool
     #[\ReturnTypeWillChange]
+    public function bindValue($parameter, $value, $data_type = PDO::PARAM_STR)
     {
         $value = $this->typedValue($value, $data_type);
         $this->bindParam($parameter, $value, $data_type);
