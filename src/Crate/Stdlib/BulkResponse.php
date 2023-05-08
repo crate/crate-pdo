@@ -124,6 +124,7 @@ final class BulkResponse implements BulkResponseInterface
     /**
      * {@Inheritdoc}
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->results);

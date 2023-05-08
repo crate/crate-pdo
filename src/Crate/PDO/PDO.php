@@ -30,7 +30,6 @@ use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\Http\ServerPool;
 use Crate\Stdlib\ArrayUtils;
 use PDO as BasePDO;
-use ReturnTypeWillChange;
 
 use const PHP_VERSION_ID;
 
@@ -207,7 +206,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function prepare(string $statement, array $options = [])
     {
         $options = ArrayUtils::toArray($options);
@@ -454,7 +453,7 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    #[ReturnTypeWillChange]
+    #[\ReturnTypeWillChange]
     public function quote(string $string, int $parameter_type = self::PARAM_STR)
     {
         switch ($parameter_type) {
