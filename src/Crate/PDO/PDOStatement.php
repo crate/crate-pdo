@@ -373,7 +373,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      * {@inheritDoc}
      */
     #[\ReturnTypeWillChange]
-    public function fetchColumn(int $column_number = 0)
+    public function fetchColumn($column_number = 0)
     {
         if (!is_int($column_number)) {
             throw new Exception\InvalidArgumentException('column_number must be a valid integer');
@@ -495,7 +495,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     /**
      * {@inheritDoc}
      *
-     * @return array|null
+     * @return array
      */
     #[\ReturnTypeWillChange]
     public function errorInfo()
@@ -523,8 +523,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
     /**
      * {@inheritDoc}
+     *
+     * @param int $attribute
+     * @param mixed $value
      */
-    public function setAttribute(int $attribute, $value): bool
+    #[\ReturnTypeWillChange]
+    public function setAttribute($attribute, $value)
     {
         throw new Exception\UnsupportedException('This driver doesn\'t support setting attributes');
     }
@@ -533,7 +537,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      * {@inheritDoc}
      */
     #[\ReturnTypeWillChange]
-    public function getAttribute(int $attribute)
+    public function getAttribute($attribute)
     {
         throw new Exception\UnsupportedException('This driver doesn\'t support getting attributes');
     }
@@ -554,7 +558,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      * {@inheritDoc}
      */
     #[\ReturnTypeWillChange]
-    public function getColumnMeta(int $column)
+    public function getColumnMeta($column)
     {
         throw new Exception\UnsupportedException;
     }

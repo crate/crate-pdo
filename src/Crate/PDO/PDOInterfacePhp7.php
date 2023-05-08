@@ -36,8 +36,8 @@ interface PDOInterfacePhp7
     public function lastInsertId(?string $name = null): string;
     public function errorCode();
     public function errorInfo();
-    public function setAttribute(int $attribute, $value): bool;
-    public function getAttribute(int $attribute);
+    public function setAttribute($attribute, $value);
+    public function getAttribute($attribute);
     public function getServerVersion();
     public function getServerInfo();
     public static function getAvailableDrivers();

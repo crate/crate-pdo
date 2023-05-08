@@ -361,11 +361,7 @@ class PDOStatementTest extends TestCase
      */
     public function testFetchColumnWithInvalidColumnNumberType()
     {
-        if (PHP_VERSION_ID >= 80000) {
-            $this->expectException(\TypeError::class);
-        } else {
-            $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
-        }
+        $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
         $this->statement->fetchColumn('test');
     }
 
@@ -711,11 +707,7 @@ class PDOStatementTest extends TestCase
      */
     public function testGetAttribute()
     {
-        if (PHP_VERSION_ID >= 80000) {
-            $this->expectException(\TypeError::class);
-        } else {
-            $this->expectException(UnsupportedException::class);
-        }
+        $this->expectException(UnsupportedException::class);
         $this->statement->getAttribute(null, null);
     }
 
@@ -724,11 +716,7 @@ class PDOStatementTest extends TestCase
      */
     public function testSetAttribute()
     {
-        if (PHP_VERSION_ID >= 80000) {
-            $this->expectException(\TypeError::class);
-        } else {
-            $this->expectException(UnsupportedException::class);
-        }
+        $this->expectException(UnsupportedException::class);
         $this->statement->setAttribute(null, null);
     }
 
@@ -760,11 +748,7 @@ class PDOStatementTest extends TestCase
      */
     public function testGetColumnMeta()
     {
-        if (PHP_VERSION_ID >= 80000) {
-            $this->expectException(\TypeError::class);
-        } else {
-            $this->expectException(UnsupportedException::class);
-        }
+        $this->expectException(UnsupportedException::class);
         $this->statement->getColumnMeta(null);
     }
 

@@ -257,7 +257,8 @@ class PDO extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function exec($statement): int
+    #[\ReturnTypeWillChange]
+    public function exec($statement)
     {
         $statement = $this->prepare($statement);
         $result    = $statement->execute();
@@ -306,7 +307,8 @@ class PDO extends BasePDO implements PDOInterface
      * @throws \Crate\PDO\Exception\PDOException
      * @throws \Crate\PDO\Exception\InvalidArgumentException
      */
-    public function setAttribute(int $attribute, $value): bool
+    #[\ReturnTypeWillChange]
+    public function setAttribute($attribute, $value)
     {
         switch ($attribute) {
             case self::ATTR_DEFAULT_FETCH_MODE:
@@ -382,7 +384,7 @@ class PDO extends BasePDO implements PDOInterface
      * @throws \Crate\PDO\Exception\PDOException
      */
     #[\ReturnTypeWillChange]
-    public function getAttribute(int $attribute)
+    public function getAttribute($attribute)
     {
         switch ($attribute) {
             case self::ATTR_PREFETCH:
