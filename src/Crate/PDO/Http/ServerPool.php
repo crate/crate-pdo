@@ -25,7 +25,7 @@ declare(strict_types=1);
 namespace Crate\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
-use Crate\PDO\PDO;
+use Crate\PDO\PDOCrateDB;
 use Crate\PDO\PDOInterface;
 use Crate\Stdlib\BulkResponse;
 use Crate\Stdlib\BulkResponseInterface;
@@ -215,25 +215,25 @@ final class ServerPool implements ServerInterface
      */
     public function configure(PDOInterface $pdo): void
     {
-        $sslMode = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_MODE);
+        $sslMode = $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE);
 
-        $protocol = $sslMode === PDO::CRATE_ATTR_SSL_MODE_DISABLED ? 'http' : 'https';
+        $protocol = $sslMode === PDOCrateDB::CRATE_ATTR_SSL_MODE_DISABLED ? 'http' : 'https';
 
         $options = [
-            RequestOptions::TIMEOUT         => $pdo->getAttribute(PDO::ATTR_TIMEOUT),
-            RequestOptions::CONNECT_TIMEOUT => $pdo->getAttribute(PDO::ATTR_TIMEOUT),
-            RequestOptions::AUTH            => $pdo->getAttribute(PDO::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
+            RequestOptions::TIMEOUT         => $pdo->getAttribute(PDOCrateDB::ATTR_TIMEOUT),
+            RequestOptions::CONNECT_TIMEOUT => $pdo->getAttribute(PDOCrateDB::ATTR_TIMEOUT),
+            RequestOptions::AUTH            => $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
             RequestOptions::HEADERS         => [
-                'Default-Schema' => $pdo->getAttribute(PDO::CRATE_ATTR_DEFAULT_SCHEMA),
+                'Default-Schema' => $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_DEFAULT_SCHEMA),
             ],
         ];
 
-        if ($sslMode === PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION) {
+        if ($sslMode === PDOCrateDB::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION) {
             $options['verify'] = false;
         }
 
-        $ca         = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PATH);
-        $caPassword = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CA_PASSWORD);
+        $ca         = $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_SSL_CA_PATH);
+        $caPassword = $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_SSL_CA_PASSWORD);
 
         if ($ca) {
             if ($caPassword) {
@@ -243,8 +243,8 @@ final class ServerPool implements ServerInterface
             }
         }
 
-        $cert         = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PATH);
-        $certPassword = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_CERT_PASSWORD);
+        $cert         = $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_SSL_CERT_PATH);
+        $certPassword = $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_SSL_CERT_PASSWORD);
 
         if ($cert) {
             if ($certPassword) {
@@ -254,8 +254,8 @@ final class ServerPool implements ServerInterface
             }
         }
 
-        $key         = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PATH);
-        $keyPassword = $pdo->getAttribute(PDO::CRATE_ATTR_SSL_KEY_PASSWORD);
+        $key         = $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_SSL_KEY_PATH);
+        $keyPassword = $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_SSL_KEY_PASSWORD);
 
         if ($key) {
             if ($keyPassword) {

@@ -30,14 +30,14 @@ class PDOParseDSNTest extends TestCase
 {
     private function parseDSN($dsn)
     {
-        $method = new ReflectionMethod('Crate\PDO\PDO', 'parseDSN');
+        $method = new ReflectionMethod('Crate\PDO\PDOCrateDB', 'parseDSN');
         $method->setAccessible(true);
         return $method->invoke(null, $dsn);
     }
 
     private function serversFromDsnParts(array $dsnParts)
     {
-        $method = new ReflectionMethod('Crate\PDO\PDO', 'serversFromDsnParts');
+        $method = new ReflectionMethod('Crate\PDO\PDOCrateDB', 'serversFromDsnParts');
         $method->setAccessible(true);
         return $method->invoke(null, $dsnParts);
     }

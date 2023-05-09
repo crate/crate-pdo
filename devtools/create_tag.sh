@@ -55,8 +55,8 @@ then
    exit 1
 fi
 
-# get version from PDO class
-VERSION=$(cat src/Crate/PDO/PDO.php | grep 'public const VERSION' | sed -E 's/.*VERSION.*= (.+)/\1/' | tr -d ';' | cut -d' ' -f8 | tr -d "'")
+# get version from PDOCrateDB class
+VERSION=$(cat src/Crate/PDO/PDOCrateDB.php | grep 'public const VERSION' | sed -E 's/.*VERSION.*= (.+)/\1/' | tr -d ';' | cut -d' ' -f8 | tr -d "'")
 print_green "Version: $VERSION"
 
 if [[ -z $VERSION ]]; then

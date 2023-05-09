@@ -22,20 +22,20 @@
 
 namespace CrateTest\PDO;
 
-use Crate\PDO\PDO;
+use Crate\PDO\PDOCrateDB;
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractPDOPwAuthTest extends TestCase
 {
     /**
-     * @var PDO
+     * @var PDOCrateDB
      */
     protected $pdo;
 
     protected function setUp(): void
     {
-        $this->pdo = new PDO('crate:localhost:4200', 'crate', 'crate');
-        $this->pdo->setAttribute(PDO::CRATE_ATTR_SSL_MODE, PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION);
+        $this->pdo = new PDOCrateDB('crate:localhost:4200', 'crate', 'crate');
+        $this->pdo->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION);
 
         $usr = $this->pdo->prepare("CREATE USER test_user WITH (password = 'pwd')");
 

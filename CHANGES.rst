@@ -18,6 +18,10 @@ Unreleased
 
 - Maintenance: Added more type hints, mitigating lots of deprecation warnings.
 
+- UX: Rename ``Crate\PDO\PDO`` to ``Crate\PDO\PDOCrateDB``. It will not break
+  existing code, because there is a compatibility shim in place. However, it
+  is marked deprecated / for removal on one of the upcoming releases.
+
 Breaking changes
 ----------------
 

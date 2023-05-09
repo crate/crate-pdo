@@ -22,14 +22,14 @@
 
 namespace CrateTest\PDO;
 
-use Crate\PDO\PDO;
+use Crate\PDO\PDOCrateDB;
 
 class PDOPwAuthTest extends AbstractPDOPwAuthTest
 {
     public function testAuthentication()
     {
-        $sslConn = new PDO('crate:localhost:4200', 'test_user', 'pwd');
-        $sslConn->setAttribute(PDO::CRATE_ATTR_SSL_MODE, PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION);
+        $sslConn = new PDOCrateDB('crate:localhost:4200', 'test_user', 'pwd');
+        $sslConn->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION);
 
         $statement = $sslConn->prepare('SELECT CURRENT_USER;');
 

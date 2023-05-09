@@ -22,21 +22,21 @@
 
 namespace CrateIntegrationTest\PDO;
 
-use Crate\PDO\PDO;
+use Crate\PDO\PDOCrateDB;
 use PHPUnit\Framework\TestCase;
 
 abstract class AbstractIntegrationTest extends TestCase
 {
     /**
-     * @var PDO
+     * @var PDOCrateDB
      */
     protected $pdo;
 
     protected function setUp(): void
     {
-        $this->pdo = new PDO('crate:localhost:4200', null, null, [
-            PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
-            PDO::ATTR_TIMEOUT        => 5,
+        $this->pdo = new PDOCrateDB('crate:localhost:4200', null, null, [
+            PDOCrateDB::CRATE_ATTR_SSL_MODE => PDOCrateDB::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
+            PDOCrateDB::ATTR_TIMEOUT        => 5,
         ]);
 
         $query = 'CREATE TABLE test_table (id INTEGER PRIMARY KEY, name STRING,';

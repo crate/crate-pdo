@@ -23,7 +23,7 @@
 namespace CrateTest\PDO;
 
 use Crate\PDO\Exception\UnsupportedException;
-use Crate\PDO\PDO;
+use Crate\PDO\PDOCrateDB;
 use Crate\PDO\PDOInterface;
 use Crate\PDO\PDOStatement;
 use Crate\Stdlib\Collection;
@@ -49,7 +49,7 @@ class PDOStatementTest extends TestCase
     private const SQL = 'SELECT * FROM table_name';
 
     /**
-     * @var PDO|PHPUnit_Framework_MockObject_MockObject
+     * @var PDOCrateDB|PHPUnit_Framework_MockObject_MockObject
      */
     protected $pdo;
 
@@ -179,7 +179,7 @@ class PDOStatementTest extends TestCase
     {
         $column     = 'column';
         $value      = 'value1';
-        $type       = PDO::PARAM_STR;
+        $type       = PDOCrateDB::PARAM_STR;
         $maxlen     = 1000;
         $driverData = null;
 
@@ -203,18 +203,18 @@ class PDOStatementTest extends TestCase
     public function bindValueParameterProvider()
     {
         return [
-            [PDO::PARAM_INT, '1', 1],
-            [PDO::PARAM_NULL, '1', null],
-            [PDO::PARAM_BOOL, '1', true],
-            [PDO::PARAM_BOOL, 'false', false],
-            [PDO::PARAM_BOOL, 'true', true],
-            [PDO::PARAM_BOOL, '1', true],
-            [PDO::PARAM_BOOL, '0', false],
-            [PDO::PARAM_BOOL, '', false],
-            [PDO::PARAM_STR, '1', '1'],
-            [PDO::PARAM_INT, null, null],
-            [PDO::PARAM_TIMESTAMP, null, null],
-            [PDO::PARAM_BOOL, null, null],
+            [PDOCrateDB::PARAM_INT, '1', 1],
+            [PDOCrateDB::PARAM_NULL, '1', null],
+            [PDOCrateDB::PARAM_BOOL, '1', true],
+            [PDOCrateDB::PARAM_BOOL, 'false', false],
+            [PDOCrateDB::PARAM_BOOL, 'true', true],
+            [PDOCrateDB::PARAM_BOOL, '1', true],
+            [PDOCrateDB::PARAM_BOOL, '0', false],
+            [PDOCrateDB::PARAM_BOOL, '', false],
+            [PDOCrateDB::PARAM_STR, '1', '1'],
+            [PDOCrateDB::PARAM_INT, null, null],
+            [PDOCrateDB::PARAM_TIMESTAMP, null, null],
+            [PDOCrateDB::PARAM_BOOL, null, null],
         ];
     }
 
@@ -263,7 +263,7 @@ class PDOStatementTest extends TestCase
 
         $this->callbackReturnValue = $collection;
 
-        $this->assertFalse($this->statement->fetch(PDO::FETCH_NUM));
+        $this->assertFalse($this->statement->fetch(PDOCrateDB::FETCH_NUM));
     }
 
     /**
@@ -275,9 +275,9 @@ class PDOStatementTest extends TestCase
         $name   = null;
         $active = null;
 
-        $this->statement->bindColumn('id', $id, PDO::PARAM_INT);
-        $this->statement->bindColumn('name', $name, PDO::PARAM_STR);
-        $this->statement->bindColumn('active', $active, PDO::PARAM_BOOL);
+        $this->statement->bindColumn('id', $id, PDOCrateDB::PARAM_INT);
+        $this->statement->bindColumn('name', $name, PDOCrateDB::PARAM_STR);
+        $this->statement->bindColumn('active', $active, PDOCrateDB::PARAM_BOOL);
 
         $this->assertNull($id);
         $this->assertNull($name);
@@ -285,13 +285,13 @@ class PDOStatementTest extends TestCase
 
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->statement->fetch(PDO::FETCH_BOUND);
+        $this->statement->fetch(PDOCrateDB::FETCH_BOUND);
 
         $this->assertSame(1, $id);
         $this->assertSame('foo', $name);
         $this->assertFalse($active);
 
-        $this->statement->fetch(PDO::FETCH_BOUND);
+        $this->statement->fetch(PDOCrateDB::FETCH_BOUND);
 
         $this->assertSame(2, $id);
         $this->assertSame('bar', $name);
@@ -301,10 +301,10 @@ class PDOStatementTest extends TestCase
     public function fetchStyleProvider()
     {
         return [
-            [PDO::FETCH_NAMED, ['id' => 1, 'name' => 'foo', 'active' => false]],
-            [PDO::FETCH_ASSOC, ['id' => 1, 'name' => 'foo', 'active' => false]],
-            [PDO::FETCH_BOTH, [0 => 1, 1 => 'foo', 2 => false, 'id' => 1, 'name' => 'foo', 'active' => false]],
-            [PDO::FETCH_NUM, [0 => 1, 1 => 'foo', 2 => false]],
+            [PDOCrateDB::FETCH_NAMED, ['id' => 1, 'name' => 'foo', 'active' => false]],
+            [PDOCrateDB::FETCH_ASSOC, ['id' => 1, 'name' => 'foo', 'active' => false]],
+            [PDOCrateDB::FETCH_BOTH, [0 => 1, 1 => 'foo', 2 => false, 'id' => 1, 'name' => 'foo', 'active' => false]],
+            [PDOCrateDB::FETCH_NUM, [0 => 1, 1 => 'foo', 2 => false]],
         ];
     }
 
@@ -333,7 +333,7 @@ class PDOStatementTest extends TestCase
 
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->statement->fetch(PDO::FETCH_INTO);
+        $this->statement->fetch(PDOCrateDB::FETCH_INTO);
     }
 
     /**
@@ -432,7 +432,7 @@ class PDOStatementTest extends TestCase
         $this->expectException(UnsupportedException::class);
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->statement->fetchAll(PDO::FETCH_INTO);
+        $this->statement->fetchAll(PDOCrateDB::FETCH_INTO);
     }
 
     /**
@@ -442,7 +442,7 @@ class PDOStatementTest extends TestCase
     {
         return [
             [
-                // Null mean it will use the default which is PDO::FETCH_BOTH
+                // Null mean it will use the default which is PDOCrateDB::FETCH_BOTH
                 null,
                 [
                     [
@@ -464,7 +464,7 @@ class PDOStatementTest extends TestCase
                 ],
             ],
             [
-                PDO::FETCH_BOTH,
+                PDOCrateDB::FETCH_BOTH,
                 [
                     [
                         0        => 1,
@@ -485,7 +485,7 @@ class PDOStatementTest extends TestCase
                 ],
             ],
             [
-                PDO::FETCH_ASSOC,
+                PDOCrateDB::FETCH_ASSOC,
                 [
                     [
                         'id'     => 1,
@@ -500,7 +500,7 @@ class PDOStatementTest extends TestCase
                 ],
             ],
             [
-                PDO::FETCH_NAMED,
+                PDOCrateDB::FETCH_NAMED,
                 [
                     [
                         'id'     => 1,
@@ -515,7 +515,7 @@ class PDOStatementTest extends TestCase
                 ],
             ],
             [
-                PDO::FETCH_NUM,
+                PDOCrateDB::FETCH_NUM,
                 [
                     [
                         0 => 1,
@@ -530,7 +530,7 @@ class PDOStatementTest extends TestCase
                 ],
             ],
             [
-                PDO::FETCH_COLUMN,
+                PDOCrateDB::FETCH_COLUMN,
                 [
                     1,
                     2,
@@ -555,8 +555,8 @@ class PDOStatementTest extends TestCase
         $this->pdo
             ->expects($this->any())
             ->method('getAttribute')
-            ->with(PDO::ATTR_DEFAULT_FETCH_MODE)
-            ->will($this->returnValue(PDO::FETCH_BOTH));
+            ->with(PDOCrateDB::ATTR_DEFAULT_FETCH_MODE)
+            ->will($this->returnValue(PDOCrateDB::FETCH_BOTH));
 
         $result = $this->statement->fetchAll($fetchStyle);
 
@@ -573,7 +573,7 @@ class PDOStatementTest extends TestCase
         $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->statement->fetchAll(PDO::FETCH_FUNC, 'void');
+        $this->statement->fetchAll(PDOCrateDB::FETCH_FUNC, 'void');
     }
 
     /**
@@ -584,7 +584,7 @@ class PDOStatementTest extends TestCase
     {
         $columns                   = ['id', 'id', 'name'];
         $this->callbackReturnValue = new Collection([[1, 1, 'foo']], $columns, 0, 1);
-        $result                    = $this->statement->fetchAll(PDO::FETCH_BOTH);
+        $result                    = $this->statement->fetchAll(PDOCrateDB::FETCH_BOTH);
 
         $expected = [[0 => 1, 1 => 1, 2 => 'foo', 'id' => 1, 'id' => 1, 'name' => 'foo']];
         $this->assertEquals($expected, $result);
@@ -598,7 +598,7 @@ class PDOStatementTest extends TestCase
     {
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $result = $this->statement->fetchAll(PDO::FETCH_FUNC, function ($id, $name, $active) {
+        $result = $this->statement->fetchAll(PDOCrateDB::FETCH_FUNC, function ($id, $name, $active) {
             return $id;
         });
 
@@ -615,7 +615,7 @@ class PDOStatementTest extends TestCase
         $this->expectException('Crate\PDO\Exception\InvalidArgumentException');
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->statement->fetchAll(PDO::FETCH_COLUMN, 'test');
+        $this->statement->fetchAll(PDOCrateDB::FETCH_COLUMN, 'test');
     }
 
     /**
@@ -627,7 +627,7 @@ class PDOStatementTest extends TestCase
         $this->expectException('Crate\PDO\Exception\OutOfBoundsException');
         $this->callbackReturnValue = $this->getPopulatedCollection();
 
-        $this->statement->fetchAll(PDO::FETCH_COLUMN, 100);
+        $this->statement->fetchAll(PDOCrateDB::FETCH_COLUMN, 100);
     }
 
     /**
@@ -764,7 +764,7 @@ class PDOStatementTest extends TestCase
             'fetch mode requires the colno argument'
         );
 
-        $this->statement->setFetchMode(PDO::FETCH_COLUMN);
+        $this->statement->setFetchMode(PDOCrateDB::FETCH_COLUMN);
     }
 
     /**
@@ -779,7 +779,7 @@ class PDOStatementTest extends TestCase
             'colno must be an integer'
         );
 
-        $this->statement->setFetchMode(PDO::FETCH_COLUMN, 'test');
+        $this->statement->setFetchMode(PDOCrateDB::FETCH_COLUMN, 'test');
     }
 
     /**
@@ -788,7 +788,7 @@ class PDOStatementTest extends TestCase
      */
     public function testSetFetchModeWithColumn()
     {
-        $this->statement->setFetchMode(PDO::FETCH_COLUMN, 1);
+        $this->statement->setFetchMode(PDOCrateDB::FETCH_COLUMN, 1);
 
         $reflection = new ReflectionClass(PDOStatement::class);
 
@@ -797,18 +797,18 @@ class PDOStatementTest extends TestCase
 
         $options = $property->getValue($this->statement);
 
-        $this->assertEquals(PDO::FETCH_COLUMN, $options['fetchMode']);
+        $this->assertEquals(PDOCrateDB::FETCH_COLUMN, $options['fetchMode']);
         $this->assertEquals(1, $options['fetchColumn']);
     }
 
     public function fetchModeStyleProvider()
     {
         return [
-            [PDO::FETCH_ASSOC],
-            [PDO::FETCH_NUM],
-            [PDO::FETCH_BOTH],
-            [PDO::FETCH_BOUND],
-            [PDO::FETCH_NAMED],
+            [PDOCrateDB::FETCH_ASSOC],
+            [PDOCrateDB::FETCH_NUM],
+            [PDOCrateDB::FETCH_BOTH],
+            [PDOCrateDB::FETCH_BOUND],
+            [PDOCrateDB::FETCH_NAMED],
         ];
     }
 
@@ -840,7 +840,7 @@ class PDOStatementTest extends TestCase
     public function testSetFetchModeWithInvalidFetchStyle()
     {
         $this->expectException(UnsupportedException::class);
-        $this->statement->setFetchMode(PDO::FETCH_INTO);
+        $this->statement->setFetchMode(PDOCrateDB::FETCH_INTO);
     }
 
     /**
@@ -893,7 +893,7 @@ class PDOStatementTest extends TestCase
     public function testGetIterator()
     {
         $this->callbackReturnValue = $this->getPopulatedCollection();
-        $this->statement->setFetchMode(PDO::FETCH_COLUMN, 0);
+        $this->statement->setFetchMode(PDOCrateDB::FETCH_COLUMN, 0);
 
         $counter = 0;
 
@@ -920,24 +920,24 @@ class PDOStatementTest extends TestCase
         $method = new ReflectionMethod(PDOStatement::class, 'typedValue');
         $method->setAccessible(true);
 
-        $this->assertEquals(1.23, $method->invoke($this->statement, 1.23, PDO::PARAM_FLOAT));
-        $this->assertEquals(1.23, $method->invoke($this->statement, 1.23, PDO::PARAM_DOUBLE));
+        $this->assertEquals(1.23, $method->invoke($this->statement, 1.23, PDOCrateDB::PARAM_FLOAT));
+        $this->assertEquals(1.23, $method->invoke($this->statement, 1.23, PDOCrateDB::PARAM_DOUBLE));
 
-        $this->assertEquals(1, $method->invoke($this->statement, 1, PDO::PARAM_INT));
-        $this->assertEquals(1, $method->invoke($this->statement, 1, PDO::PARAM_LONG));
+        $this->assertEquals(1, $method->invoke($this->statement, 1, PDOCrateDB::PARAM_INT));
+        $this->assertEquals(1, $method->invoke($this->statement, 1, PDOCrateDB::PARAM_LONG));
 
-        $this->assertEquals(null, $method->invoke($this->statement, 1, PDO::PARAM_NULL));
+        $this->assertEquals(null, $method->invoke($this->statement, 1, PDOCrateDB::PARAM_NULL));
 
-        $this->assertEquals("hello", $method->invoke($this->statement, "hello", PDO::PARAM_STR));
-        $this->assertEquals("1234", $method->invoke($this->statement, 1234, PDO::PARAM_STR));
-        $this->assertEquals("127.0.0.1", $method->invoke($this->statement, "127.0.0.1", PDO::PARAM_IP));
+        $this->assertEquals("hello", $method->invoke($this->statement, "hello", PDOCrateDB::PARAM_STR));
+        $this->assertEquals("1234", $method->invoke($this->statement, 1234, PDOCrateDB::PARAM_STR));
+        $this->assertEquals("127.0.0.1", $method->invoke($this->statement, "127.0.0.1", PDOCrateDB::PARAM_IP));
 
-        $this->assertEquals([1, 2], $method->invoke($this->statement, [1, 2], PDO::PARAM_ARRAY));
-        $this->assertEquals(["foo" => "bar"], $method->invoke($this->statement, ["foo" => "bar"], PDO::PARAM_ARRAY));
+        $this->assertEquals([1, 2], $method->invoke($this->statement, [1, 2], PDOCrateDB::PARAM_ARRAY));
+        $this->assertEquals(["foo" => "bar"], $method->invoke($this->statement, ["foo" => "bar"], PDOCrateDB::PARAM_ARRAY));
 
-        $this->assertEquals(12345, $method->invoke($this->statement, 12345, PDO::PARAM_TIMESTAMP));
-        $this->assertEquals(12345, $method->invoke($this->statement, "12345", PDO::PARAM_TIMESTAMP));
-        $this->assertEquals("2014-03-04T18:45:20", $method->invoke($this->statement, "2014-03-04T18:45:20", PDO::PARAM_TIMESTAMP));
+        $this->assertEquals(12345, $method->invoke($this->statement, 12345, PDOCrateDB::PARAM_TIMESTAMP));
+        $this->assertEquals(12345, $method->invoke($this->statement, "12345", PDOCrateDB::PARAM_TIMESTAMP));
+        $this->assertEquals("2014-03-04T18:45:20", $method->invoke($this->statement, "2014-03-04T18:45:20", PDOCrateDB::PARAM_TIMESTAMP));
 
     }
 
@@ -950,7 +950,7 @@ class PDOStatementTest extends TestCase
         $method->setAccessible(true);
 
         $this->expectException('Crate\PDO\Exception\PDOException');
-        $method->invoke($this->statement, 1, PDO::PARAM_LOB);
+        $method->invoke($this->statement, 1, PDOCrateDB::PARAM_LOB);
     }
 
     /**
