@@ -5,6 +5,9 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2023/05/09 2.2.0
+================
+
 - Added support for `CrateDB bulk operations`_, for improved efficiency on
   DML operations.
 
