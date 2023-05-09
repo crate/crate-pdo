@@ -24,6 +24,7 @@ namespace CrateTest\PDO;
 
 use Crate\PDO\Exception\InvalidArgumentException;
 use Crate\PDO\Exception\PDOException;
+use Crate\PDO\Exception\LogicException;
 use Crate\PDO\Exception\UnsupportedException;
 use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\PDO;
@@ -404,6 +405,25 @@ class PDOTest extends TestCase
         $this->assertEquals(E_USER_DEPRECATED, $errno, 'E_USER_DEPRECATED has not been triggered');
         $this->stringStartsWith('`crate/crate-pdo` will stop supporting PHP7', $errstr, 'PHP7 deprecation not issued');
 
+    }
+
+    public function testExec()
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage("The statement has not been executed yet");
+        $this->pdo->exec("SELECT 1;");
+    }
+
+    public function testErrorCode()
+    {
+        $pdo = new PDO('crate:localhost:1234', null, null, []);
+        $this->assertEquals(0, $pdo->errorCode());
+    }
+
+    public function testErrorInfo()
+    {
+        $pdo = new PDO('crate:localhost:1234', null, null, []);
+        $this->assertEquals(["00000", null, null], $pdo->errorInfo());
     }
 
 }
