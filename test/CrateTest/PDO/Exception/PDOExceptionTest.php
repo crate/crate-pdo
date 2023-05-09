@@ -28,7 +28,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * Tests for {@see \Crate\PDO\Exception\PDOException}
  *
- * @coverDefaultClass \Create\PDO\Exception\PDOException
+ * @coverDefaultClass \Crate\PDO\Exception\PDOException
  *
  * @group unit
  */

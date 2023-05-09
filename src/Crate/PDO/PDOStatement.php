@@ -166,7 +166,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     private function getFetchStyle()
     {
-        return $this->options['fetchMode'] ?: $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE);
+        return $this->options['fetchMode'] ?: $this->pdo->getAttribute(PDOCrateDB::ATTR_DEFAULT_FETCH_MODE);
     }
 
     /**
@@ -248,7 +248,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      * {@inheritDoc}
      */
     #[\ReturnTypeWillChange]
-    public function fetch($fetch_style = null, $cursor_orientation = PDO::FETCH_ORI_NEXT, $cursor_offset = 0)
+    public function fetch($fetch_style = null, $cursor_orientation = PDOCrateDB::FETCH_ORI_NEXT, $cursor_offset = 0)
     {
         if (!$this->hasExecuted()) {
             $this->execute();
@@ -271,22 +271,22 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $fetch_style = $fetch_style ?: $this->getFetchStyle();
 
         switch ($fetch_style) {
-            case PDO::FETCH_NAMED:
-            case PDO::FETCH_ASSOC:
+            case PDOCrateDB::FETCH_NAMED:
+            case PDOCrateDB::FETCH_ASSOC:
                 return array_combine($this->collection->getColumns(false), $row);
 
-            case PDO::FETCH_BOTH:
+            case PDOCrateDB::FETCH_BOTH:
                 return array_merge($row, array_combine($this->collection->getColumns(false), $row));
 
-            case PDO::FETCH_BOUND:
+            case PDOCrateDB::FETCH_BOUND:
                 $this->updateBoundColumns($row);
 
                 return true;
 
-            case PDO::FETCH_NUM:
+            case PDOCrateDB::FETCH_NUM:
                 return $row;
 
-            case PDO::FETCH_OBJ:
+            case PDOCrateDB::FETCH_OBJ:
                 return $this->getObjectResult($this->collection->getColumns(false), $row);
 
             default:
@@ -301,7 +301,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     public function bindParam(
         $parameter,
         &$variable,
-        $data_type = PDO::PARAM_STR,
+        $data_type = PDOCrateDB::PARAM_STR,
         $length = null,
         $driver_options = null
     ) {
@@ -332,7 +332,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
     #[\ReturnTypeWillChange]
     public function bindColumn($column, &$param, $type = null, $maxlen = null, $driverdata = null)
     {
-        $type = $type ?: PDO::PARAM_STR;
+        $type = $type ?: PDOCrateDB::PARAM_STR;
 
         $this->columnBinding[$column] = [
             'ref'        => &$param,
@@ -346,7 +346,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      * {@inheritDoc}
      */
     #[\ReturnTypeWillChange]
-    public function bindValue($parameter, $value, $data_type = PDO::PARAM_STR)
+    public function bindValue($parameter, $value, $data_type = PDOCrateDB::PARAM_STR)
     {
         $value = $this->typedValue($value, $data_type);
         $this->bindParam($parameter, $value, $data_type);
@@ -419,25 +419,25 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $fetch_style = $fetch_style ?: $this->getFetchStyle();
 
         switch ($fetch_style) {
-            case PDO::FETCH_NUM:
+            case PDOCrateDB::FETCH_NUM:
                 return $this->collection->getRows();
 
-            case PDO::FETCH_NAMED:
-            case PDO::FETCH_ASSOC:
+            case PDOCrateDB::FETCH_NAMED:
+            case PDOCrateDB::FETCH_ASSOC:
                 $columns = $this->collection->getColumns(false);
 
                 return $this->collection->map(function (array $row) use ($columns) {
                     return array_combine($columns, $row);
                 });
 
-            case PDO::FETCH_BOTH:
+            case PDOCrateDB::FETCH_BOTH:
                 $columns = $this->collection->getColumns(false);
 
                 return $this->collection->map(function (array $row) use ($columns) {
                     return array_merge($row, array_combine($columns, $row));
                 });
 
-            case PDO::FETCH_FUNC:
+            case PDOCrateDB::FETCH_FUNC:
                 if (!is_callable($fetch_argument)) {
                     throw new Exception\InvalidArgumentException('Second argument must be callable');
                 }
@@ -446,7 +446,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                     return call_user_func_array($fetch_argument, $row);
                 });
 
-            case PDO::FETCH_COLUMN:
+            case PDOCrateDB::FETCH_COLUMN:
                 $columnIndex = $fetch_argument ?: $this->options['fetchColumn'];
 
                 if (!is_int($columnIndex)) {
@@ -463,7 +463,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 return $this->collection->map(function (array $row) use ($columnIndex) {
                     return $row[$columnIndex];
                 });
-            case PDO::FETCH_OBJ:
+            case PDOCrateDB::FETCH_OBJ:
                 $columns = $this->collection->getColumns(false);
 
                 return $this->collection->map(function (array $row) use ($columns) {
@@ -572,7 +572,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         $argCount = count($args);
 
         switch ($mode) {
-            case PDO::FETCH_COLUMN:
+            case PDOCrateDB::FETCH_COLUMN:
                 if ($argCount != 2) {
                     throw new Exception\InvalidArgumentException('fetch mode requires the colno argument');
                 }
@@ -585,12 +585,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
                 $this->options['fetchColumn'] = $params;
                 break;
 
-            case PDO::FETCH_ASSOC:
-            case PDO::FETCH_NUM:
-            case PDO::FETCH_BOTH:
-            case PDO::FETCH_BOUND:
-            case PDO::FETCH_NAMED:
-            case PDO::FETCH_OBJ:
+            case PDOCrateDB::FETCH_ASSOC:
+            case PDOCrateDB::FETCH_NUM:
+            case PDOCrateDB::FETCH_BOTH:
+            case PDOCrateDB::FETCH_BOUND:
+            case PDOCrateDB::FETCH_NAMED:
+            case PDOCrateDB::FETCH_OBJ:
                 if ($params !== null) {
                     throw new Exception\InvalidArgumentException('fetch mode doesn\'t allow any extra arguments');
                 }
@@ -662,29 +662,29 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
         }
 
         switch ($data_type) {
-            case PDO::PARAM_FLOAT:
-            case PDO::PARAM_DOUBLE:
+            case PDOCrateDB::PARAM_FLOAT:
+            case PDOCrateDB::PARAM_DOUBLE:
                 return (float)$value;
 
-            case PDO::PARAM_INT:
-            case PDO::PARAM_LONG:
+            case PDOCrateDB::PARAM_INT:
+            case PDOCrateDB::PARAM_LONG:
                 return (int)$value;
 
-            case PDO::PARAM_NULL:
+            case PDOCrateDB::PARAM_NULL:
                 return null;
 
-            case PDO::PARAM_BOOL:
+            case PDOCrateDB::PARAM_BOOL:
                 return filter_var($value, FILTER_VALIDATE_BOOLEAN);
 
-            case PDO::PARAM_STR:
-            case PDO::PARAM_IP:
+            case PDOCrateDB::PARAM_STR:
+            case PDOCrateDB::PARAM_IP:
                 return (string)$value;
 
-            case PDO::PARAM_OBJECT:
-            case PDO::PARAM_ARRAY:
+            case PDOCrateDB::PARAM_OBJECT:
+            case PDOCrateDB::PARAM_ARRAY:
                 return (array)$value;
 
-            case PDO::PARAM_TIMESTAMP:
+            case PDOCrateDB::PARAM_TIMESTAMP:
                 if (is_numeric($value)) {
                     return (int)$value;
                 }

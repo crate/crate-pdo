@@ -25,7 +25,7 @@ namespace CrateIntegrationTest\PDO;
 use Crate\Stdlib\CrateConst;
 
 /**
- * Integration tests for {@see \Crate\PDO\PDO}
+ * Integration tests for {@see \Crate\PDO\PDOCrateDB}
  *
  * @coversNothing
  *

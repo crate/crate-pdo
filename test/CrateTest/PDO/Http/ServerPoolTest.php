@@ -26,7 +26,7 @@ namespace CrateTest\PDO\Http;
 
 use Crate\PDO\Exception\RuntimeException;
 use Crate\PDO\Http\ServerPool;
-use Crate\PDO\PDO;
+use Crate\PDO\PDOCrateDB;
 use Crate\Stdlib\BulkResponse;
 use Crate\Stdlib\Collection;
 use GuzzleHttp\Client;
@@ -42,7 +42,7 @@ use PHPUnit\Framework\TestCase;
 final class ServerPoolTest extends TestCase
 {
     /**
-     * @var PDO
+     * @var PDOCrateDB
      */
     private $pdo;
 
@@ -62,7 +62,7 @@ final class ServerPoolTest extends TestCase
 
         $this->serverPool = new ServerPool(['localhost:4200', 'localhost:4200'], $this->client);
 
-        $this->pdo = new PDO('crate:localhost:4200');
+        $this->pdo = new PDOCrateDB('crate:localhost:4200');
         $this->pdo->setServer($this->serverPool);
     }
 
@@ -71,9 +71,9 @@ final class ServerPoolTest extends TestCase
         return [
             [
                 [
-                    PDO::ATTR_TIMEOUT               => 10,
-                    PDO::CRATE_ATTR_DEFAULT_SCHEMA  => 'default',
-                    PDO::CRATE_ATTR_HTTP_BASIC_AUTH => ['foo', 'bar'],
+                    PDOCrateDB::ATTR_TIMEOUT               => 10,
+                    PDOCrateDB::CRATE_ATTR_DEFAULT_SCHEMA  => 'default',
+                    PDOCrateDB::CRATE_ATTR_HTTP_BASIC_AUTH => ['foo', 'bar'],
                 ],
                 [
                     RequestOptions::TIMEOUT         => 10,
@@ -86,7 +86,7 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE => PDOCrateDB::CRATE_ATTR_SSL_MODE_ENABLED_BUT_WITHOUT_HOST_VERIFICATION,
                 ],
                 [
                     RequestOptions::VERIFY => false,
@@ -95,7 +95,7 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE => PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED,
                 ],
                 [
                     'base_uri' => 'https://localhost:4200',
@@ -103,8 +103,8 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE    => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CA_PATH => 'foo.pem',
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE    => PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDOCrateDB::CRATE_ATTR_SSL_CA_PATH => 'foo.pem',
                 ],
                 [
                     'base_uri'             => 'https://localhost:4200',
@@ -113,9 +113,9 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE        => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CA_PATH     => 'foo.pem',
-                    PDO::CRATE_ATTR_SSL_CA_PASSWORD => 'foo',
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE        => PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDOCrateDB::CRATE_ATTR_SSL_CA_PATH     => 'foo.pem',
+                    PDOCrateDB::CRATE_ATTR_SSL_CA_PASSWORD => 'foo',
                 ],
                 [
                     'base_uri'             => 'https://localhost:4200',
@@ -124,8 +124,8 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE     => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_KEY_PATH => 'foo.pem',
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE     => PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDOCrateDB::CRATE_ATTR_SSL_KEY_PATH => 'foo.pem',
                 ],
                 [
                     'base_uri'              => 'https://localhost:4200',
@@ -134,9 +134,9 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE         => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_KEY_PATH     => 'foo.pem',
-                    PDO::CRATE_ATTR_SSL_KEY_PASSWORD => 'foo',
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE         => PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDOCrateDB::CRATE_ATTR_SSL_KEY_PATH     => 'foo.pem',
+                    PDOCrateDB::CRATE_ATTR_SSL_KEY_PASSWORD => 'foo',
                 ],
                 [
                     'base_uri'              => 'https://localhost:4200',
@@ -145,8 +145,8 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE      => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CERT_PATH => 'foo.pem',
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE      => PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDOCrateDB::CRATE_ATTR_SSL_CERT_PATH => 'foo.pem',
                 ],
                 [
                     'base_uri'           => 'https://localhost:4200',
@@ -155,9 +155,9 @@ final class ServerPoolTest extends TestCase
             ],
             [
                 [
-                    PDO::CRATE_ATTR_SSL_MODE          => PDO::CRATE_ATTR_SSL_MODE_REQUIRED,
-                    PDO::CRATE_ATTR_SSL_CERT_PATH     => 'foo.pem',
-                    PDO::CRATE_ATTR_SSL_CERT_PASSWORD => 'foo',
+                    PDOCrateDB::CRATE_ATTR_SSL_MODE          => PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED,
+                    PDOCrateDB::CRATE_ATTR_SSL_CERT_PATH     => 'foo.pem',
+                    PDOCrateDB::CRATE_ATTR_SSL_CERT_PASSWORD => 'foo',
                 ],
                 [
                     'base_uri'           => 'https://localhost:4200',
