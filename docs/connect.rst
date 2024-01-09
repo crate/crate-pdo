@@ -99,6 +99,32 @@ You can get a PDO connection like this:
    authenticate as the CrateDB superuser, which is ``crate``. The superuser
    does not have a password, so you should omit the ``password`` argument.
 
+CrateDB Cloud
+=============
+
+If you are connecting to CrateDB Cloud you will need to enable the SSL mode 
+by setting the connection's ``CRATE_ATTR_SSL_MODE`` attribute:
+
+.. code-block:: php
+
+   require __DIR__ . '/vendor/autoload.php';
+   use Crate\PDO\PDOCrateDB;
+   $dsn = 'crate:yourcluster.yourdomain.com:4200';
+   $user = 'user1';	
+   $password = '<SECRET>';
+   $options = null;
+   $connection = new PDOCrateDB($dsn, $user, $password, $options);
+   $connection->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED);
+   $stmt = $connection->prepare('SELECT mountain FROM sys.summits LIMIT 1;');
+   $stmt->execute();
+   $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+   foreach ($rows as $row) {
+		print_r($row);
+	}
+
+If this is not configured you will see the following error message: 
+``cURL error 52: Empty reply from server``
+
 Advanced settings
 =================
 
@@ -142,7 +168,7 @@ Driver specific constants
 
 The CrateDB driver provides number of ``PDO`` attribute class constants.
 
-``PDO::CRATE_ATTR_DEFAULT_SCHEMA`` (string)
+``PDOCrateDB::CRATE_ATTR_DEFAULT_SCHEMA`` (string)
     The default schema for the PDO connection.
 
     .. TIP::
@@ -152,7 +178,7 @@ The CrateDB driver provides number of ``PDO`` attribute class constants.
 
        However, you can query any schema you like by specifying it in the query.
 
-``PDO::CRATE_ATTR_SSL_MODE`` (int) named attribute
+``PDOCrateDB::CRATE_ATTR_SSL_MODE`` (int) named attribute
    The connection SSL mode.
 
    Accepted values:
@@ -166,19 +192,19 @@ The CrateDB driver provides number of ``PDO`` attribute class constants.
    ``CRATE_ATTR_SSL_MODE_REQUIRED``
        Enable SSL mode, and perform host verification.
 
-``PDO::CRATE_ATTR_SSL_KEY_PATH`` (string)
+``PDOCrateDB::CRATE_ATTR_SSL_KEY_PATH`` (string)
    The path to an SSL client key file.
 
-``PDO::CRATE_ATTR_SSL_KEY_PASSWORD`` (string)
+``PDOCrateDB::CRATE_ATTR_SSL_KEY_PASSWORD`` (string)
    The SSL client key file password.
 
-``PDO::CRATE_ATTR_SSL_CERT_PATH`` (string)
+``PDOCrateDB::CRATE_ATTR_SSL_CERT_PATH`` (string)
    The path to an SSL client certificate file.
 
-``PDO::CRATE_ATTR_SSL_CERT_PASSWORD`` (string)
+``PDOCrateDB::CRATE_ATTR_SSL_CERT_PASSWORD`` (string)
    The SSL client certificate file password.
 
-``PDO::CRATE_ATTR_SSL_CA_PATH`` (string)
+``PDOCrateDB::CRATE_ATTR_SSL_CA_PATH`` (string)
    The path to an SSL *Certificate Authority* (CA) certificate file.
 
 .. SEEALSO::
