@@ -54,11 +54,16 @@ jobs:
 
       # https://github.com/codecov/codecov-action
       - name: Upload coverage results to Codecov
-        uses: codecov/codecov-action@v3
-        if: always() && (matrix.php-version == '7.4' || startsWith(matrix.php-version, '8.'))
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         with:
           files: ./build/logs/clover.xml
+          flags: unittests
+          env_vars: OS,PYTHON
+          name: codecov-umbrella
           fail_ci_if_error: true
+        if: always() && (matrix.php-version == '7.4' || startsWith(matrix.php-version, '8.'))
 
       - name: Upload coverage results to Scrutinizer CI
         if: always() && (matrix.php-version == '7.4' || startsWith(matrix.php-version, '8.'))
