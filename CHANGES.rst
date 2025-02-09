@@ -5,6 +5,8 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+- Verified support on PHP 8.4
+
 2023/05/09 2.2.0
 ================
 
