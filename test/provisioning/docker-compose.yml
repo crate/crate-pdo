@@ -1,8 +1,6 @@
 # Purpose:
 # Start CrateDB with custom parameters and wait for the service being available,
-# even when invoked through `docker-compose up --detach`.
-
-version: '3'
+# even when invoked through `docker compose up --detach`.
 
 services:
 
