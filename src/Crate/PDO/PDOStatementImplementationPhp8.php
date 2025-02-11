@@ -35,9 +35,9 @@ trait PDOStatementImplementationPhp8
      * @param int   $mode
      * @param mixed ...$args
      *
-     * @return bool
+     * @return true
      */
-    public function setFetchMode(int $mode, ...$args): bool
+    public function setFetchMode(int $mode, ...$args): true
     {
         return $this->doSetFetchMode($mode, ...$args);
     }
