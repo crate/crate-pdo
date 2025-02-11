@@ -72,7 +72,7 @@ final class ServerPool implements ServerInterface
      * @param array $servers
      * @param ClientInterface|null $client
      */
-    public function __construct(array $servers, ClientInterface $client = null)
+    public function __construct(array $servers, ?ClientInterface $client = null)
     {
         if (\count($servers) === 0) {
             $servers = [self::DEFAULT_SERVER];
