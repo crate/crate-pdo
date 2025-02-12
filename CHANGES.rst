@@ -5,6 +5,11 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2025/02/12 2.2.2
+================
+
+- PHP 8.4: Fix deprecation warnings
+
 2025/02/12 2.2.1
 ================
 
