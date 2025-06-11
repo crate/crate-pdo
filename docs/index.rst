@@ -27,7 +27,7 @@ interface for accessing databases in PHP.
 .. rubric:: Table of contents
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    getting-started
    connect

@@ -4,11 +4,6 @@
 Data types
 ==========
 
-.. rubric:: Table of contents
-
-.. contents::
-   :local:
-
 .. _type-map:
 
 Type mapping

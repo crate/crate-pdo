@@ -4,11 +4,6 @@
 Compatibility
 =============
 
-.. rubric:: Table of contents
-
-.. contents::
-   :local:
-
 .. _versions:
 
 Version notes

@@ -4,11 +4,6 @@
 Connect to CrateDB
 ==================
 
-.. rubric:: Table of contents
-
-.. contents::
-   :local:
-
 .. _data-source-name:
 
 Data source names
@@ -102,7 +97,7 @@ You can get a PDO connection like this:
 CrateDB Cloud
 =============
 
-If you are connecting to CrateDB Cloud you will need to enable the SSL mode 
+If you are connecting to CrateDB Cloud you will need to enable the SSL mode
 by setting the connection's ``CRATE_ATTR_SSL_MODE`` attribute:
 
 .. code-block:: php
@@ -110,7 +105,7 @@ by setting the connection's ``CRATE_ATTR_SSL_MODE`` attribute:
    require __DIR__ . '/vendor/autoload.php';
    use Crate\PDO\PDOCrateDB;
    $dsn = 'crate:yourcluster.yourdomain.com:4200';
-   $user = 'user1';	
+   $user = 'user1';
    $password = '<SECRET>';
    $options = null;
    $connection = new PDOCrateDB($dsn, $user, $password, $options);
@@ -122,7 +117,7 @@ by setting the connection's ``CRATE_ATTR_SSL_MODE`` attribute:
 		print_r($row);
 	}
 
-If this is not configured you will see the following error message: 
+If this is not configured you will see the following error message:
 ``cURL error 52: Empty reply from server``
 
 Advanced settings

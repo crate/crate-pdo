@@ -9,7 +9,7 @@ Supplementary information for the CrateDB PDO Driver.
 .. rubric:: Table of contents
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    data-types
    compatibility

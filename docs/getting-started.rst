@@ -7,11 +7,6 @@ Getting started
 Learn how to install and get started with the :ref:`CrateDB PDO driver
 <index>`.
 
-.. rubric:: Table of contents
-
-.. contents::
-   :local:
-
 .. _prerequisites:
 
 Prerequisites
