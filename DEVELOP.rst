@@ -209,6 +209,18 @@ To make changes to the RTD configuration (e.g., to activate or deactivate a
 release version), please contact the `@crate/tech-writing`_ team.
 
 
+*********
+Releasing
+*********
+
+- Bump version number in ``src/Crate/PDO/PDOCrateDB.php``
+- Update ``CHANGES.rst``, designating the new release
+- Commit changes: ``Release x.x.x``
+- Tag repository: ``git tag x.x.x``
+- Push to GitHub: ``git push && git push --tags``
+- Verify publishing worked: https://packagist.org/packages/crate/crate-pdo
+
+
 .. _@crate/tech-writing: https://github.com/orgs/crate/teams/tech-writing
 .. _Composer: https://getcomposer.org
 .. _fswatch: https://github.com/emcrisostomo/fswatch
