@@ -42,7 +42,7 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-version }}
-          tools: composer, phpunit:^9.5
+          tools: composer:2.8, phpunit:^9.5
 
       - uses: ramsey/composer-install@v2
 
