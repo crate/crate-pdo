@@ -44,7 +44,8 @@ jobs:
           php-version: ${{ matrix.php-version }}
           tools: composer:2.8, phpunit:^9.5
 
-      - uses: ramsey/composer-install@v2
+      - name: Install PHP dependencies
+        uses: ramsey/composer-install@v3
 
       - name: Run code style checks
         run: composer run check-style
