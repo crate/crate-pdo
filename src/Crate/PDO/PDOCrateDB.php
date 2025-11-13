@@ -472,11 +472,40 @@ class PDOCrateDB extends BasePDO implements PDOInterface
                 throw new Exception\UnsupportedException('This is not supported by crate.io');
 
             case self::PARAM_STR:
-                throw new Exception\UnsupportedException('This is not supported, please use prepared statements.');
+                trigger_error(
+                    "Strongly consider using prepared statements (secure) " .
+                    "instead of quoting strings manually (insecure), " .
+                    "see also https://www.php.net/manual/en/pdo.quote.php.",
+                    E_USER_DEPRECATED
+                );
+                return $this->quotePostgresql((string)$string);
 
             default:
                 throw new Exception\InvalidArgumentException('Unknown param type');
         }
+    }
+
+    /**
+     * Escape/quote strings for PostgreSQL when using prepared statements is not possible.
+     *
+     * https://github.com/ADOdb/ADOdb/blob/v5.22.10/adodb.inc.php
+     * https://github.com/ADOdb/ADOdb/blob/v5.22.10/drivers/adodb-postgres64.inc.php
+     *
+     * @param string $string
+     * @return string
+     */
+    private function quotePostgresql($value): string
+    {
+        if (is_bool($value)) {
+            return $value ? 'true' : 'false';
+        }
+        $value = str_replace(
+            array('\\', "\0"),
+            array('\\\\', "\\\0"),
+            $value
+        );
+        // CrateDB uses quote-doubling instead of backslash escaping.
+        return str_replace("'", "''", $value);
     }
 
     /**

@@ -235,6 +235,8 @@ class PDOTest extends TestCase
 
         $this->assertEquals(100, $this->pdo->quote('100', PDOCrateDB::PARAM_INT));
         $this->assertNull($this->pdo->quote('helloWorld', PDOCrateDB::PARAM_NULL));
+
+        $this->assertEquals("Don''t bother", $this->pdo->quote("Don't bother", \PDO::PARAM_STR));
     }
 
     /**
@@ -244,7 +246,6 @@ class PDOTest extends TestCase
     {
         return [
             [PDOCrateDB::PARAM_LOB, PDOException::class, 'This is not supported by crate.io'],
-            [PDOCrateDB::PARAM_STR, PDOException::class, 'This is not supported, please use prepared statements.'],
             [120, InvalidArgumentException::class, 'Unknown param type'],
         ];
     }
