@@ -38,7 +38,7 @@ trait PDOStatementImplementationPhp8
      * @return bool
      */
     #[\ReturnTypeWillChange]
-    public function setFetchMode(int $mode, ...$args): bool
+    public function setFetchMode($mode, ...$args)
     {
         return $this->doSetFetchMode($mode, ...$args);
     }
