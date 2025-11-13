@@ -5,6 +5,9 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2025/11/13 2.2.3
+================
+
 - PHP 8: Fixed fatal error about signature mismatch of this driver's
   ``PDOStatementImplementation::setFetchMode()`` vs. Doctrine's.
 
