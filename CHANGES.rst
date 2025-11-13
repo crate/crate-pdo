@@ -8,6 +8,7 @@ Unreleased
 - Dependencies: Fixed deprecation warnings on function signatures
   ``PDOCrateDB::prepare``, ``PDOCrateDB::lastInsertId``, ``PDOCrateDB::quote``,
   and ``PDOStatementImplementationPhp8::query``.
+- Verified support on PHP 8.5
 
 2025/11/13 2.2.3
 ================
