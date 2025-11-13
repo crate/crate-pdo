@@ -12,6 +12,7 @@ Unreleased
   when prepared statements can't be used.
 - Standards: Adjusted interface signature for ``PDO::query``;
   the ``query`` argument is no longer optional.
+- Verified support on PHP 8.5
 
 2025/11/13 2.2.3
 ================
