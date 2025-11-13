@@ -8,7 +8,7 @@ updates:
   - package-ecosystem: "composer"
     directory: "/"
     schedule:
-      interval: "monthly"
+      interval: "weekly"
     # Prefix all commit messages with "Composer" plus its scope, that is, a
     # list of updated dependencies
     commit-message:
