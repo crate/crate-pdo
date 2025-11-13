@@ -35,9 +35,9 @@ trait PDOImplementationPhp8
      * @param string|null $query
      * @param int|null $fetchMode
      * @param mixed ...$fetchModeArgs
-     * @return PDOStatement
+     * @return PDOStatement|false
      */
-    public function query(?string $query = null, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement
+    public function query(?string $query = null, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
     {
         if ($fetchMode !== null) {
             throw new UnsupportedException('PDOCrateDB::query $fetchMode not implemented yet');

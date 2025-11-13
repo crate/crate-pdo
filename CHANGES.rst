@@ -5,6 +5,10 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+- Dependencies: Fixed deprecation warnings on function signatures
+  ``PDOCrateDB::prepare``, ``PDOCrateDB::lastInsertId``, ``PDOCrateDB::quote``,
+  and ``PDOStatementImplementationPhp8::query``.
+
 2025/11/13 2.2.3
 ================
 

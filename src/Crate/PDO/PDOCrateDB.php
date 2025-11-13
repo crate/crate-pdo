@@ -207,7 +207,7 @@ class PDOCrateDB extends BasePDO implements PDOInterface
      * {@inheritDoc}
      */
     #[\ReturnTypeWillChange]
-    public function prepare(string $statement, array $options = [])
+    public function prepare($statement, $options = null)
     {
         $options = ArrayUtils::toArray($options);
 
@@ -280,7 +280,7 @@ class PDOCrateDB extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function lastInsertId(?string $name = null): string
+    public function lastInsertId($name = null): string
     {
         throw new Exception\UnsupportedException;
     }
@@ -456,7 +456,7 @@ class PDOCrateDB extends BasePDO implements PDOInterface
      * {@inheritDoc}
      */
     #[\ReturnTypeWillChange]
-    public function quote(string $string, int $parameter_type = self::PARAM_STR)
+    public function quote($string, $parameter_type = self::PARAM_STR)
     {
         switch ($parameter_type) {
             case self::PARAM_INT:
