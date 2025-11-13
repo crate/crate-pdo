@@ -38,7 +38,7 @@ trait PDOStatementImplementationPhp7
      * @param mixed $arg2
      * @param mixed $arg3
      */
-    public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null): bool
+    public function setFetchMode($fetchMode, $arg2 = null, $arg3 = null)
     {
         return $this->doSetFetchMode(...func_get_args());
     }
