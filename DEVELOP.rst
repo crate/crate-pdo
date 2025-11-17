@@ -129,7 +129,7 @@ Running the Tests
         --mount type=bind,source=$PWD/test/provisioning/crate.yml,target=/crate/config/crate.yml \
         --mount type=bind,source=$PWD/test/provisioning/keystore,target=/vagrant/test/provisioning/keystore \
         --mount type=bind,source=$PWD/test/provisioning/truststore,target=/vagrant/test/provisioning/truststore \
-        --publish 4200:4200 --publish 5432:5432 crate/crate:nightly
+        --publish 4200:4200 --publish 5432:5432 crate/crate:nightly '-Cdiscovery.type=single-node'
 
     # Run test suite on current/default version of PHP
     composer run test
