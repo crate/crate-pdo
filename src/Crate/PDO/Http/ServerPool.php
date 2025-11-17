@@ -36,6 +36,7 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\RequestOptions;
+use PDO;
 
 /**
  * Class ServerPool
@@ -220,8 +221,8 @@ final class ServerPool implements ServerInterface
         $protocol = $sslMode === PDOCrateDB::CRATE_ATTR_SSL_MODE_DISABLED ? 'http' : 'https';
 
         $options = [
-            RequestOptions::TIMEOUT         => $pdo->getAttribute(PDOCrateDB::ATTR_TIMEOUT),
-            RequestOptions::CONNECT_TIMEOUT => $pdo->getAttribute(PDOCrateDB::ATTR_TIMEOUT),
+            RequestOptions::TIMEOUT         => $pdo->getAttribute(PDO::ATTR_TIMEOUT),
+            RequestOptions::CONNECT_TIMEOUT => $pdo->getAttribute(PDO::ATTR_TIMEOUT),
             RequestOptions::AUTH            => $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_HTTP_BASIC_AUTH) ?: null,
             RequestOptions::HEADERS         => [
                 'Default-Schema' => $pdo->getAttribute(PDOCrateDB::CRATE_ATTR_DEFAULT_SCHEMA),

@@ -36,6 +36,7 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\RequestOptions;
+use PDO;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -71,7 +72,7 @@ final class ServerPoolTest extends TestCase
         return [
             [
                 [
-                    PDOCrateDB::ATTR_TIMEOUT               => 10,
+                    PDO::ATTR_TIMEOUT                      => 10,
                     PDOCrateDB::CRATE_ATTR_DEFAULT_SCHEMA  => 'default',
                     PDOCrateDB::CRATE_ATTR_HTTP_BASIC_AUTH => ['foo', 'bar'],
                 ],

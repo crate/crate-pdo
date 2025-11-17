@@ -25,6 +25,7 @@ namespace CrateIntegrationTest\PDO;
 use Crate\PDO\PDOCrateDB;
 use Crate\Stdlib\BulkResponse;
 use Crate\Stdlib\CrateConst;
+use PDO;
 
 /**
  * Class PDOStatementTest
@@ -70,7 +71,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement->bindColumn('id', $id);
         $statement->bindColumn('name', $name);
 
-        while ($row = $statement->fetch(PDOCrateDB::FETCH_BOUND)) {
+        while ($row = $statement->fetch(PDO::FETCH_BOUND)) {
 
             $this->assertEquals($expected[$index]['id'], $id);
             $this->assertEquals($expected[$index]['name'], $name);
@@ -96,7 +97,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->execute();
 
-        $this->assertEquals($expected, $statement->fetchAll(PDOCrateDB::FETCH_NUM));
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_NUM));
     }
 
     public function testFetchAllWithAssocStyle()
@@ -114,7 +115,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->execute();
 
-        $this->assertEquals($expected, $statement->fetchAll(PDOCrateDB::FETCH_ASSOC));
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function testFetchAllWithObjectStyle()
@@ -132,7 +133,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement = $this->pdo->prepare('SELECT id, name FROM test_table');
         $statement->execute();
 
-        $this->assertEquals($expected, $statement->fetchAll(PDOCrateDB::FETCH_OBJ));
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_OBJ));
     }
 
     public function testFetchSameColumnTwiceWithAssocStyle()
@@ -147,7 +148,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement = $this->pdo->prepare('SELECT id, id FROM test_table');
         $statement->execute();
 
-        $this->assertEquals($expected, $statement->fetchAll(PDOCrateDB::FETCH_ASSOC));
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_ASSOC));
     }
 
     public function testFetchAllWithBothStyle()
@@ -166,7 +167,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement->execute();
 
         // In theory this should be assertSame, but implementing that would be incredibly slow
-        $this->assertEquals($expected, $statement->fetchAll(PDOCrateDB::FETCH_BOTH));
+        $this->assertEquals($expected, $statement->fetchAll(PDO::FETCH_BOTH));
     }
 
     public function testFetchAllWithFuncStyle()
@@ -189,7 +190,7 @@ class PDOStatementTest extends AbstractIntegrationTest
             return sprintf('%d:%s', $id, $name);
         };
 
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_FUNC, $callback);
+        $resultSet = $statement->fetchAll(PDO::FETCH_FUNC, $callback);
 
         foreach ($resultSet as $result) {
             $this->assertEquals(sprintf('%d:%s', $expected[$index]['id'], $expected[$index]['name']), $result);
@@ -217,7 +218,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement->execute();
         $this->assertEquals(1, $statement->rowCount());
 
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_NAMED);
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
         $this->assertEquals(2, $resultSet[0]['id']);
         $this->assertEquals($name, $resultSet[0]['name']);
     }
@@ -244,7 +245,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement->execute();
         $this->assertEquals(1, $statement->rowCount());
 
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_NAMED);
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
         $this->assertEquals(2, $resultSet[0]['id']);
         $this->assertEquals($name, $resultSet[0]['name']);
 
@@ -254,7 +255,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement->execute();
         $this->assertEquals(1, $statement->rowCount());
 
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_NAMED);
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
         $this->assertEquals(2, $resultSet[0]['id']);
         $this->assertEquals($name, $resultSet[0]['name']);
     }
@@ -281,8 +282,8 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->pdo->exec("REFRESH TABLE test_table");
 
         $statement = $this->pdo->prepare('update test_table set name = concat(name, :name) where int_type = :int_type and name != :name');
-        $statement->bindValue(':int_type', 1, PDOCrateDB::PARAM_INT);
-        $statement->bindValue(':name', 'world', PDOCrateDB::PARAM_STR);
+        $statement->bindValue(':int_type', 1, PDO::PARAM_INT);
+        $statement->bindValue(':name', 'world', PDO::PARAM_STR);
         $statement->execute();
 
         $this->pdo->exec("REFRESH TABLE test_table");
@@ -311,15 +312,15 @@ class PDOStatementTest extends AbstractIntegrationTest
         $statement->execute();
         $this->assertEquals(1, $statement->rowCount());
 
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_NAMED);
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
         $this->assertEquals(2, $resultSet[0]['id']);
         $this->assertEquals('second', $resultSet[0]['name']);
     }
 
     public function testArrayValue()
     {
-        $statement = $this->pdo->prepare('INSERT INTO test_table (id, array_type, object_type) VALUES(?, ?, ?)');
-        $statement->bindValue(1, 1, PDOCrateDB::PARAM_INT);
+        $statement = $this->pdo->prepare('INSERT INTO test_table (id, array_type, object_type) VALUES (?, ?, ?)');
+        $statement->bindValue(1, 1, PDO::PARAM_INT);
         $statement->bindValue(2, [1, 2], PDOCrateDB::PARAM_ARRAY);
         $statement->bindValue(3, ["foo" => "bar"], PDOCrateDB::PARAM_OBJECT);
         $statement->execute();
@@ -328,7 +329,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->pdo->exec('REFRESH TABLE test_table');
 
         $statement = $this->pdo->prepare('SELECT id, array_type, object_type FROM test_table');
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_ASSOC);
+        $resultSet = $statement->fetchAll(PDO::FETCH_ASSOC);
         $this->assertEquals(1, $resultSet[0]['id']);
         $this->assertEquals([1, 2], $resultSet[0]['array_type']);
         $this->assertEquals(["foo" => "bar"], $resultSet[0]['object_type']);
@@ -342,7 +343,7 @@ class PDOStatementTest extends AbstractIntegrationTest
         $this->pdo->exec('REFRESH TABLE test_table');
 
         $statement = $this->pdo->prepare('SELECT * FROM test_table');
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_NAMED);
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
 
         $this->assertEquals(6, $resultSet[0]['id']);
         $this->assertEquals(NULL, $resultSet[0]['name']);
@@ -363,14 +364,14 @@ class PDOStatementTest extends AbstractIntegrationTest
         // Check outcome, response and result count, it is a `BulkResponse` instance here.
         // The `rowCount()` should be the total number of records.
         $this->assertTrue($outcome);
-        $response = $statement->fetchAll(PDOCrateDB::FETCH_NUM);
+        $response = $statement->fetchAll(PDO::FETCH_NUM);
         $this->assertEquals([["rowcount" => 1], ["rowcount" => 1], ["rowcount" => 1], ["rowcount" => 1]], $response);
         $this->assertEquals(4, $statement->rowCount());
 
         // Verify records have been inserted correctly.
         $this->pdo->exec("REFRESH TABLE test_table");
         $statement = $this->pdo->prepare("SELECT id, name, int_type FROM test_table ORDER BY id");
-        $results = $statement->fetchAll(PDOCrateDB::FETCH_NUM);
+        $results = $statement->fetchAll(PDO::FETCH_NUM);
         $this->assertEquals([5, 'foo', 1], $results[0]);
         $this->assertEquals([8, 'bar', 4], $results[3]);
     }
@@ -392,13 +393,13 @@ class PDOStatementTest extends AbstractIntegrationTest
     public function testNullParamBinding()
     {
         $statement = $this->pdo->prepare('INSERT INTO test_table (id, name) VALUES (6, ?)');
-        $statement->bindValue(1, NULL, PDOCrateDB::PARAM_STR);
+        $statement->bindValue(1, NULL, PDO::PARAM_STR);
         $statement->execute();
 
         $this->pdo->exec('REFRESH TABLE test_table');
 
         $statement = $this->pdo->prepare('SELECT * FROM test_table');
-        $resultSet = $statement->fetchAll(PDOCrateDB::FETCH_NAMED);
+        $resultSet = $statement->fetchAll(PDO::FETCH_NAMED);
 
         $this->assertEquals(6, $resultSet[0]['id']);
         $this->assertEquals(NULL, $resultSet[0]['name']);
