@@ -32,7 +32,7 @@ use function func_get_args;
 trait PDOStatementImplementationPhp7
 {
     /**
-     * @deprecated Use one of the fetch- or iterate-related methods.
+     * Set the default fetch mode for this statement.
      *
      * @param int   $fetchMode
      * @param mixed $arg2
@@ -44,7 +44,7 @@ trait PDOStatementImplementationPhp7
     }
 
     /**
-     * @deprecated Use fetchAllNumeric(), fetchAllAssociative() or fetchFirstColumn() instead.
+     * Fetch the remaining rows from a result set.
      *
      * @param int|null $fetchMode
      * @param mixed    $fetchArgument
