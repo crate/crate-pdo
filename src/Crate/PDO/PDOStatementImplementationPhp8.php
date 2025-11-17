@@ -30,7 +30,7 @@ namespace Crate\PDO;
 trait PDOStatementImplementationPhp8
 {
     /**
-     * @deprecated Use one of the fetch- or iterate-related methods.
+     * Set the default fetch mode for this statement.
      *
      * @param int   $mode
      * @param mixed ...$args
@@ -44,7 +44,7 @@ trait PDOStatementImplementationPhp8
     }
 
     /**
-     * @deprecated Use fetchAllNumeric(), fetchAllAssociative() or fetchFirstColumn() instead.
+     * Fetch the remaining rows from a result set.
      *
      * @param int|null $mode
      * @param mixed    ...$args
