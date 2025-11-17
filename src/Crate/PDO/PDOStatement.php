@@ -569,13 +569,11 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
      */
     public function doSetFetchMode($mode, $params = null)
     {
-        $args     = func_get_args();
-        $argCount = count($args);
 
         switch ($mode) {
             case PDO::FETCH_COLUMN:
-                if ($argCount != 2) {
                     throw new Exception\InvalidArgumentException('fetch mode requires the colno argument');
+                if ($params === null) {
                 }
 
                 if (!is_int($params)) {

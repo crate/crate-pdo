@@ -269,9 +269,13 @@ class PDOCrateDB extends BasePDO implements PDOInterface
     /**
      * {@inheritDoc}
      */
-    public function doQuery($statement)
+    public function doQuery($statement, ?int $fetchMode = null, ...$fetchModeArgs)
     {
         $statement = $this->prepare($statement);
+        if ($fetchMode !== null) {
+            $statement->setFetchMode($fetchMode, ...$fetchModeArgs);
+        }
+
         $result    = $statement->execute();
 
         return $result === false ? false : $statement;

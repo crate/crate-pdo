@@ -15,6 +15,7 @@ Unreleased
 - Verified support on PHP 8.5 and PHP 8.6
 - Standards: Started referring to canonical ``PDO::`` symbols where possible,
   using ``PDOCrateDB::`` only for CrateDB specifics.
+- Added support of the ``$fetchMode`` argument for the ``PDO::query`` method.
 
 2025/11/13 2.2.3
 ================

@@ -337,10 +337,7 @@ class PDOTest extends TestCase
      */
     public function testNewPhp8PdoInterfaceQueryWithFetchMode($fetchMode)
     {
-        $this->expectException(UnsupportedException::class);
-        $this->expectExceptionMessage('PDOCrateDB::query $fetchMode not implemented yet');
-
-        $this->pdo->query("SELECT 1;", $fetchMode, 'foobar');
+        $this->pdo->query("SELECT 1;", $fetchMode);
     }
 
     /**
@@ -357,6 +354,21 @@ class PDOTest extends TestCase
             [PDO::FETCH_BOUND],
             [PDO::FETCH_NAMED],
         ];
+    }
+
+    public function testNewPhp8PdoInterfaceQueryWithInvalidFetchMode()
+    {
+        $this->expectException(UnsupportedException::class);
+        $this->expectExceptionMessage('Invalid fetch mode specified');
+
+        $this->pdo->query("SELECT 1;", 99);
+    }
+
+    public function testNewPhp8PdoInterfaceQueryWithInvalidFetchModeParams()
+    {
+        $this->expectException(InvalidArgumentException::class);
+
+        $this->pdo->query("SELECT 1;", PDO::FETCH_NAMED, 'foobar');
     }
 
     /**
