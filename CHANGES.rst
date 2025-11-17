@@ -10,6 +10,8 @@ Unreleased
   and ``PDOStatementImplementationPhp8::query``.
 - Quoting: Started supporting ``PDOCrateDB::quote(..., \PDO::PARAM_STR)``
   when prepared statements can't be used.
+- Standards: Adjusted interface signature for ``PDO::query``;
+  the ``query`` argument is no longer optional.
 
 2025/11/13 2.2.3
 ================

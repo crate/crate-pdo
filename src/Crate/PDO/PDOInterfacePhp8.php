@@ -32,7 +32,7 @@ interface PDOInterfacePhp8
     public function rollback(): bool;
     public function inTransaction(): bool;
     public function exec($statement);
-    public function query(?string $query = null, ?int $fetchMode = null, mixed ...$fetchModeArgs);
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs);
     public function lastInsertId(?string $name = null): string;
     public function errorCode();
     public function errorInfo();

@@ -25,6 +25,7 @@ declare(strict_types=1);
 namespace Crate\PDO;
 
 use Crate\PDO\Exception\UnsupportedException;
+use PDOStatement;
 
 /**
  * @internal
@@ -37,7 +38,7 @@ trait PDOImplementationPhp8
      * @param mixed ...$fetchModeArgs
      * @return PDOStatement|false
      */
-    public function query(?string $query = null, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
+    public function query(string $query, ?int $fetchMode = null, mixed ...$fetchModeArgs): PDOStatement|false
     {
         if ($fetchMode !== null) {
             throw new UnsupportedException('PDOCrateDB::query $fetchMode not implemented yet');
