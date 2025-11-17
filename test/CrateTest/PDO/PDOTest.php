@@ -30,6 +30,7 @@ use Crate\PDO\Http\ServerInterface;
 use Crate\PDO\PDOCrateDB;
 use Crate\PDO\PDOStatement;
 use Generator;
+use PDO;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
@@ -88,8 +89,8 @@ class PDOTest extends TestCase
      */
     public function testInstantiationWithTraversableOptions()
     {
-        $pdo = new PDOCrateDB('crate:localhost:1234', null, null, new \ArrayObject([PDOCrateDB::ATTR_ERRMODE => PDOCrateDB::ERRMODE_EXCEPTION]));
-        $this->assertEquals(PDOCrateDB::ERRMODE_EXCEPTION, $pdo->getAttribute(PDOCrateDB::ATTR_ERRMODE));
+        $pdo = new PDOCrateDB('crate:localhost:1234', null, null, new \ArrayObject([PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]));
+        $this->assertEquals(PDO::ERRMODE_EXCEPTION, $pdo->getAttribute(PDO::ATTR_ERRMODE));
     }
 
     /**
@@ -127,9 +128,9 @@ class PDOTest extends TestCase
      */
     public function testGetAndSetDefaultFetchMode()
     {
-        $this->assertEquals(PDOCrateDB::FETCH_BOTH, $this->pdo->getAttribute(PDOCrateDB::ATTR_DEFAULT_FETCH_MODE));
-        $this->pdo->setAttribute(PDOCrateDB::ATTR_DEFAULT_FETCH_MODE, PDOCrateDB::FETCH_ASSOC);
-        $this->assertEquals(PDOCrateDB::FETCH_ASSOC, $this->pdo->getAttribute(PDOCrateDB::ATTR_DEFAULT_FETCH_MODE));
+        $this->assertEquals(PDO::FETCH_BOTH, $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE));
+        $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+        $this->assertEquals(PDO::FETCH_ASSOC, $this->pdo->getAttribute(PDO::ATTR_DEFAULT_FETCH_MODE));
     }
 
     /**
@@ -138,9 +139,9 @@ class PDOTest extends TestCase
      */
     public function testGetAndSetErrorMode()
     {
-        $this->assertEquals(PDOCrateDB::ERRMODE_SILENT, $this->pdo->getAttribute(PDOCrateDB::ATTR_ERRMODE));
-        $this->pdo->setAttribute(PDOCrateDB::ATTR_ERRMODE, PDOCrateDB::ERRMODE_EXCEPTION);
-        $this->assertEquals(PDOCrateDB::ERRMODE_EXCEPTION, $this->pdo->getAttribute(PDOCrateDB::ATTR_ERRMODE));
+        $this->assertEquals(PDO::ERRMODE_SILENT, $this->pdo->getAttribute(PDO::ATTR_ERRMODE));
+        $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->assertEquals(PDO::ERRMODE_EXCEPTION, $this->pdo->getAttribute(PDO::ATTR_ERRMODE));
     }
 
     /**
@@ -149,9 +150,9 @@ class PDOTest extends TestCase
      */
     public function testGetAndSetStatementClass()
     {
-        $this->assertEquals([PDOStatement::class], $this->pdo->getAttribute(PDOCrateDB::ATTR_STATEMENT_CLASS));
-        $this->pdo->setAttribute(PDOCrateDB::ATTR_STATEMENT_CLASS, 'Doctrine\DBAL\Driver\PDO\Statement');
-        $this->assertEquals(['Doctrine\DBAL\Driver\PDO\Statement'], $this->pdo->getAttribute(PDOCrateDB::ATTR_STATEMENT_CLASS));
+        $this->assertEquals([PDOStatement::class], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
+        $this->pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, 'Doctrine\DBAL\Driver\PDO\Statement');
+        $this->assertEquals(['Doctrine\DBAL\Driver\PDO\Statement'], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
     }
 
     /**
@@ -172,7 +173,7 @@ class PDOTest extends TestCase
 
     public function testGetStatementClass()
     {
-        $this->assertEquals([PDOStatement::class], $this->pdo->getAttribute(PDOCrateDB::ATTR_STATEMENT_CLASS));
+        $this->assertEquals([PDOStatement::class], $this->pdo->getAttribute(PDO::ATTR_STATEMENT_CLASS));
     }
 
     /**
@@ -180,7 +181,7 @@ class PDOTest extends TestCase
      */
     public function testPersistent()
     {
-        $this->assertFalse($this->pdo->getAttribute(PDOCrateDB::ATTR_PERSISTENT));
+        $this->assertFalse($this->pdo->getAttribute(PDO::ATTR_PERSISTENT));
     }
 
     /**
@@ -188,7 +189,7 @@ class PDOTest extends TestCase
      */
     public function testPreFetch()
     {
-        $this->assertFalse($this->pdo->getAttribute(PDOCrateDB::ATTR_PREFETCH));
+        $this->assertFalse($this->pdo->getAttribute(PDO::ATTR_PREFETCH));
     }
 
     /**
@@ -196,7 +197,7 @@ class PDOTest extends TestCase
      */
     public function testAutoCommit()
     {
-        $this->assertTrue($this->pdo->getAttribute(PDOCrateDB::ATTR_AUTOCOMMIT));
+        $this->assertTrue($this->pdo->getAttribute(PDO::ATTR_AUTOCOMMIT));
     }
 
     /**
@@ -218,11 +219,11 @@ class PDOTest extends TestCase
     {
         $timeout = 3;
 
-        $this->assertEquals(0, $this->pdo->getAttribute(PDOCrateDB::ATTR_TIMEOUT));
+        $this->assertEquals(0, $this->pdo->getAttribute(PDO::ATTR_TIMEOUT));
 
-        $this->pdo->setAttribute(PDOCrateDB::ATTR_TIMEOUT, $timeout);
+        $this->pdo->setAttribute(PDO::ATTR_TIMEOUT, $timeout);
 
-        $this->assertEquals($timeout, $this->pdo->getAttribute(PDOCrateDB::ATTR_TIMEOUT));
+        $this->assertEquals($timeout, $this->pdo->getAttribute(PDO::ATTR_TIMEOUT));
     }
 
     /**
@@ -230,11 +231,11 @@ class PDOTest extends TestCase
      */
     public function testQuote()
     {
-        $this->assertTrue($this->pdo->quote('1', PDOCrateDB::PARAM_BOOL));
-        $this->assertFalse($this->pdo->quote('0', PDOCrateDB::PARAM_BOOL));
+        $this->assertTrue($this->pdo->quote('1', PDO::PARAM_BOOL));
+        $this->assertFalse($this->pdo->quote('0', PDO::PARAM_BOOL));
 
-        $this->assertEquals(100, $this->pdo->quote('100', PDOCrateDB::PARAM_INT));
-        $this->assertNull($this->pdo->quote('helloWorld', PDOCrateDB::PARAM_NULL));
+        $this->assertEquals(100, $this->pdo->quote('100', PDO::PARAM_INT));
+        $this->assertNull($this->pdo->quote('helloWorld', PDO::PARAM_NULL));
 
         $this->assertEquals("Don''t bother", $this->pdo->quote("Don't bother", \PDO::PARAM_STR));
     }
@@ -245,7 +246,7 @@ class PDOTest extends TestCase
     public function quoteExceptionProvider()
     {
         return [
-            [PDOCrateDB::PARAM_LOB, PDOException::class, 'This is not supported by crate.io'],
+            [PDO::PARAM_LOB, PDOException::class, 'This is not supported by crate.io'],
             [120, InvalidArgumentException::class, 'Unknown param type'],
         ];
     }
@@ -350,11 +351,11 @@ class PDOTest extends TestCase
     public function fetchModeStyleProvider()
     {
         return [
-            [PDOCrateDB::FETCH_ASSOC],
-            [PDOCrateDB::FETCH_NUM],
-            [PDOCrateDB::FETCH_BOTH],
-            [PDOCrateDB::FETCH_BOUND],
-            [PDOCrateDB::FETCH_NAMED],
+            [PDO::FETCH_ASSOC],
+            [PDO::FETCH_NUM],
+            [PDO::FETCH_BOTH],
+            [PDO::FETCH_BOUND],
+            [PDO::FETCH_NAMED],
         ];
     }
 

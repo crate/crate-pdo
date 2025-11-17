@@ -13,6 +13,8 @@ Unreleased
 - Standards: Adjusted interface signature for ``PDO::query``;
   the ``query`` argument is no longer optional.
 - Verified support on PHP 8.5 and PHP 8.6
+- Standards: Started referring to canonical ``PDO::`` symbols where possible,
+  using ``PDOCrateDB::`` only for CrateDB specifics.
 
 2025/11/13 2.2.3
 ================
