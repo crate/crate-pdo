@@ -367,6 +367,7 @@ class PDOTest extends TestCase
     public function testNewPhp8PdoInterfaceQueryWithInvalidFetchModeParams()
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Fetch mode does not allow any extra arguments');
 
         $this->pdo->query("SELECT 1;", PDO::FETCH_NAMED, 'foobar');
     }

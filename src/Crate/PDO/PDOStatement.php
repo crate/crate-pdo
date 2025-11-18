@@ -572,12 +572,12 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
 
         switch ($mode) {
             case PDO::FETCH_COLUMN:
-                    throw new Exception\InvalidArgumentException('fetch mode requires the colno argument');
                 if ($params === null) {
+                    throw new Exception\InvalidArgumentException('Fetch mode requires the colno argument');
                 }
 
                 if (!is_int($params)) {
-                    throw new Exception\InvalidArgumentException('colno must be an integer');
+                    throw new Exception\InvalidArgumentException('Column number must be an integer');
                 }
 
                 $this->options['fetchMode']   = $mode;
@@ -591,7 +591,7 @@ class PDOStatement extends BasePDOStatement implements IteratorAggregate
             case PDO::FETCH_NAMED:
             case PDO::FETCH_OBJ:
                 if ($params !== null) {
-                    throw new Exception\InvalidArgumentException('fetch mode doesn\'t allow any extra arguments');
+                    throw new Exception\InvalidArgumentException('Fetch mode does not allow any extra arguments');
                 }
 
                 $this->options['fetchMode'] = $mode;
