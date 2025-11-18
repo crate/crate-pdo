@@ -762,7 +762,7 @@ class PDOStatementTest extends TestCase
     {
         $this->expectException(
             'Crate\PDO\Exception\InvalidArgumentException',
-            'fetch mode requires the colno argument'
+            'Fetch mode requires the colno argument'
         );
 
         $this->statement->setFetchMode(PDO::FETCH_COLUMN);
@@ -777,7 +777,7 @@ class PDOStatementTest extends TestCase
     {
         $this->expectException(
             'Crate\PDO\Exception\InvalidArgumentException',
-            'colno must be an integer'
+            'Column number must be an integer'
         );
 
         $this->statement->setFetchMode(PDO::FETCH_COLUMN, 'test');
