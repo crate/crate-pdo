@@ -295,18 +295,14 @@ application documentation][sample application documentation]) for a practical de
 use.
 :::
 
-[composer]: https://getcomposer.org/
-[composer documentation]: https://getcomposer.org
+
 [cratedb reference]: https://crate.io/docs/crate/reference/en/latest/admin/ssl.html
 [data source name]: https://en.wikipedia.org/wiki/Data_source_name
 [database user]: https://crate.io/docs/crate/reference/en/latest/admin/user-management.html
-[dsn]: https://en.wikipedia.org/wiki/Data_source_name
 [fetch modes]: https://www.php.net/manual/en/pdostatement.fetch.php
 [http connection]: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html
 [http endpoint]: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html
-[pdo api documentation]: https://www.php.net/pdo
 [pdo documentation]: https://www.php.net/manual/en/intro.pdo.php
-[pdo::setattribute]: https://www.php.net/manual/en/pdo.setattribute.php
 [round-robin dns]: https://en.wikipedia.org/wiki/Round-robin_DNS
 [sample application]: https://github.com/crate/crate-sample-apps/tree/main/php-slim
 [sample application documentation]: https://github.com/crate/crate-sample-apps/blob/main/php-slim/documentation.md
