@@ -59,6 +59,7 @@ $connection->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATT
 
 getting-started
 connect
+bulk-operations
 data-types
 ```
 
