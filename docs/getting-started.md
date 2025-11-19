@@ -31,7 +31,7 @@ Once the package has been configured as a dependency, you can install it, like:
 composer install
 ```
 
-Afterwards, if you are not already doing so, you must require the Composer
+Afterward, if you are not already doing so, you must require the Composer
 [autoload.php] file. You can do this by adding a line like this to your PHP
 application:
 

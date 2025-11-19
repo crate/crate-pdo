@@ -158,7 +158,7 @@ attribute class constants.
 
   **Default:** `0` (indefinitely)
 
-### Driver specific constants
+### Driver-specific constants
 
 The CrateDB driver provides number of `PDO` attribute class constants.
 
@@ -266,7 +266,7 @@ When creating a statement instance with it, the `$parameters` data will be
 obtained as a **list of records**, like demonstrated in the example below.
 
 Please note that you **must** use `PDO::FETCH_NUM` on the fetch operation,
-because the response object type `BulkResponse` is different than the regular
+because the response object type `BulkResponse` is different from the regular
 response type `Collection`.
 
 ```php
