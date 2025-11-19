@@ -8,8 +8,7 @@ Unreleased
 - Added support for querying with ``PDO::PARAM_STR`` when prepared statements
   can't be used, better supporting the Laravel Eloquent ORM. Thanks, @olavski.
 - Added support for the ``$fetchMode`` argument of the ``PDO::query`` method.
-- Adjusted function and interface signatures and type hinting to better comply
-  with PHP and PDO standards, fixing deprecation warnings and normalizing symbols.
+- Fixed deprecation warnings for compatibility with modern PHP and PDO versions.
 - Verified support on PHP 8.5 and PHP 8.6.
 
 2025/11/13 2.2.3
