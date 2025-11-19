@@ -14,21 +14,29 @@ To use this mode, the `PDOStatement` offers a corresponding `bulkMode` option.
 When creating a statement instance with it, the `$parameters` data will be
 obtained as a **list of records**, like demonstrated in the example below.
 
-Please note that you **must** use `PDO::FETCH_NUM` on the fetch operation,
-because the response object type `BulkResponse` is different from the regular
-response type `Collection`.
-
 ```php
-// Run insert operation.
+// Define insert data.
 $parameters = [[5, 'foo', 1], [6, 'bar', 2], [7, 'foo', 3], [8, 'bar', 4]];
+
+// Invoke bulk insert operation.
 $statement = $connection->prepare(
     'INSERT INTO test_table (id, name, int_type) VALUES (?, ?, ?)',
     array("bulkMode" => true));
 $statement->execute($parameters);
 
-// Evaluate response.
-// MUST use `PDO::FETCH_NUM` for returning bulk operation responses.
-print("Total count: {$statement->rowCount()}\n");
+// Evaluate response, mainly for getting informed about inserted rows.
 $response = $statement->fetchAll(PDO::FETCH_NUM);
 print_r($response);
 ```
+
+:::{NOTE}
+Please note that you **must** use `PDO::FETCH_NUM` on the fetch operation,
+because the response object type `BulkResponse` is different from the regular
+response type `Collection`. The reason is only `PDO::FETCH_NUM` provides
+unaltered access to the raw response from the database.
+```php
+switch ($fetch_style) {
+    case PDO::FETCH_NUM:
+        return $this->collection->getRows();
+```
+:::
