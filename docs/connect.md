@@ -6,8 +6,7 @@
 
 ## Data source names
 
-PDO makes use of [Data Source Name] (DSN) strings.
-
+PDO makes use of [data source name] (DSN) strings.
 A basic version of the DSN string for CrateDB might be:
 
 ```text
@@ -16,34 +15,19 @@ crate:<HOST_ADDR>:<PORT>
 
 Here, replace `<HOST_ADDR>` with the host address of a CrateDB node, and
 replace `<PORT>` with the port number of the [HTTP endpoint].
-
-Example DSN strings:
-
-- `crate:localhost:4200`
-- `crate:crate-1.vm.example.com:4200`
-- `crate:198.51.100.1:4200`
-
-You can specify a second CrateDB node, like so:
+You can specify multiple CrateDB nodes separated by commas.
 
 ```text
 crate:<HOST_ADDR_1>:<PORT>,<HOST_ADDR_2>:<PORT>
 ```
 
-Here, `<HOST_ADDR_1>` and `<HOST_ADDR_2>` are the host strings for the
-first and second CrateDB nodes, respectively.
-
-In fact, you can specify as many nodes as you like. Each corresponding host
-string must be separated from the previous one using a `,` character.
-
-:::{TIP}
+:::{NOTE}
 The list of nodes is shuffled when the connection is first created.
-
 For every query, the client will attempt to connect to each node in sequence
 until a successful connection is made. Nodes are moved to the end of the
 list each time they are tried.
-
 Over multiple query executions, this behaviour functions as client-side
-*round-robin* load balancing. (This is analogous to [round-robin DNS].)
+*round-robin* load balancing, which is analogous to [round-robin DNS].
 :::
 
 You can also specify a schema, like so:
@@ -57,12 +41,13 @@ Here, replace `<SCHEMA>` with the name of the schema you want to select.
 :::{TIP}
 The default CrateDB schema is `doc`, and if you do not specify a schema,
 this is what will be used.
-
-However, you can query any schema you like by specifying it in the query.
+Note you can always query any schema you like by specifying it in the query
+expression itself.
 :::
 
-To wrap up, here's a more complex list of example DSN strings:
+To wrap up, here's a list of example DSN strings:
 
+- `crate:localhost:4200`
 - `crate:localhost:4200/my_schema`
 - `crate:crate-1.vm.example.com:4200,crate-2.vm.example.com:4200`
 - `crate:198.51.100.1:4200,198.51.100.2:4200/another_schema`
@@ -183,7 +168,7 @@ When not configuring SSL but connecting to an SSL-enabled host, you will see an
 error message like `cURL error 52: Empty reply from server`.
 :::
 
-### Fetch modes
+## Fetch modes
 
 CrateDB PDO supports a subset of the PDO [fetch modes], depending on the fetch
 method used.
@@ -219,17 +204,6 @@ method used.
 |                            | ``PDO::FETCH_OBJ``    |
 +----------------------------+-----------------------+
 ```
-
-## Next steps
-
-Use the standard [PDO documentation] documentation for the rest of your
-setup process.
-
-:::{SEEALSO}
-Check out the [sample application] (and the corresponding [sample
-application documentation][sample application documentation]) for a practical demonstration of this driver in
-use.
-:::
 
 
 [cratedb reference]: https://crate.io/docs/crate/reference/en/latest/admin/ssl.html
