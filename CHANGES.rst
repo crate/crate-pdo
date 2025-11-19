@@ -5,17 +5,12 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
-- Dependencies: Fixed deprecation warnings on function signatures
-  ``PDOCrateDB::prepare``, ``PDOCrateDB::lastInsertId``, ``PDOCrateDB::quote``,
-  and ``PDOStatementImplementationPhp8::query``.
-- Quoting: Started supporting ``PDOCrateDB::quote(..., \PDO::PARAM_STR)``
-  when prepared statements can't be used.
-- Standards: Adjusted interface signature for ``PDO::query``;
-  the ``query`` argument is no longer optional.
-- Verified support on PHP 8.5 and PHP 8.6
-- Standards: Started referring to canonical ``PDO::`` symbols where possible,
-  using ``PDOCrateDB::`` only for CrateDB specifics.
-- Added support of the ``$fetchMode`` argument for the ``PDO::query`` method.
+- Added support for querying with ``PDO::PARAM_STR`` when prepared statements
+  can't be used, better supporting the Laravel Eloquent ORM. Thanks, @olavski.
+- Added support for the ``$fetchMode`` argument of the ``PDO::query`` method.
+- Adjusted function and interface signatures and type hinting to better comply
+  with PHP and PDO standards, fixing deprecation warnings and normalizing symbols.
+- Verified support on PHP 8.5 and PHP 8.6.
 
 2025/11/13 2.2.3
 ================
