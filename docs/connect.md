@@ -130,7 +130,7 @@ Once you have a connection, you can configure settings with the
 $connection->setAttribute(<ATTRIBUTE>, <VALUE>);
 ```
 
-Here, replace `<ATTRIBUTE>` with the a reference to a `PDO` attribute class
+Here, replace `<ATTRIBUTE>` with a reference to a `PDO` attribute class
 constant, and replace `<VALUE>` with the value you want to set it to.
 
 `PDO` attribute class constants look like this:
@@ -286,7 +286,7 @@ print_r($response);
 
 ## Next steps
 
-Use the standard the [PDO documentation] documentation for the rest of your
+Use the standard [PDO documentation] documentation for the rest of your
 setup process.
 
 :::{SEEALSO}
