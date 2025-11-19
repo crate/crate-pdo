@@ -1,6 +1,6 @@
 (connect)=
 
-# Connect to CrateDB
+# Connection options
 
 (data-source-name)=
 
@@ -67,59 +67,22 @@ To wrap up, here's a more complex list of example DSN strings:
 - `crate:crate-1.vm.example.com:4200,crate-2.vm.example.com:4200`
 - `crate:198.51.100.1:4200,198.51.100.2:4200/another_schema`
 
-(get-connection)=
+(authentication)=
 
-## Get a connection
+## Authentication
 
-You can get a PDO connection like this:
-
-```php
-use Crate\PDO\PDOCrateDB;
-
-$dsn = '<DATA_SOURCE_NAME>';
-$user = 'crate';
-$password = null;
-$options = null;
-$connection = new PDOCrateDB($dsn, $user, $password, $options);
-```
-
-:::{NOTE}
 Authentication was introduced in CrateDB versions 2.1.x.
 
 If you are using CrateDB 2.1.x or later, you must supply a username. If you
 are using earlier versions of CrateDB, this argument is not supported.
 
+:::{SEEALSO}
 See the {ref}`compatibility notes <cratedb-versions>` for more information.
+:::
 
 If you have not configured a custom [database user], you probably want to
 authenticate as the CrateDB superuser, which is `crate`. The superuser
 does not have a password, so you should omit the `password` argument.
-:::
-
-## CrateDB Cloud
-
-If you are connecting to CrateDB Cloud you will need to enable the SSL mode
-by setting the connection's `CRATE_ATTR_SSL_MODE` attribute:
-
-```php
-require __DIR__ . '/vendor/autoload.php';
-use Crate\PDO\PDOCrateDB;
-$dsn = 'crate:yourcluster.yourdomain.com:4200';
-$user = 'user1';
-$password = '<SECRET>';
-$options = null;
-$connection = new PDOCrateDB($dsn, $user, $password, $options);
-$connection->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED);
-$stmt = $connection->prepare('SELECT mountain FROM sys.summits LIMIT 1;');
-$stmt->execute();
-$rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-foreach ($rows as $row) {
-             print_r($row);
-     }
-```
-
-If this is not configured you will see the following error message:
-`cURL error 52: Empty reply from server`
 
 ## Advanced settings
 
@@ -213,6 +176,11 @@ The CrateDB driver provides number of `PDO` attribute class constants.
 
 :::{SEEALSO}
 Consult the [CrateDB reference] for more help with setting up SSL.
+:::
+
+:::{NOTE}
+When not configuring SSL but connecting to an SSL-enabled host, you will see an
+error message like `cURL error 52: Empty reply from server`.
 :::
 
 ### Fetch modes

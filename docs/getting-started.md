@@ -1,6 +1,7 @@
 (getting-started)=
+(setup)=
 
-# Getting started
+# Driver setup
 
 Learn how to install and get started with the {ref}`CrateDB PDO driver
 <index>`.

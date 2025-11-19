@@ -7,21 +7,33 @@ consistent interface for accessing databases in PHP.
 The [CrateDB PDO driver] provides a PDO adapter to the HTTP
 interface of [CrateDB].
 
+(get-connection)=
+
 :::{rubric} Synopsis
 :::
+
+```shell
+composer require crate/crate-pdo
+```
 
 ```php
 <?php
 
 require 'vendor/autoload.php';
 
-use Crate\PDO\PDOCrateDB as PDO;
+use Crate\PDO\PDOCrateDB;
+use PDO;
 
-$pdo = new PDO(
-    'crate:localhost:4200',
-    'crate',
-    'crate',
-    [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC],
+$dsn = 'crate:localhost:4200';
+$username = 'crate';
+$password = 'crate';
+$options = [PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC];
+
+$pdo = new PDOCrateDB(
+    $dsn,
+    $username,
+    $password,
+    $options,
 );
 
 $stm = $pdo->query('SELECT * FROM sys.summits ORDER BY height DESC LIMIT 3');
@@ -29,6 +41,14 @@ while ($row = $stm->fetch()) {
     print_r($row);
 }
 ?>
+```
+
+:::{rubric} Synopsis (CrateDB Cloud)
+:::
+Enable SSL for connecting to CrateDB Cloud.
+```php
+$dsn = 'crate:clustername.cratedb.net:4200';
+$connection->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED);
 ```
 
 :::{rubric} Documentation
