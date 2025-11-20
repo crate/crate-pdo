@@ -2,6 +2,24 @@
 CrateDB PDO Driver
 ==================
 
+.. image:: https://poser.pugx.org/crate/crate-pdo/license
+    :target: https://packagist.org/packages/crate/crate-pdo
+    :alt: License
+
+.. image:: https://poser.pugx.org/crate/crate-pdo/v/stable
+    :target: https://packagist.org/packages/crate/crate-pdo
+    :alt: Latest stable version
+
+.. image:: https://poser.pugx.org/crate/crate-pdo/d/monthly
+    :target: https://packagist.org/packages/crate/crate-pdo
+    :alt: Monthly downloads
+
+.. image:: https://img.shields.io/badge/PHP-7.3%2C%207.4%2C%208.0%2C%208.1%2C%208.2%2C%208.3%2C%208.4%2C%208.5%2C%208.6-green.svg
+    :target: https://packagist.org/packages/crate/crate-pdo
+    :alt: Supported PHP versions
+
+|
+
 .. image:: https://github.com/crate/crate-pdo/workflows/Tests/badge.svg
     :target: https://github.com/crate/crate-pdo/actions?workflow=Tests
     :alt: Build status
@@ -20,40 +38,23 @@ CrateDB PDO Driver
 
 |
 
-.. image:: https://poser.pugx.org/crate/crate-pdo/v/stable
-    :target: https://packagist.org/packages/crate/crate-pdo
-    :alt: Latest stable version
-
-.. image:: https://img.shields.io/badge/PHP-7.3%2C%207.4%2C%208.0%2C%208.1%2C%208.2%2C%208.3%2C%208.4%2C%208.5%2C%208.6-green.svg
-    :target: https://packagist.org/packages/crate/crate-pdo
-    :alt: Supported PHP versions
-
-.. image:: https://poser.pugx.org/crate/crate-pdo/d/monthly
-    :target: https://packagist.org/packages/crate/crate-pdo
-    :alt: Monthly downloads
-
-.. image:: https://poser.pugx.org/crate/crate-pdo/license
-    :target: https://packagist.org/packages/crate/crate-pdo
-    :alt: License
-
-|
-
 The `PHP Data Objects (PDO)`_ extension defines a lightweight,
 consistent interface for accessing databases in PHP.
+
 The `CrateDB PDO Driver`_ provides a PDO adapter to the HTTP
 interface of `CrateDB`_.
-
-The adapter allows you to use the standard PDO API
+It allows you to use the standard PDO API
 when connecting to CrateDB from PHP applications.
 
 Installation
 ============
 
-The CrateDB PDO adapter is available as a Composer_ package.
+The CrateDB PDO Driver is available as a Composer_ package.
+See the `installation documentation`_ for more information.
+
+::
 
     composer require crate/crate-pdo
-
-See the `installation documentation`_ for more info.
 
 Documentation
 =============
@@ -68,7 +69,6 @@ This project is primarily maintained by `Crate.io`_, but community
 contributions are very much welcome.
 See the `developer docs`_ and the `contribution docs`_ for more
 information about how to get started and how to contribute.
-
 If you need a different support contact for contributions or
 requests other than GitHub, please choose one of our other
 `support channels`_.
