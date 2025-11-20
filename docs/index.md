@@ -43,9 +43,11 @@ while ($row = $stm->fetch()) {
 ?>
 ```
 
-:::{rubric} Synopsis (CrateDB Cloud)
+(get-connection-ssl)=
+
+:::{rubric} Synopsis (SSL)
 :::
-Enable SSL for connecting to CrateDB Cloud.
+Enable SSL, for example when connecting to CrateDB Cloud.
 ```php
 $dsn = 'crate:clustername.cratedb.net:4200';
 $connection->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED);

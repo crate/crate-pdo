@@ -56,6 +56,10 @@ To wrap up, here's a list of example DSN strings:
 
 ## Authentication
 
+Perform regular credentials-based authentication by passing username
+and password to the constructor of the PDOCrateDB class.
+{ref}`get-connection` has a full example.
+
 Authentication was introduced in CrateDB versions 2.1.x.
 
 If you are using CrateDB 2.1.x or later, you must supply a username. If you
@@ -123,7 +127,7 @@ The CrateDB driver provides number of `PDO` attribute class constants.
 
 `PDOCrateDB::CRATE_ATTR_SSL_MODE` (int) named attribute
 
-: The connection SSL mode.
+: The connection SSL mode. See also full example at {ref}`get-connection-ssl`.
 
   Accepted values:
 
