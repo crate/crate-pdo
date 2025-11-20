@@ -24,19 +24,13 @@ $statement = $connection->prepare(
     array("bulkMode" => true));
 $statement->execute($parameters);
 
-// Evaluate response, mainly for getting informed about inserted rows.
+// Get the affected rows of each bulk entry.
 $response = $statement->fetchAll(PDO::FETCH_NUM);
 print_r($response);
 ```
 
 :::{NOTE}
-Please note that you **must** use `PDO::FETCH_NUM` on the fetch operation,
-because the response object type `BulkResponse` is different from the regular
-response type `Collection`. The reason is only `PDO::FETCH_NUM` provides
-unaltered access to the raw response from the database.
-```php
-switch ($fetch_style) {
-    case PDO::FETCH_NUM:
-        return $this->collection->getRows();
-```
+To get the affected rows of each bulk entry, you **must** use the
+`PDO::FETCH_NUM` fetch mode. Other fetch modes will not work
+and raise errors in this context.
 :::
