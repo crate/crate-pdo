@@ -50,7 +50,7 @@ while ($row = $stm->fetch()) {
 Enable SSL, for example when connecting to CrateDB Cloud.
 ```php
 $dsn = 'crate:clustername.cratedb.net:4200';
-$connection->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED);
+$pdo->setAttribute(PDOCrateDB::CRATE_ATTR_SSL_MODE, PDOCrateDB::CRATE_ATTR_SSL_MODE_REQUIRED);
 ```
 
 :::{rubric} Documentation
