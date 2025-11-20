@@ -72,7 +72,7 @@ class PDOCrateDB extends BasePDO implements PDOInterface
         'defaultFetchMode' => self::FETCH_BOTH,
         'errorMode'        => self::ERRMODE_SILENT,
         'sslMode'          => self::CRATE_ATTR_SSL_MODE_DISABLED,
-        'statementClass'   => PDOStatement::class,
+        'statementClass'   => [PDOStatement::class, []],
         'timeout'          => 0.0,
         'auth'             => [],
         'defaultSchema'    => 'doc',
@@ -217,9 +217,23 @@ class PDOCrateDB extends BasePDO implements PDOInterface
             return true;
         }
 
-        $className = $this->attributes['statementClass'];
+        $statementClass = $this->attributes['statementClass'];
+        if (is_string($statementClass)) {
+            $className = $statementClass;
+        } elseif (is_array($statementClass)) {
+            $className = $statementClass[0];
+        } else {
+            throw new InvalidArgumentException(
+                'Value provided to statementClass has invalid type'
+            );
+        }
+        if ($className == "Crate\PDO\PDOStatement") {
+            $constructorArgs = [$this, $this->request, $statement, $options];
+        } elseif (count($this->attributes['statementClass']) == 2) {
+            $constructorArgs = $this->attributes['statementClass'][1];
+        }
 
-        return new $className($this, $this->request, $statement, $options);
+        return new $className(...$constructorArgs);
     }
 
     /**
@@ -324,7 +338,23 @@ class PDOCrateDB extends BasePDO implements PDOInterface
                 break;
 
             case self::ATTR_STATEMENT_CLASS:
-                $this->attributes['statementClass'] = $value;
+                // Previous versions accepted bare class strings on this mode's argument value,
+                // while the PDO standard format is `[ClassName::class, [constructor_args]]`.
+                // Let's modernize, upcycle, and propagate accordingly.
+                if (is_string($value)) {
+                    trigger_error(
+                        "Using bare class strings with `ATTR_STATEMENT_CLASS` is deprecated, " .
+                        "see also https://github.com/crate/crate-pdo/issues/191.",
+                        E_USER_DEPRECATED
+                    );
+                    $this->attributes['statementClass'] = [$value, []];
+                } elseif (is_array($value)) {
+                    $this->attributes['statementClass'] = $value;
+                } else {
+                    throw new InvalidArgumentException(
+                        'Value provided to ATTR_STATEMENT_CLASS has invalid type'
+                    );
+                }
                 break;
 
             case self::ATTR_TIMEOUT:
@@ -334,7 +364,7 @@ class PDOCrateDB extends BasePDO implements PDOInterface
             case self::CRATE_ATTR_HTTP_BASIC_AUTH:
                 if (!is_array($value) && $value !== null) {
                     throw new InvalidArgumentException(
-                        'Value probided to CRATE_ATTR_HTTP_BASIC_AUTH must be null or an array'
+                        'Value provided to CRATE_ATTR_HTTP_BASIC_AUTH must be null or an array'
                     );
                 }
 
@@ -420,7 +450,7 @@ class PDOCrateDB extends BasePDO implements PDOInterface
                 return static::DRIVER_NAME;
 
             case self::ATTR_STATEMENT_CLASS:
-                return [$this->attributes['statementClass']];
+                return $this->attributes['statementClass'];
 
             case self::CRATE_ATTR_DEFAULT_SCHEMA:
                 return $this->attributes['defaultSchema'];

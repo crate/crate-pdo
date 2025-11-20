@@ -9,6 +9,7 @@ Unreleased
   can't be used, better supporting the Laravel Eloquent ORM. Thanks, @olavski.
 - Added support for the ``$fetchMode`` argument of the ``PDO::query`` method.
 - Fixed deprecation warnings for compatibility with modern PHP and PDO versions.
+- Implemented standards-compliant ``ATTR_STATEMENT_CLASS`` driver attribute.
 - Verified support on PHP 8.5 and PHP 8.6.
 
 2025/11/13 2.2.3
