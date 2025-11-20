@@ -1,6 +1,6 @@
-===================
-CrateDB PDO Adapter
-===================
+==================
+CrateDB PDO Driver
+==================
 
 .. image:: https://github.com/crate/crate-pdo/workflows/Tests/badge.svg
     :target: https://github.com/crate/crate-pdo/actions?workflow=Tests
@@ -17,6 +17,8 @@ CrateDB PDO Adapter
 .. image:: https://scrutinizer-ci.com/g/crate/crate-pdo/badges/quality-score.png?b=main
     :target: https://scrutinizer-ci.com/g/crate/crate-pdo
     :alt: Quality
+
+|
 
 .. image:: https://poser.pugx.org/crate/crate-pdo/v/stable
     :target: https://packagist.org/packages/crate/crate-pdo
@@ -36,49 +38,50 @@ CrateDB PDO Adapter
 
 |
 
-The CrateDB PDO adapter is a CrateDB_ specific database driver implementation
-of the PDO_ API.
+The `PHP Data Objects (PDO)`_ extension defines a lightweight,
+consistent interface for accessing databases in PHP.
+The `CrateDB PDO Driver`_ provides a PDO adapter to the HTTP
+interface of `CrateDB`_.
 
-This adapter allows you to use the standardized PDO API you're already familiar
-with when developing PHP applications with a CrateDB database.
-
-Prerequisites
-=============
-
-You need to be using PHP and Composer_.
+The adapter allows you to use the standard PDO API
+when connecting to CrateDB from PHP applications.
 
 Installation
 ============
 
-The CrateDB PDO adapter is available as a Composer package. Install it like::
+The CrateDB PDO adapter is available as a Composer_ package.
 
     composer require crate/crate-pdo
 
 See the `installation documentation`_ for more info.
 
+Documentation
+=============
+
+The documentation for the ``crate-pdo`` package
+is available at https://cratedb.com/docs/pdo/.
+
 Contributing
 ============
 
-This project is primarily maintained by `Crate.io`_, but we welcome community
-contributions!
+This project is primarily maintained by `Crate.io`_, but community
+contributions are very much welcome.
+See the `developer docs`_ and the `contribution docs`_ for more
+information about how to get started and how to contribute.
 
-See the `developer docs`_ and the `contribution docs`_ for more information.
+If you need a different support contact for contributions or
+requests other than GitHub, please choose one of our other
+`support channels`_.
 
-Help
-====
-
-Looking for more help?
-
-- Read the `project docs`_
-- Check out our `support channels`_
 
 .. _Composer: https://getcomposer.org/
 .. _contribution docs: CONTRIBUTING.rst
-.. _Crate.io: https://crate.io
+.. _Crate.io: https://cratedb.com
 .. _crate/crate-pdo: https://packagist.org/packages/crate/crate-pdo
 .. _CrateDB: https://github.com/crate/crate
+.. _CrateDB PDO Driver: https://github.com/crate/crate-pdo
 .. _developer docs: DEVELOP.rst
-.. _installation documentation: https://crate.io/docs/reference/pdo/installation.html
+.. _installation documentation: https://cratedb.com/docs/pdo/en/latest/getting-started.html
 .. _PDO: http://www.php.net/manual/en/intro.pdo.php
-.. _support channels: https://crate.io/support/
-.. _project docs: https://crate.io/docs/reference/pdo/
+.. _PHP Data Objects (PDO): https://www.php.net/manual/en/intro.pdo.php
+.. _support channels: https://cratedb.com/support/
