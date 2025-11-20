@@ -1,6 +1,7 @@
 (getting-started)=
+(setup)=
 
-# Getting started
+# Driver setup
 
 Learn how to install and get started with the {ref}`CrateDB PDO driver
 <index>`.
@@ -14,8 +15,7 @@ Your project must be using [Composer].
 ## Set up as a dependency
 
 The driver is available as a package at [crate/crate-pdo].
-
-Add the driver package to your project's [composer.json]:
+Add the driver package to your project's [composer.json].
 
 ```shell
 composer require crate/crate-pdo
@@ -25,7 +25,7 @@ composer require crate/crate-pdo
 
 ## Install
 
-Once the package has been configured as a dependency, you can install it, like:
+Once the package has been configured as a dependency, you can install it.
 
 ```shell
 composer install
@@ -33,7 +33,7 @@ composer install
 
 Afterward, if you are not already doing so, you must require the Composer
 [autoload.php] file. You can do this by adding a line like this to your PHP
-application:
+application.
 
 ```php
 require __DIR__ . '/vendor/autoload.php';
