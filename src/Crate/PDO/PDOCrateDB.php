@@ -219,18 +219,23 @@ class PDOCrateDB extends BasePDO implements PDOInterface
 
         $statementClass = $this->attributes['statementClass'];
         if (is_string($statementClass)) {
+            trigger_error(
+                "Using bare class strings with `statementClass` is deprecated, " .
+                "see also https://github.com/crate/crate-pdo/issues/191.",
+                E_USER_DEPRECATED
+            );
             $className = $statementClass;
+            $constructorArgs = [];
         } elseif (is_array($statementClass)) {
             $className = $statementClass[0];
+            $constructorArgs = $statementClass[1] ?? [];
         } else {
             throw new InvalidArgumentException(
                 'Value provided to statementClass has invalid type'
             );
         }
-        if ($className == "Crate\PDO\PDOStatement") {
+        if ($className === PDOStatement::class) {
             $constructorArgs = [$this, $this->request, $statement, $options];
-        } elseif (count($this->attributes['statementClass']) == 2) {
-            $constructorArgs = $this->attributes['statementClass'][1];
         }
 
         return new $className(...$constructorArgs);
@@ -349,6 +354,11 @@ class PDOCrateDB extends BasePDO implements PDOInterface
                     );
                     $this->attributes['statementClass'] = [$value, []];
                 } elseif (is_array($value)) {
+                    if (empty($value) || !is_string($value[0])) {
+                        throw new InvalidArgumentException(
+                            'ATTR_STATEMENT_CLASS array must contain a class name as first element'
+                        );
+                    }
                     $this->attributes['statementClass'] = $value;
                 } else {
                     throw new InvalidArgumentException(
