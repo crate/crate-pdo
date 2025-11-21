@@ -5,6 +5,9 @@ Changelog for crate-pdo
 Unreleased
 ==========
 
+2025/11/21 2.2.4
+================
+
 - Added support for querying with ``PDO::PARAM_STR`` when prepared statements
   can't be used, better supporting the Laravel Eloquent ORM. Thanks, @olavski.
 - Added support for the ``$fetchMode`` argument of the ``PDO::query`` method.

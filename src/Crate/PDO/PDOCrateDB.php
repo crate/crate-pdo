@@ -37,7 +37,7 @@ class PDOCrateDB extends BasePDO implements PDOInterface
 {
     use PDOImplementation;
 
-    public const VERSION     = '2.2.3';
+    public const VERSION     = '2.2.4';
     public const DRIVER_NAME = 'crate';
 
     public const DSN_REGEX = '/^(?:crate:)(?:((?:[\w\.-]+:\d+\,?)+))\/?([\w]+)?$/';
