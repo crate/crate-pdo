@@ -1,6 +1,6 @@
 {
     "name": "crate/crate-pdo",
-    "description": "PDO adapter for CrateDB",
+    "description": "CrateDB PDO Driver",
     "authors": [
         {
             "name": "Crate.io",
