@@ -77,6 +77,6 @@ data-types
 [CrateDB]: https://crate.io/products/cratedb/
 [CrateDB PDO driver]: https://github.com/crate/crate-pdo
 [CrateDB PDO example application]: https://github.com/crate/crate-sample-apps/tree/main/php-slim
-[PHP Data Objects (PDO)]: https://www.php.net/manual/en/intro.pdo.php
+[PHP Data Objects (PDO)]: https://www.php.net/manual/en/book.pdo.php
 [PostgreSQL PDO Driver]: https://www.php.net/manual/en/ref.pdo-pgsql.php
 [PostgreSQL PDO example application]: https://github.com/crate/cratedb-examples/tree/main/by-language/php-pdo
