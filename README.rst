@@ -82,6 +82,6 @@ requests other than GitHub, please choose one of our other
 .. _CrateDB PDO Driver: https://github.com/crate/crate-pdo
 .. _developer docs: DEVELOP.rst
 .. _installation documentation: https://cratedb.com/docs/pdo/en/latest/getting-started.html
-.. _PDO: http://www.php.net/manual/en/intro.pdo.php
-.. _PHP Data Objects (PDO): https://www.php.net/manual/en/intro.pdo.php
+.. _PDO: https://www.php.net/manual/en/book.pdo.php
+.. _PHP Data Objects (PDO): https://www.php.net/manual/en/book.pdo.php
 .. _support channels: https://cratedb.com/support/

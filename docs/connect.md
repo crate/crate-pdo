@@ -216,7 +216,7 @@ method used.
 [fetch modes]: https://www.php.net/manual/en/pdostatement.fetch.php
 [http connection]: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html
 [http endpoint]: https://crate.io/docs/crate/reference/en/latest/interfaces/http.html
-[pdo documentation]: https://www.php.net/manual/en/intro.pdo.php
+[pdo documentation]: https://www.php.net/manual/en/book.pdo.php
 [round-robin dns]: https://en.wikipedia.org/wiki/Round-robin_DNS
 [sample application]: https://github.com/crate/crate-sample-apps/tree/main/php-slim
 [sample application documentation]: https://github.com/crate/crate-sample-apps/blob/main/php-slim/documentation.md
