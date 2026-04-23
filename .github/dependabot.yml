@@ -14,3 +14,8 @@ updates:
     commit-message:
       prefix: "Composer"
       include: "scope"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
