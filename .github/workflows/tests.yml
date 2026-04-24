@@ -59,7 +59,7 @@ jobs:
           tools: composer:2.8, phpunit:^9.5
 
       - name: Install PHP dependencies
-        uses: ramsey/composer-install@v3
+        uses: ramsey/composer-install@v4
 
       - name: Run code style checks
         run: composer run check-style
